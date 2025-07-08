@@ -1,0 +1,21 @@
+{
+  "name": "scicloud",
+  "displayName": "SciCloud - Scientific Lab Management",
+  "description": "An open-source solution for managing scientific laboratories and projects",
+  "author": "Michael BURTIN <michael.burtin@univ-poitiers.fr>",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mburtin/SciCloud.git"
+  },
+  "license": "MIT",
+  "keywords": [],
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": ">=20.x"
+  },
+  "packageManager": "pnpm@10.12.4"
+}

@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint", 
+    "esbenp.prettier-vscode", 
+    "xabikos.JavaScriptSnippets", 
+    "Vue.volar", 
+    "bradlc.vscode-tailwindcss",
+    "Selemondev.shadcn-vue"
+  ]
+}
