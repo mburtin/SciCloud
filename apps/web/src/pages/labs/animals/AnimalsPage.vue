@@ -1,0 +1,560 @@
+<template>
+  <div class="space-y-6">
+    <!-- Page Header -->
+    <div class="border-b border-border pb-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-semibold text-foreground">
+            Animals
+          </h1>
+          <p class="text-muted-foreground mt-1">
+            Manage and track laboratory animals.
+          </p>
+        </div>
+        <Button @click="openNewAnimalDialog">
+          <Plus class="h-4 w-4 mr-2" />
+          New Animal
+        </Button>
+      </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
+      <Card class="p-3">
+        <div class="flex items-center gap-4">
+          <div class="bg-blue-100 p-2 rounded-lg">
+            <Users class="h-5 w-5 text-blue-600" />
+          </div>
+          <div>
+            <p class="text-sm text-muted-foreground">
+              Total animals
+            </p>
+            <p class="text-xl font-bold">
+              {{ totalAnimals }}
+            </p>
+          </div>
+        </div>
+      </Card>
+      <Card class="p-3">
+        <div class="flex items-center gap-4">
+          <div class="bg-green-100 p-2 rounded-lg">
+            <CheckCircle2 class="h-5 w-5 text-green-600" />
+          </div>
+          <div>
+            <p class="text-sm text-muted-foreground">
+              Alive
+            </p>
+            <p class="text-xl font-bold">
+              {{ aliveAnimals }}
+            </p>
+          </div>
+        </div>
+      </Card>
+      <Card class="p-3">
+        <div class="flex items-center gap-4">
+          <div class="bg-purple-100 p-2 rounded-lg">
+            <FlaskConical class="h-5 w-5 text-purple-600" />
+          </div>
+          <div>
+            <p class="text-sm text-muted-foreground">
+              In experimentation
+            </p>
+            <p class="text-xl font-bold">
+              {{ experimentAnimals }}
+            </p>
+          </div>
+        </div>
+      </Card>
+      <Card class="p-3">
+        <div class="flex items-center gap-4">
+          <div class="bg-orange-100 p-2 rounded-lg">
+            <HeartPulse class="h-5 w-5 text-orange-600" />
+          </div>
+          <div>
+            <p class="text-sm text-muted-foreground">
+              Health monitoring
+            </p>
+            <p class="text-xl font-bold">
+              {{ healthMonitoringAnimals }}
+            </p>
+          </div>
+        </div>
+      </Card>
+      <Card class="p-3">
+        <div class="flex items-center gap-4">
+          <div class="bg-yellow-100 p-2 rounded-lg">
+            <CalendarDays class="h-5 w-5 text-yellow-600" />
+          </div>
+          <div>
+            <p class="text-sm text-muted-foreground">
+              Upcoming exams
+            </p>
+            <p class="text-xl font-bold">
+              {{ upcomingExamsAnimals }}
+            </p>
+          </div>
+        </div>
+      </Card>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-card border rounded-lg p-4 flex items-center gap-4">
+      <div class="relative w-full max-w-sm">
+        <Input
+          v-model="searchQuery"
+          placeholder="Search by ID, species, strain, veterinarian..."
+          class="pl-10"
+        />
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <Search class="h-5 w-5 text-muted-foreground" />
+        </div>
+      </div>
+      <Select v-model="filterSpecies">
+        <SelectTrigger class="w-48">
+          <SelectValue placeholder="All species" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">
+            All Species
+          </SelectItem>
+          <SelectItem value="mouse">
+            Mouse
+          </SelectItem>
+          <SelectItem value="rat">
+            Rat
+          </SelectItem>
+          <SelectItem value="rabbit">
+            Rabbit
+          </SelectItem>
+          <SelectItem value="other">
+            Other
+          </SelectItem>
+        </SelectContent>
+      </Select>
+      <Select v-model="filterStatus">
+        <SelectTrigger class="w-48">
+          <SelectValue placeholder="All statuses" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">
+            All Statuses
+          </SelectItem>
+          <SelectItem value="active">
+            Active
+          </SelectItem>
+          <SelectItem value="quarantine">
+            Quarantine
+          </SelectItem>
+          <SelectItem value="experiment">
+            In Experiment
+          </SelectItem>
+          <SelectItem value="archived">
+            Archived
+          </SelectItem>
+        </SelectContent>
+      </Select>
+      <Select v-model="filterProject">
+        <SelectTrigger class="w-48">
+          <SelectValue placeholder="All projects" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">
+            All Projects
+          </SelectItem>
+          <SelectItem value="Project Alpha">
+            Project Alpha
+          </SelectItem>
+          <SelectItem value="Project Beta">
+            Project Beta
+          </SelectItem>
+          <SelectItem value="Project Gamma">
+            Project Gamma
+          </SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+
+    <!-- Animals Table -->
+    <Card>
+      <CardContent class="p-0">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Species</TableHead>
+              <TableHead>Age</TableHead>
+              <TableHead>Sex</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Project</TableHead>
+              <TableHead>Last Updated</TableHead>
+              <TableHead />
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow
+              v-for="animal in filteredAnimals"
+              :key="animal.id"
+              class="cursor-pointer hover:bg-muted/50"
+              @click="navigateToAnimalDetail(animal.id)"
+            >
+              <TableCell>{{ animal.id }}</TableCell>
+              <TableCell>
+                <div class="flex items-center gap-2">
+                  <span class="font-medium">{{ animal.species }}</span>
+                  <Badge v-if="animal.strain" variant="outline">
+                    {{ animal.strain }}
+                  </Badge>
+                </div>
+              </TableCell>
+              <TableCell>{{ animal.age }} weeks</TableCell>
+              <TableCell>{{ animal.sex === 'male' ? 'M' : 'F' }}</TableCell>
+              <TableCell>
+                <Badge :variant="getStatusVariant(animal.status)">
+                  {{ getStatusLabel(animal.status) }}
+                </Badge>
+              </TableCell>
+              <TableCell>
+                <div v-if="animal.project" class="text-sm">
+                  {{ animal.project }}
+                </div>
+                <div v-else class="text-sm text-muted-foreground">
+                  Unassigned
+                </div>
+              </TableCell>
+              <TableCell>{{ formatDate(animal.lastUpdated) }}</TableCell>
+              <TableCell>
+                <DropdownMenu>
+                  <DropdownMenuTrigger as-child>
+                    <Button variant="ghost" class="h-8 w-8 p-0" @click.stop>
+                      <span class="sr-only">Open menu</span>
+                      <MoreHorizontal class="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                    <DropdownMenuItem @click="navigateToAnimalDetail(animal.id)">
+                      View details
+                    </DropdownMenuItem>
+                    <DropdownMenuItem @click="openEditAnimalDialog(animal)">
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem class="text-red-500" @click="handleDeleteAnimal(animal.id)">
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  </div>
+
+  <!-- New Animal Dialog -->
+  <Dialog v-model:open="isNewAnimalDialogOpen">
+    <DialogContent class="sm:max-w-[600px]">
+      <DialogHeader>
+        <DialogTitle>Add New Animal</DialogTitle>
+        <DialogDescription>
+          Fill in the details for the new animal.
+        </DialogDescription>
+      </DialogHeader>
+      <div class="grid gap-4 py-4">
+        <div class="grid grid-cols-4 items-center gap-4">
+          <Label for="species" class="text-right">Species</Label>
+          <Input id="species" v-model="newAnimalForm.species" class="col-span-3" />
+        </div>
+        <div class="grid grid-cols-4 items-center gap-4">
+          <Label for="strain" class="text-right">Strain</Label>
+          <Input id="strain" v-model="newAnimalForm.strain" class="col-span-3" />
+        </div>
+        <div class="grid grid-cols-4 items-center gap-4">
+          <Label for="age" class="text-right">Age (weeks)</Label>
+          <Input
+            id="age"
+            v-model.number="newAnimalForm.age"
+            type="number"
+            class="col-span-3"
+          />
+        </div>
+        <div class="grid grid-cols-4 items-center gap-4">
+          <Label for="sex" class="text-right">Sex</Label>
+          <Select v-model="newAnimalForm.sex">
+            <SelectTrigger class="col-span-3">
+              <SelectValue placeholder="Select sex" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="male">
+                Male
+              </SelectItem>
+              <SelectItem value="female">
+                Female
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div class="grid grid-cols-4 items-center gap-4">
+          <Label for="project" class="text-right">Project</Label>
+          <Input id="project" v-model="newAnimalForm.project" class="col-span-3" />
+        </div>
+      </div>
+      <DialogFooter>
+        <Button variant="outline" @click="isNewAnimalDialogOpen = false">
+          Cancel
+        </Button>
+        <Button @click="handleCreateAnimal">
+          Save Animal
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+
+  <!-- Edit Animal Dialog -->
+  <Dialog v-model:open="isEditDialogOpen">
+    <DialogContent v-if="editingAnimal" class="sm:max-w-[600px]">
+      <DialogHeader>
+        <DialogTitle>Edit Animal</DialogTitle>
+        <DialogDescription>
+          Update the details for animal ID: {{ editingAnimal.id }}
+        </DialogDescription>
+      </DialogHeader>
+      <div class="grid gap-4 py-4">
+        <div class="grid grid-cols-4 items-center gap-4">
+          <Label for="edit-species" class="text-right">Species</Label>
+          <Input id="edit-species" v-model="editingAnimal.species" class="col-span-3" />
+        </div>
+        <div class="grid grid-cols-4 items-center gap-4">
+          <Label for="edit-strain" class="text-right">Strain</Label>
+          <Input id="edit-strain" v-model="editingAnimal.strain" class="col-span-3" />
+        </div>
+        <div class="grid grid-cols-4 items-center gap-4">
+          <Label for="edit-age" class="text-right">Age (weeks)</Label>
+          <Input
+            id="edit-age"
+            v-model.number="editingAnimal.age"
+            type="number"
+            class="col-span-3"
+          />
+        </div>
+        <div class="grid grid-cols-4 items-center gap-4">
+          <Label for="edit-project" class="text-right">Project</Label>
+          <Input id="edit-project" v-model="editingAnimal.project" class="col-span-3" />
+        </div>
+        <div class="grid grid-cols-4 items-center gap-4">
+          <Label for="edit-status" class="text-right">Status</Label>
+          <Select v-model="editingAnimal.status">
+            <SelectTrigger class="col-span-3">
+              <SelectValue placeholder="Select status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="active">
+                Active
+              </SelectItem>
+              <SelectItem value="quarantine">
+                Quarantine
+              </SelectItem>
+              <SelectItem value="experiment">
+                In Experiment
+              </SelectItem>
+              <SelectItem value="archived">
+                Archived
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <DialogFooter>
+        <Button variant="outline" @click="isEditDialogOpen = false">
+          Cancel
+        </Button>
+        <Button @click="handleUpdateAnimal">
+          Save Changes
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+</template>
+
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { 
+  Search, 
+  Plus, 
+  MoreHorizontal,
+  Users,
+  CheckCircle2,
+  FlaskConical,
+  HeartPulse,
+  CalendarDays
+} from 'lucide-vue-next';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Label } from '@/components/ui/label';
+import { mockAnimals, type Animal } from '@/data/mocks/animals.mock';
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+
+// Reactive state
+const searchQuery = ref('')
+const filterSpecies = ref('all')
+const filterStatus = ref('all')
+const filterProject = ref('all');
+const router = useRouter();
+
+// Animals data
+const animals = ref<Animal[]>(mockAnimals)
+  
+
+// Stats
+const totalAnimals = computed(() => animals.value.length)
+const aliveAnimals = computed(() => animals.value.filter(a => a.status !== 'archived').length)
+const experimentAnimals = computed(() => animals.value.filter(a => a.status === 'experiment').length)
+const healthMonitoringAnimals = computed(() => animals.value.filter(a => a.healthMonitoring).length)
+const upcomingExamsAnimals = computed(() => animals.value.filter(a => a.upcomingExams).length)
+
+// Filter animals
+const filteredAnimals = computed(() => {
+  let filtered = animals.value
+
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase()
+    filtered = filtered.filter(animal => 
+      animal.id.toLowerCase().includes(query) ||
+      animal.species.toLowerCase().includes(query) ||
+      (animal.strain && animal.strain.toLowerCase().includes(query)) ||
+      (animal.project && animal.project.toLowerCase().includes(query))
+    )
+  }
+
+  if (filterSpecies.value !== 'all') {
+    const speciesMap: Record<string, string> = {
+      'mouse': 'Mouse',
+      'rat': 'Rat',
+      'rabbit': 'Rabbit'
+    }
+    filtered = filtered.filter(animal => animal.species === speciesMap[filterSpecies.value])
+  }
+
+  if (filterStatus.value !== 'all') {
+    filtered = filtered.filter(animal => animal.status === filterStatus.value)
+  }
+
+  if (filterProject.value !== 'all') {
+    filtered = filtered.filter(animal => animal.project === filterProject.value)
+  }
+
+  return filtered
+})
+
+// Methods
+const getStatusLabel = (status: string) => {
+  const labels: Record<string, string> = {
+    'active': 'Active',
+    'quarantine': 'Quarantine',
+    'experiment': 'In Experiment',
+    'archived': 'Archived'
+  }
+  return labels[status] || status
+}
+
+const getStatusVariant = (status: string): 'default' | 'destructive' | 'outline' | 'secondary' => {
+  const variants: Record<string, 'default' | 'destructive' | 'outline' | 'secondary'> = {
+    'active': 'default',
+    'quarantine': 'destructive',
+    'experiment': 'secondary',
+    'archived': 'outline'
+  }
+  return variants[status] || 'default'
+}
+
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  })
+}
+
+const isNewAnimalDialogOpen = ref(false)
+const newAnimalForm = ref<Partial<Animal>>({})
+
+const resetNewAnimalForm = () => {
+  newAnimalForm.value = {
+    id: `M${(Math.random() * 1000).toFixed(0).padStart(3, '0')}`,
+    species: 'Mouse',
+    strain: '',
+    age: 8,
+    sex: 'male',
+    status: 'active',
+    project: '',
+    lastUpdated: new Date().toISOString(),
+    healthMonitoring: false,
+    upcomingExams: false,
+  }
+}
+
+const openNewAnimalDialog = () => {
+  resetNewAnimalForm()
+  isNewAnimalDialogOpen.value = true
+}
+
+const handleCreateAnimal = () => {
+  animals.value.unshift(newAnimalForm.value as Animal)
+  isNewAnimalDialogOpen.value = false
+}
+
+const isEditDialogOpen = ref(false);
+const editingAnimal = ref<Animal | null>(null);
+
+const openEditAnimalDialog = (animal: Animal) => {
+  editingAnimal.value = JSON.parse(JSON.stringify(animal));
+  isEditDialogOpen.value = true;
+};
+
+const handleUpdateAnimal = () => {
+  if (!editingAnimal.value) return;
+  const index = animals.value.findIndex(a => a.id === editingAnimal.value!.id);
+  if (index !== -1) {
+    animals.value[index] = editingAnimal.value;
+  }
+  isEditDialogOpen.value = false;
+};
+
+const handleDeleteAnimal = (animalId: string) => {
+  if (confirm('Are you sure you want to delete this animal?')) {
+    animals.value = animals.value.filter(a => a.id !== animalId);
+  }
+};
+
+const navigateToAnimalDetail = (animalId: string) => {
+  router.push({ name: 'lab-animal-detail', params: { id: animalId } });
+}
+</script>

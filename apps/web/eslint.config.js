@@ -66,6 +66,7 @@ export default [
       "eslint.config.js",
       "*.config.js",
       "*.config.ts",
+      "src/components/ui/**",
     ],
   },
 ];
