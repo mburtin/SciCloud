@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    // Base TypeScript configuration
+    "target": "ES2023",                         // Target JavaScript version
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],   // Available TypeScript libraries
+    "esModuleInterop": true,                    // Compatibility with CommonJS modules
+
+    // File handling
+    "allowJs": true,                            // Allow .js files
+    "resolveJsonModule": true,                  // Allow importing JSON files
+    "skipLibCheck": true,                       // Skip type checking of .d.ts files in node_modules
+    "isolatedModules": true,                    // Each file must be an isolated module
+    "forceConsistentCasingInFileNames": true,   // Force consistent casing in file names
+    
+    // Strictness
+    "strict": true,                             // Enable all strict type checking
+    "noUnusedLocals": true,                     // Error on unused local variables
+    "noUncheckedIndexedAccess": true,           // Check unchecked indexed access
+    "noImplicitOverride": true,                 // Error when a method doesn't properly override a parent class method
+    "erasableSyntaxOnly": true,                 // Only allow syntax that can be erased by the compiler
+    "noFallthroughCasesInSwitch": true,         // Error on fallthrough cases in switch statements
+    "noUncheckedSideEffectImports": true,       // Error on imports that have side effects without being used
+
+    // Paths and resolution
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["./apps/shared/src/*"],
+      "@/*": ["./apps/*"]
+    },
+
+    // Output directories
+    "outDir": "./dist",                         // Default output directory
+    "rootDir": "."                              // Source root directory (set to project root to include all mapped paths)
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ]
+}
