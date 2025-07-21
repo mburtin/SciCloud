@@ -2,14 +2,22 @@
   "name": "scicloud",
   "version": "0.1.0",
   "type": "module",
-  "description": "",
-  "main": "index.js",
+  "description": "SciCloud - Cloud services for scientific research",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "web-dev": "pnpm --filter web dev",
+    "web-build": "pnpm --filter web build",
+    "web-preview": "pnpm --filter web preview",
+    "web-test": "pnpm --filter web test",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "type-check": "vue-tsc --noEmit"
   },
-  "keywords": [],
+  "keywords": [
+    "scientific research",
+    "data analysis",
+    "project management",
+    "cloud services"
+  ],
   "author": "",
   "license": "MIT",
   "packageManager": "pnpm@10.13.1",

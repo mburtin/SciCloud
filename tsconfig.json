@@ -5,8 +5,6 @@
     "incremental": true                         // Incremental compilation for better performance
   },
   "references": [
-    { "path": "./apps/shared" },
-    { "path": "./apps/web" },
-    { "path": "./apps/server" }
+    { "path": "./apps/web" }
   ]
 }

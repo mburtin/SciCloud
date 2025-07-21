@@ -3,8 +3,12 @@
     // Base TypeScript configuration
     "target": "ES2023",                         // Target JavaScript version
     "lib": ["ES2023", "DOM", "DOM.Iterable"],   // Available TypeScript libraries
+    "module": "ESNext",                         // Use modern ES modules
     "esModuleInterop": true,                    // Compatibility with CommonJS modules
-
+    "moduleResolution": "bundler",              // Use bundler resolution for modern tools
+    "allowImportingTsExtensions": true,         // Allow importing TypeScript files with .ts extensions
+    "noEmit": true,                             // Do not emit output files (useful for type checking only)
+    
     // File handling
     "allowJs": true,                            // Allow .js files
     "resolveJsonModule": true,                  // Allow importing JSON files
@@ -24,8 +28,7 @@
     // Paths and resolution
     "baseUrl": ".",
     "paths": {
-      "@shared/*": ["./apps/shared/src/*"],
-      "@/*": ["./apps/*"]
+      "@web/*": ["./apps/web/src/*"]
     },
 
     // Output directories
