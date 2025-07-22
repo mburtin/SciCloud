@@ -1,16 +1,8 @@
-export interface ProjectDocument {
-  name: string
-  type: string
-  description: string
-  uploadDate: string
-  uploader: string
-  size: string
-  tags: string[]
-  icon: any
-}
+import type { Documents } from '@/types/documents'
 
-export const mockProjectDocuments: ProjectDocument[] = [
+export const mockProjectDocuments: Documents[] = [
   {
+    id: 'doc-001',
     name: 'Protocole_Recherche_V3.pdf',
     type: 'Report',
     description: 'Project PDF document for Water Quality Analysis',
@@ -19,8 +11,11 @@ export const mockProjectDocuments: ProjectDocument[] = [
     size: '21.0 MB',
     tags: ['pdf', 'project', 'initial'],
     icon: null, // Will be set by getFileIcon in component
+    created_at: '2024-06-15T02:00:00Z',
+    updated_at: '2024-06-15T02:00:00Z',
   },
   {
+    id: 'doc-002',
     name: 'Resultats_Analyse.xlsx',
     type: 'Data',
     description: 'Project Excel document for Water Quality Analysis',
@@ -29,8 +24,11 @@ export const mockProjectDocuments: ProjectDocument[] = [
     size: '854.0 KB',
     tags: ['excel', 'project', 'initial'],
     icon: null, // Will be set by getFileIcon in component
+    created_at: '2024-06-20T02:00:00Z',
+    updated_at: '2024-06-20T02:00:00Z',
   },
   {
+    id: 'doc-003',
     name: 'Rapport_Intermediaire.docx',
     type: 'Protocol',
     description: 'Project Word document for Water Quality Analysis',
@@ -39,5 +37,7 @@ export const mockProjectDocuments: ProjectDocument[] = [
     size: '1.2 MB',
     tags: ['word', 'protocol', 'draft'],
     icon: null, // Will be set by getFileIcon in component
+    created_at: '2024-06-22T09:30:00Z',
+    updated_at: '2024-06-22T09:30:00Z',
   },
 ]

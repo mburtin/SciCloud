@@ -1,18 +1,4 @@
-export type StockLevel = 'high' | 'normal' | 'low' | 'outofstock'
-
-export interface Consumable {
-  id: string
-  reference: string
-  name: string
-  supplier: string
-  category: string
-  quantity: number
-  unit: string
-  stockLevel: StockLevel
-  location: string
-  lastOrder: string | null
-  expiryDate: string | null
-}
+import type { Consumable } from '@/types/lab'
 
 export const mockConsumables: Consumable[] = [
   {
@@ -26,7 +12,9 @@ export const mockConsumables: Consumable[] = [
     stockLevel: 'normal',
     location: 'Shelf A-1',
     lastOrder: '2024-06-15',
-    expiryDate: '2025-12-31'
+    expiryDate: '2025-12-31',
+    created_at: '2024-06-01T08:00:00',
+    updated_at: '2024-06-15T10:00:00',
   },
   {
     id: 'C002',
@@ -39,7 +27,9 @@ export const mockConsumables: Consumable[] = [
     stockLevel: 'high',
     location: 'Cabinet B-3',
     lastOrder: '2024-05-20',
-    expiryDate: null
+    expiryDate: '9999-12-31',
+    created_at: '2024-05-01T09:00:00',
+    updated_at: '2024-05-20T11:00:00',
   },
   {
     id: 'C003',
@@ -52,7 +42,9 @@ export const mockConsumables: Consumable[] = [
     stockLevel: 'normal',
     location: 'Shelf C-2',
     lastOrder: '2024-07-01',
-    expiryDate: null
+    expiryDate: '9999-12-31',
+    created_at: '2024-06-15T10:00:00',
+    updated_at: '2024-07-01T14:00:00',
   },
   {
     id: 'C004',
@@ -65,7 +57,9 @@ export const mockConsumables: Consumable[] = [
     stockLevel: 'low',
     location: 'Fridge 1',
     lastOrder: '2024-06-25',
-    expiryDate: '2024-08-31'
+    expiryDate: '2024-08-31',
+    created_at: '2024-06-10T08:30:00',
+    updated_at: '2024-06-25T16:00:00',
   },
   {
     id: 'C005',
@@ -78,7 +72,9 @@ export const mockConsumables: Consumable[] = [
     stockLevel: 'outofstock',
     location: 'Drawer D-5',
     lastOrder: '2024-04-10',
-    expiryDate: null
+    expiryDate: '9999-12-31',
+    created_at: '2024-04-01T09:00:00',
+    updated_at: '2024-04-10T12:00:00',
   },
   {
     id: 'C006',
@@ -91,7 +87,9 @@ export const mockConsumables: Consumable[] = [
     stockLevel: 'low',
     location: 'Flammable Cabinet',
     lastOrder: '2024-07-10',
-    expiryDate: '2023-12-31'
+    expiryDate: '2023-12-31',
+    created_at: '2024-07-01T10:00:00',
+    updated_at: '2024-07-10T15:30:00',
   },
   {
     id: 'C007',
@@ -104,6 +102,8 @@ export const mockConsumables: Consumable[] = [
     stockLevel: 'low',
     location: 'Acid Cabinet',
     lastOrder: '2024-07-10',
-    expiryDate: '2024-07-20'
+    expiryDate: '2024-07-20',
+    created_at: '2024-07-01T11:00:00',
+    updated_at: '2024-07-10T16:00:00',
   }
 ]

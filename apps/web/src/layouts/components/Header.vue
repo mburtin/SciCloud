@@ -209,9 +209,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useAuthStore } from '@/stores/auth.store'
-import { mockUser } from '@/data/mocks/user.mock'
-import { mockMainModules } from '@/data/mocks/navigation.mock'
-import { mockNotifications } from '@/data/mocks/notifications.mock'
+import { mockUser } from '@/mocks/user.mock'
+import { mockMainModules } from '@/mocks/navigation.mock'
+import { mockNotifications } from '@/mocks/notifications.mock'
 
 const router = useRouter()
 const authStore = useAuthStore()

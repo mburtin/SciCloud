@@ -108,15 +108,7 @@
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div class="flex items-center gap-2">
-                    <Avatar class="h-6 w-6">
-                      <AvatarImage :src="project.responsibleAvatar" />
-                      <AvatarFallback class="text-xs">
-                        {{ project.responsibleInitials }}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span class="text-sm">{{ project.responsible }}</span>
-                  </div>
+                  <span class="text-sm">{{ project.responsible }}</span>
                 </TableCell>
                 <TableCell>
                   <DropdownMenu>
@@ -154,7 +146,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { 
   Search, 
@@ -176,7 +167,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { mockProjects } from '@/data/mocks/projects.mock'
+import { mockProjects } from '@/mocks/projects.mock'
 
 // Reactive state
 const router = useRouter();
@@ -194,7 +185,7 @@ const filteredProjects = computed(() => {
     const query = searchQuery.value.toLowerCase()
     filtered = filtered.filter(project => 
       project.name.toLowerCase().includes(query) ||
-      project.description.toLowerCase().includes(query) ||
+      project.description?.toLowerCase().includes(query) ||
       project.responsible.toLowerCase().includes(query)
     )
   }

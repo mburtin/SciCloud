@@ -1,4 +1,4 @@
-import type { User } from '@/data/types'
+import type { User } from '@/types/auth'
 
 export const mockUser: Pick<User, 'name' | 'email'> & { avatar: string } = {
   name: 'Dr. Evelyn Reed',

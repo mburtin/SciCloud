@@ -133,7 +133,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { FileText, TrendingUp, Calendar, Tag, Plus, User, Eye, Download, MoreHorizontal, File, FileType2, FileQuestion } from 'lucide-vue-next';
-import { mockProjectDocuments } from '@/data/mocks/project-documents.mock';
+import { mockProjectDocuments } from '@/mocks/project-documents.mock';
 
 const getFileIcon = (fileName: string) => {
   if (fileName.endsWith('.pdf')) return FileType2;

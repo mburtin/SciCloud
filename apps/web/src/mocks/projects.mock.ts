@@ -1,19 +1,4 @@
-export interface Project {
-  id: string
-  name: string
-  description: string
-  status: 'active' | 'planning' | 'completed' | 'paused'
-  progress: number
-  responsible: string
-  responsibleInitials: string
-  responsibleAvatar: string
-  category: string
-  priority: 'high' | 'medium' | 'low'
-  deadline: string
-  budget: number
-  isFavorite: boolean
-  isArchived: boolean
-}
+import type { Project } from '@/types/projects'
 
 export const mockProjects: Project[] = [
   {
@@ -23,14 +8,15 @@ export const mockProjects: Project[] = [
     status: 'active',
     progress: 45,
     responsible: 'Dr. Maria Stevens',
-    responsibleInitials: 'MS',
-    responsibleAvatar: '/avatars/01.png',
     category: 'Microbiology',
     priority: 'high',
     deadline: '2025-08-30',
     budget: 25000,
     isFavorite: true,
     isArchived: false,
+    created_by: 'user-001',
+    created_at: '2024-01-15T09:00:00Z',
+    updated_at: '2024-07-20T14:30:00Z',
   },
   {
     id: '2',
@@ -39,14 +25,15 @@ export const mockProjects: Project[] = [
     status: 'planning',
     progress: 25,
     responsible: 'Dr. Michael Chen',
-    responsibleInitials: 'MC',
-    responsibleAvatar: '/avatars/02.png',
     category: 'Environmental Chemistry',
     priority: 'medium',
     deadline: '2024-11-15',
     budget: 45000,
     isFavorite: false,
     isArchived: false,
+    created_by: 'user-002',
+    created_at: '2024-02-01T10:00:00Z',
+    updated_at: '2024-07-18T16:45:00Z',
   },
   {
     id: '3',
@@ -55,14 +42,15 @@ export const mockProjects: Project[] = [
     status: 'completed',
     progress: 100,
     responsible: 'Dr. Emily Rodriguez',
-    responsibleInitials: 'ER',
-    responsibleAvatar: '/avatars/03.png',
     category: 'Cell Biology',
     priority: 'high',
     deadline: '2024-06-10',
     budget: 150000,
     isFavorite: false,
     isArchived: false,
+    created_by: 'user-003',
+    created_at: '2024-01-10T08:30:00Z',
+    updated_at: '2024-06-10T17:00:00Z',
   },
   {
     id: '4',
@@ -71,13 +59,14 @@ export const mockProjects: Project[] = [
     status: 'paused',
     progress: 60,
     responsible: 'Dr. James Wilson',
-    responsibleInitials: 'JW',
-    responsibleAvatar: '/avatars/04.png',
     category: 'Pharmacology',
     priority: 'low',
     deadline: '2025-01-20',
     budget: 75000,
     isFavorite: true,
     isArchived: true,
+    created_by: 'user-004',
+    created_at: '2024-03-15T11:00:00Z',
+    updated_at: '2024-05-20T13:30:00Z',
   },
 ]

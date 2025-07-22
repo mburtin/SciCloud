@@ -412,7 +412,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Label } from '@/components/ui/label';
-import { mockAnimals, type Animal } from '@/data/mocks/animals.mock';
+import { mockAnimals } from '@/mocks/animals.mock';
+import type { Animal } from '@/types/lab';
 
 import {
   Select,

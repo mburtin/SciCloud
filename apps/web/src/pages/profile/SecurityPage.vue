@@ -152,7 +152,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Key, Fingerprint, Shield, Monitor } from 'lucide-vue-next';
-import { mockActiveSessions } from '@/data/mocks/security.mock';
+import { mockActiveSessions } from '@/mocks/security.mock';
 
 // State for password change form
 const passwordForm = ref({

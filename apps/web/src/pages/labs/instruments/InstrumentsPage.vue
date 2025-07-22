@@ -105,14 +105,14 @@
           <SelectItem value="available">
             Available
           </SelectItem>
-          <SelectItem value="reserved">
-            Reserved
+          <SelectItem value="in-use">
+            In Use
           </SelectItem>
           <SelectItem value="maintenance">
             In Maintenance
           </SelectItem>
-          <SelectItem value="outoforder">
-            Out of Order
+          <SelectItem value="broken">
+            Broken
           </SelectItem>
         </SelectContent>
       </Select>
@@ -154,7 +154,6 @@
               <TableHead>Category</TableHead>
               <TableHead>Location</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Next Slot</TableHead>
               <TableHead />
             </TableRow>
           </TableHeader>
@@ -165,13 +164,13 @@
               class="cursor-pointer hover:bg-muted/50"
               @click="navigateToInstrumentDetail(instrument.id)"
             >
-              <TableCell>{{ instrument.serialNumber }}</TableCell>
+              <TableCell>{{ instrument.serial_number }}</TableCell>
               <TableCell>
                 <div class="font-medium">
                   {{ instrument.name }}
                 </div>
                 <div class="text-sm text-muted-foreground">
-                  {{ instrument.brand }} - {{ instrument.model }}
+                  {{ instrument.manufacturer }} - {{ instrument.model }}
                 </div>
               </TableCell>
               <TableCell>{{ instrument.category }}</TableCell>
@@ -182,18 +181,7 @@
                 </Badge>
               </TableCell>
               <TableCell>
-                <div v-if="instrument.nextReservation">
-                  {{ formatDate(instrument.nextReservation) }}
-                </div>
-                <div v-else class="text-sm text-muted-foreground">
-                  No reservations
-                </div>
-              </TableCell>
-              <TableCell>
                 <div class="flex items-center gap-2">
-                  <Button variant="ghost" size="sm" @click.stop="openReservationDialog(instrument.id)">
-                    <Calendar class="h-4 w-4" />
-                  </Button>
                   <Button variant="ghost" size="sm" @click.stop="openEditInstrumentDialog(instrument.id)">
                     <Edit class="h-4 w-4" />
                   </Button>
@@ -214,7 +202,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Plus, Search, Calendar, Edit, Box, CheckCircle2, Wrench, AlertTriangle } from 'lucide-vue-next'
+import { Plus, Search, Edit, Box, CheckCircle2, Wrench, AlertTriangle } from 'lucide-vue-next'
 import {
   Select,
   SelectContent,
@@ -222,7 +210,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { mockInstruments } from '@/data/mocks/instruments.mock'
+import { mockInstruments } from '@/mocks/instruments.mock'
 
 // Reactive state
 const searchQuery = ref('')
@@ -234,7 +222,7 @@ const instruments = ref(mockInstruments)
 
 // Stats
 const totalInstruments = computed(() => instruments.value.length)
-const operationalInstruments = computed(() => instruments.value.filter(i => i.status === 'available' || i.status === 'reserved').length)
+const operationalInstruments = computed(() => instruments.value.filter(i => i.status === 'available' || i.status === 'in-use').length)
 const maintenanceInstruments = computed(() => instruments.value.filter(i => i.status === 'maintenance').length)
 const maintenanceDueInstruments = computed(() => instruments.value.filter(i => i.maintenanceDue).length)
 
@@ -246,11 +234,11 @@ const filteredInstruments = computed(() => {
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
     filtered = filtered.filter(instrument => 
-      instrument.serialNumber.toLowerCase().includes(query) ||
+      instrument.serial_number?.toLowerCase().includes(query) ||
       instrument.name.toLowerCase().includes(query) ||
-      instrument.brand.toLowerCase().includes(query) ||
+      instrument.manufacturer.toLowerCase().includes(query) ||
       instrument.model.toLowerCase().includes(query) ||
-      instrument.location.toLowerCase().includes(query)
+      instrument.location?.toLowerCase().includes(query)
     )
   }
 
@@ -269,9 +257,9 @@ const filteredInstruments = computed(() => {
 const getStatusLabel = (status: string) => {
   const labels: Record<string, string> = {
     'available': 'Available',
-    'reserved': 'Reserved',
+    'in-use': 'In Use',
     'maintenance': 'In Maintenance',
-    'outoforder': 'Out of Order'
+    'broken': 'Broken'
   }
   return labels[status] || status
 }
@@ -279,21 +267,11 @@ const getStatusLabel = (status: string) => {
 const getStatusVariant = (status: string): 'default' | 'destructive' | 'outline' | 'secondary' => {
   const variants: Record<string, 'default' | 'destructive' | 'outline' | 'secondary'> = {
     'available': 'default',
-    'reserved': 'secondary',
+    'in-use': 'secondary',
     'maintenance': 'outline',
-    'outoforder': 'destructive'
+    'broken': 'destructive'
   }
   return variants[status] || 'default'
-}
-
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
 }
 
 const openNewInstrumentDialog = () => {
@@ -304,11 +282,6 @@ const openNewInstrumentDialog = () => {
 const openEditInstrumentDialog = (instrumentId: string) => {
   // TODO: Implement opening the dialog to edit an instrument
   console.log('Open dialog to edit instrument:', instrumentId)
-}
-
-const openReservationDialog = (instrumentId: string) => {
-  // TODO: Implement opening the dialog to reserve an instrument
-  console.log('Open dialog to reserve instrument:', instrumentId)
 }
 
 const navigateToInstrumentDetail = (instrumentId: string) => {

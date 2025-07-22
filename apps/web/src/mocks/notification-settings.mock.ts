@@ -1,28 +1,5 @@
 import { FolderKanban, FileText, Users, AlertTriangle, Calendar, Mail } from 'lucide-vue-next'
-
-export interface NotificationSettings {
-  methods: Record<string, NotificationMethod>
-  types: Record<string, NotificationType>
-  quietHours: QuietHours
-}
-
-export interface NotificationMethod {
-  label: string
-  enabled: boolean
-}
-
-export interface NotificationType {
-  label: string
-  description: string
-  icon: any
-  enabled: boolean
-}
-
-export interface QuietHours {
-  enabled: boolean
-  start: string
-  end: string
-}
+import type { NotificationSettings } from '@/types/notifications'
 
 export const mockNotificationSettings: NotificationSettings = {
   methods: {

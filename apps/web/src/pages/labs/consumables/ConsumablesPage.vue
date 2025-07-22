@@ -446,7 +446,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { mockConsumables, type Consumable, type StockLevel } from '@/data/mocks/consumables.mock';
+import { mockConsumables} from '@/mocks/consumables.mock';
+import type { Consumable, StockLevel } from '@/types/lab';
 
 // Reactive state
 const searchQuery = ref('')
@@ -528,7 +529,7 @@ const resetNewConsumableForm = () => {
     stockLevel: 'normal',
     location: '',
     lastOrder: null,
-    expiryDate: null
+    expiryDate: undefined
   };
 };
 
@@ -608,10 +609,11 @@ const handlePlaceOrder = () => {
   // For now, we can update the 'lastOrder' date for the items ordered.
   const today = new Date().toISOString().split('T')[0];
   Object.keys(orderQuantities.value).forEach(id => {
-    if (orderQuantities.value[id] > 0) {
+    const quantity = orderQuantities.value[id];
+    if (quantity && quantity > 0) {
       const consumable = consumables.value.find(c => c.id === id);
       if (consumable) {
-        consumable.lastOrder = today;
+        consumable.lastOrder = today as string;
       }
     }
   });

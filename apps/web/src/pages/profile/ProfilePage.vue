@@ -18,8 +18,8 @@
         <div class="flex flex-col sm:flex-row items-center gap-6">
           <div class="relative">
             <Avatar class="h-24 w-24 text-3xl">
-              <AvatarImage :src="user.avatarUrl" :alt="user.firstName" />
-              <AvatarFallback>{{ user.initials }}</AvatarFallback>
+              <AvatarImage v-if="user.avatar_url" :src="user.avatar_url" :alt="user.firstName" />
+              <AvatarFallback>{{ userInitials }}</AvatarFallback>
             </Avatar>
             <Button size="icon" variant="outline" class="absolute bottom-0 right-0 rounded-full h-8 w-8">
               <Camera class="h-4 w-4" />
@@ -79,16 +79,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import ProfileField from '@/components/shared/ProfileField.vue';
 import StatCard from '@/components/shared/StatCard.vue';
 import { Camera } from 'lucide-vue-next';
-import { mockUserProfile } from '@/data/mocks/profile.mock';
+import { mockUserProfile } from '@/mocks/profile.mock';
 
 const user = ref(mockUserProfile);
+
+// Computed property for user initials
+const userInitials = computed(() => {
+  return `${user.value.firstName[0] || ''}${user.value.lastName[0] || ''}`.toUpperCase();
+});
 
 // TODO: Implement edit functionality for profile fields
 // TODO: Implement avatar upload functionality

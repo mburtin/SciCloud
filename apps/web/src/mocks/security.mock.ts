@@ -1,24 +1,20 @@
-export interface ActiveSession {
-  id: string
-  device: string
-  location: string
-  lastActive: string
-  isCurrent: boolean
-}
+import { Session, AuthUser } from '@/types/auth'
 
-export const mockActiveSessions: ActiveSession[] = [
+export const mockActiveSessions: Session[] = [
   {
     id: '1',
+    user: {} as AuthUser,
     device: 'Chrome on macOS',
     location: 'New York, US',
     lastActive: '10 minutes ago',
-    isCurrent: true,
+    isActive: true,
   },
   {
     id: '2',
+    user: {} as AuthUser,
     device: 'Safari on iPhone',
     location: 'London, UK',
     lastActive: '2 hours ago',
-    isCurrent: false,
+    isActive: false,
   },
 ]

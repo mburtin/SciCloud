@@ -103,7 +103,8 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
   FolderOpen, Calendar
 } from 'lucide-vue-next'
-import { mockStatCards, mockRecentProjects, mockUpcomingDeadlines, type Deadline } from '@/data/mocks/dashboard.mock'
+import { mockStatCards, mockRecentProjects, mockUpcomingDeadlines } from '@/mocks/dashboard.mock'
+import type { Deadline } from '@/types/projects'
 
 // Dashboard data
 const statCards = ref(mockStatCards)

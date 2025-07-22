@@ -39,7 +39,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft } from 'lucide-vue-next';
-import { mockProjects, type Project } from '@/data/mocks/projects.mock';
+import { mockProjects, type Project } from '@/mocks/projects.mock';
 
 // Use centralized mock data
 const projects = mockProjects;

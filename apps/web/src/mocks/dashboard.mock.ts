@@ -1,29 +1,8 @@
 import {
   FolderOpen, AlertTriangle, Users, Clock, TrendingUp, BarChart, CheckCircle
 } from 'lucide-vue-next'
-
-export interface StatCard {
-  title: string
-  value: string
-  icon: any
-  trendText: string
-  trendIcon: any
-  trendClass: string
-}
-
-export interface RecentProject {
-  initials: string
-  name: string
-  category: string
-  progress: number
-}
-
-export interface Deadline {
-  task: string
-  time: string
-  status: string
-  variant: 'destructive' | 'secondary' | 'outline' | 'default'
-}
+import type { StatCard } from '@/types/ui'
+import type { RecentProject, Deadline } from '@/types/projects'
 
 export const mockStatCards: StatCard[] = [
   {

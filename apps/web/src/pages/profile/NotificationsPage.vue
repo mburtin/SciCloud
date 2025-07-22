@@ -119,7 +119,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Settings, Bell, Clock } from 'lucide-vue-next';
-import { mockNotificationSettings } from '@/data/mocks/notification-settings.mock';
+import { mockNotificationSettings } from '@/mocks/notification-settings.mock';
 
 const settings = ref(mockNotificationSettings);
 
