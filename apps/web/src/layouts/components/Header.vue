@@ -190,10 +190,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { 
-  TestTube, LayoutDashboard, FolderOpen, Search, Bell, User, Settings, LogOut
+  TestTube, Search, Bell, User, Settings, LogOut
 } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -209,26 +209,32 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useAuthStore } from '@/stores/auth.store'
-import { mockUser } from '@/mocks/user.mock'
-import { mockMainModules } from '@/mocks/navigation.mock'
-import { mockNotifications } from '@/mocks/notifications.mock'
+import { useUser } from '@/composables/useUser'
+import { useNavigation } from '@/composables/useNavigation'
 
 const router = useRouter()
 const authStore = useAuthStore()
 
-// Data
+// Use composables
+const { currentUser, userInitials, fetchCurrentUser } = useUser()
+const { 
+  mainModules, 
+  notifications, 
+  unreadNotifications, 
+  markAsRead, 
+  markAllAsRead,
+  formatTimestamp 
+} = useNavigation()
+
+// Local state
 const searchQuery = ref('')
-const user = ref(mockUser)
-const userInitials = computed(() => 
-  user.value.name.split(' ').map(n => n[0]).join('')
-)
 
-const mainModules = mockMainModules
-const notifications = ref(mockNotifications)
-
-const unreadNotifications = computed(() => 
-  notifications.value.filter(n => !n.read).length
-)
+// Computed
+const user = computed(() => ({
+  name: currentUser.value ? `${currentUser.value.firstName} ${currentUser.value.lastName}` : '',
+  email: currentUser.value?.email || '',
+  avatar: currentUser.value?.avatar_url || ''
+}))
 
 // Methods
 const logout = () => {
@@ -236,27 +242,13 @@ const logout = () => {
   router.push('/login')
 }
 
-const markAsRead = (notificationId: string) => {
-  const notification = notifications.value.find(n => n.id === notificationId)
-  if (notification) {
-    notification.read = true
-  }
-}
-
-const markAllAsRead = () => {
-  notifications.value.forEach(n => n.read = true)
-}
-
 const showAllNotifications = () => {
-  // This would typically navigate to a full notifications page
+  // Navigate to full notifications page
+  router.push('/notifications')
 }
 
-const formatTimestamp = (timestamp: string) => {
-  return new Date(timestamp).toLocaleString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-}
+// Load user data on mount
+onMounted(() => {
+  fetchCurrentUser()
+})
 </script>

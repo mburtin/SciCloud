@@ -14,8 +14,24 @@
       </div>
     </div>
 
+    <!-- Loading State -->
+    <div v-if="isLoading" class="text-center py-8">
+      <p class="text-muted-foreground">Loading projects...</p>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="error" class="text-center py-8">
+      <p class="text-destructive">{{ error }}</p>
+      <button 
+        @click="fetchProjects"
+        class="mt-2 text-sm text-primary hover:underline"
+      >
+        Try again
+      </button>
+    </div>
+
     <!-- Projects Content -->
-    <div class="space-y-4">
+    <div v-else class="space-y-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
           <Input
@@ -140,7 +156,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -167,57 +183,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { mockProjects } from '@/mocks/projects.mock'
+import { useProjects } from '@/composables/useProjects'
 
 // Reactive state
 const router = useRouter();
 const searchQuery = ref('');
 const filterStatus = ref('all');
 
-// Projects data
-const projects = ref(mockProjects)
+// Use projects composable
+const {
+  isLoading,
+  error,
+  fetchProjects,
+  toggleFavorite,
+  toggleArchive,
+  getStatusLabel,
+  getStatusVariant,
+  getFilteredProjects
+} = useProjects()
 
 // Filtered projects
 const filteredProjects = computed(() => {
-  let filtered = projects.value
-
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(project => 
-      project.name.toLowerCase().includes(query) ||
-      project.description?.toLowerCase().includes(query) ||
-      project.responsible.toLowerCase().includes(query)
-    )
-  }
-
-  if (filterStatus.value !== 'all') {
-    filtered = filtered.filter(project => project.status === filterStatus.value)
-  }
-
-  return filtered
+  return getFilteredProjects(searchQuery.value, filterStatus.value)
 })
 
 // Methods
-const getStatusLabel = (status: string) => {
-  const labels: Record<string, string> = {
-    'active': 'Active',
-    'planning': 'Planning',
-    'completed': 'Completed',
-    'paused': 'Paused'
-  }
-  return labels[status] || status
-}
-
-const getStatusVariant = (status: string): 'default' | 'destructive' | 'outline' | 'secondary' => {
-  const variants: Record<string, 'default' | 'destructive' | 'outline' | 'secondary'> = {
-    'active': 'default',
-    'planning': 'secondary',
-    'completed': 'outline',
-    'paused': 'destructive'
-  }
-  return variants[status] || 'default'
-}
-
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -235,15 +225,22 @@ const handleProjectClick = (projectId: string) => {
   router.push(`/projects/${projectId}/summary`);
 }
 
-const handleProjectAction = (action: string, projectId: string) => {
-  // TODO: Implement project actions (favorite, archive, etc.)
-  console.log(`Action: ${action} on project ${projectId}`)
-  if (action === 'favorite') {
-    const project = projects.value.find(p => p.id === projectId);
-    if (project) project.isFavorite = !project.isFavorite;
-  } else if (action === 'archive') {
-    const project = projects.value.find(p => p.id === projectId);
-    if (project) project.isArchived = !project.isArchived;
+const handleProjectAction = async (action: string, projectId: string) => {
+  try {
+    if (action === 'favorite') {
+      await toggleFavorite(projectId)
+    } else if (action === 'archive') {
+      await toggleArchive(projectId)
+    } else if (action === 'view') {
+      handleProjectClick(projectId)
+    }
+  } catch (err) {
+    console.error(`Failed to ${action} project:`, err)
   }
 }
+
+// Load projects on mount
+onMounted(() => {
+  fetchProjects()
+})
 </script>

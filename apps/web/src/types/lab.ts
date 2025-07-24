@@ -33,15 +33,16 @@ export interface Instrument extends DatabaseEntity {
 }
 
 export interface Consumable extends DatabaseEntity {
-  id: string
-    reference: string
-    name: string
-    supplier: string
-    category: string
-    quantity: number
-    unit: string
-    stockLevel: StockLevel
-    location: string
-    lastOrder: string | null
-    expiryDate: Timestamp
+  reference: string
+  name: string
+  supplier: string
+  category: string
+  quantity: number
+  unit: string
+  stock: number
+  minStock: number
+  stockLevel: StockLevel
+  location: string
+  lastOrder: string | null
+  expiryDate: Timestamp
 }
