@@ -1,13 +1,14 @@
 /**
  * User profile types
  */
-import type { DatabaseEntity } from './base'
+import type { AuditableRecord, UUID } from './base'
 
 // User role enum
 export type UserRole = 'admin' | 'user' | 'viewer'
 
 // User interface
-export interface User extends DatabaseEntity {
+export interface User extends AuditableRecord {
+  id: UUID
   firstName: string
   lastName: string
   email: string

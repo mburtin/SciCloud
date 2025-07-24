@@ -2,13 +2,13 @@
  * Laboratory management types
  */
 
-import type { Timestamp, DatabaseEntity } from './base'
+import type { Timestamp, AuditableRecord, UUID } from './base'
 
 export type StockLevel = 'high' | 'normal' | 'low' | 'outofstock'
 
 // Laboratory entity types
-export interface Animal extends DatabaseEntity {
-  id: string
+export interface Animal extends AuditableRecord {
+  id: UUID
   species: string
   strain: string
   age: number
@@ -20,8 +20,8 @@ export interface Animal extends DatabaseEntity {
   upcomingExams: boolean
 }
 
-export interface Instrument extends DatabaseEntity {
-  id: string
+export interface Instrument extends AuditableRecord {
+  id: UUID
   name: string
   model: string
   category: string
@@ -32,7 +32,8 @@ export interface Instrument extends DatabaseEntity {
   maintenanceDue: boolean
 }
 
-export interface Consumable extends DatabaseEntity {
+export interface Consumable extends AuditableRecord {
+  id: UUID
   reference: string
   name: string
   supplier: string

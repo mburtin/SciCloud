@@ -2,7 +2,7 @@
  * Project management types
  */
 
-import type { UUID, Timestamp, Priority, DatabaseEntity } from './base'
+import type { UUID, Timestamp, Priority, AuditableRecord } from './base'
 import type { User } from './user'
 import { Documents } from './documents'
 
@@ -12,8 +12,8 @@ export type ProjectMemberRole = 'owner' | 'admin' | 'member' | 'viewer'
 export type TaskStatus = 'todo' | 'in-progress' | 'done'
 
 // Project entity
-export interface Project extends DatabaseEntity {
-  id: string
+export interface Project extends AuditableRecord {
+  id: UUID
   name: string
   description?: string
   category: string
@@ -34,7 +34,8 @@ export interface Project extends DatabaseEntity {
 }
 
 // Project member entity
-export interface ProjectMember extends DatabaseEntity {
+export interface ProjectMember extends AuditableRecord {
+  id: UUID
   project_id: UUID
   user_id: UUID
   role: ProjectMemberRole
@@ -45,7 +46,8 @@ export interface ProjectMember extends DatabaseEntity {
 }
 
 // Task entity
-export interface Task extends DatabaseEntity {
+export interface Task extends AuditableRecord {
+  id: UUID
   title: string
   description?: string
   status: TaskStatus

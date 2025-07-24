@@ -11,8 +11,11 @@ export const mockProjectDocuments: Documents[] = [
     size: '21.0 MB',
     tags: ['pdf', 'project', 'initial'],
     icon: null, // Will be set by getFileIcon in component
+    created_by: "user-123",
     created_at: '2024-06-15T02:00:00Z',
+    updated_by: "user-123",
     updated_at: '2024-06-15T02:00:00Z',
+      version: 1,
   },
   {
     id: 'doc-002',
@@ -24,8 +27,11 @@ export const mockProjectDocuments: Documents[] = [
     size: '854.0 KB',
     tags: ['excel', 'project', 'initial'],
     icon: null, // Will be set by getFileIcon in component
+    created_by: "user-123",
     created_at: '2024-06-20T02:00:00Z',
+    updated_by: "user-123",
     updated_at: '2024-06-20T02:00:00Z',
+      version: 1,
   },
   {
     id: 'doc-003',
@@ -37,7 +43,10 @@ export const mockProjectDocuments: Documents[] = [
     size: '1.2 MB',
     tags: ['word', 'protocol', 'draft'],
     icon: null, // Will be set by getFileIcon in component
+    created_by: "user-123",
     created_at: '2024-06-22T09:30:00Z',
+    updated_by: "user-123",
     updated_at: '2024-06-22T09:30:00Z',
+      version: 1,
   },
 ]

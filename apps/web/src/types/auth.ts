@@ -2,6 +2,7 @@
  * Authentication and user-related types
  */
 
+import { UUID } from 'crypto'
 import type { User } from './user'
 
 // Auth-specific types (for session management)
@@ -10,7 +11,7 @@ export interface AuthUser extends Pick<User, 'id' | 'email' | 'firstName' | 'las
 }
 
 export interface Session {
-  id: string
+  id: UUID
   user: AuthUser
   device: string
   location: string

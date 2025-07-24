@@ -11,16 +11,13 @@ export type Timestamp = string
 export type Priority = 'low' | 'medium' | 'high'
 
 // Database entity base types
-export interface TimestampedEntity {
+export interface AuditableRecord {
+  created_by: UUID
   created_at: Timestamp
+  updated_by: UUID
   updated_at: Timestamp
+  version: number
 }
-
-export interface IdentifiableEntity {
-  id: UUID
-}
-
-export interface DatabaseEntity extends IdentifiableEntity, TimestampedEntity {}
 
 // Generic API types
 export interface ApiResponse<T> {
@@ -39,5 +36,5 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
 }
 
 // Utility types
-export type CreateInput<T> = Omit<T, keyof DatabaseEntity>
-export type UpdateInput<T> = Partial<Omit<T, keyof IdentifiableEntity | 'created_at'>>
+export type CreateInput<T> = Omit<T, keyof AuditableRecord | 'id'>
+export type UpdateInput<T> = Partial<Omit<T, 'id' | 'created_at' | 'created_by' | 'version'>>

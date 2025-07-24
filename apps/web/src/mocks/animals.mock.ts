@@ -12,8 +12,11 @@ export const mockAnimals: Animal[] = [
     lastUpdated: '2024-07-10T09:30:00',
     healthMonitoring: false,
     upcomingExams: false,
+    created_by: 'user-123',
     created_at: '2024-07-01T08:00:00',
+    updated_by: 'user-123',
     updated_at: '2024-07-10T09:30:00',
+    version: 1,
   },
   {
     id: 'M002',
@@ -26,8 +29,11 @@ export const mockAnimals: Animal[] = [
     lastUpdated: '2024-07-12T14:15:00',
     healthMonitoring: true,
     upcomingExams: false,
+    created_by: "user-123",
     created_at: '2024-07-02T10:00:00',
+    updated_by: "user-123",
     updated_at: '2024-07-12T14:15:00',
+    version: 1,
   },
   {
     id: 'R001',
@@ -40,8 +46,11 @@ export const mockAnimals: Animal[] = [
     lastUpdated: '2024-07-15T11:45:00',
     healthMonitoring: false,
     upcomingExams: false,
+    created_by: "user-123",
     created_at: '2024-07-05T12:00:00',
+    updated_by: "user-123",
     updated_at: '2024-07-15T11:45:00',
+    version: 1,
   },
   {
     id: 'M003',
@@ -54,8 +63,11 @@ export const mockAnimals: Animal[] = [
     lastUpdated: '2024-07-14T16:20:00',
     healthMonitoring: false,
     upcomingExams: false,
+    created_by: "user-123",
     created_at: '2024-07-03T14:00:00',
+    updated_by: "user-123",
     updated_at: '2024-07-14T16:20:00',
+    version: 1,
   },
   {
     id: 'RB001',
@@ -68,7 +80,10 @@ export const mockAnimals: Animal[] = [
     lastUpdated: '2024-06-30T10:00:00',
     healthMonitoring: false,
     upcomingExams: false,
+    created_by: "user-123",
     created_at: '2024-06-15T09:00:00',
+    updated_by: "user-123",
     updated_at: '2024-06-30T10:00:00',
+    version: 1,
   }
 ]

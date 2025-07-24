@@ -2,10 +2,11 @@
  * Notification types
  */
 
-import type { DatabaseEntity } from './base'
+import type { UUID } from './base'
 
 // Basic notification entity
-export interface Notification extends DatabaseEntity {
+export interface Notification{
+  id: UUID
   title: string
   message: string
   read: boolean

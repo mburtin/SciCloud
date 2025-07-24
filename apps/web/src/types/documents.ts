@@ -2,9 +2,10 @@
  * Document types
  */
 
-import type { DatabaseEntity } from './base'
+import type { AuditableRecord, UUID } from './base'
 
-export interface Documents extends DatabaseEntity {
+export interface Documents extends AuditableRecord {
+  id: UUID
   name: string
   type: string
   description: string
