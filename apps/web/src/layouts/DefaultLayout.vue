@@ -3,7 +3,7 @@
     <Header />
     <div class="flex flex-1 overflow-hidden">
       <Sidebar />
-      <main class="flex-1 overflow-y-auto p-6">
+      <main class="flex-1 overflow-y-auto layout-content-padding">
         <router-view />
       </main>
     </div>

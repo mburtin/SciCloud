@@ -65,6 +65,14 @@
   --text-lg: 1.125rem;
   --text-xl: 1.25rem;
   --text-2xl: 1.5rem;
+  
+  /* Layout dimensions */
+  --layout-sidebar-width: 18rem;        /* 288px - w-72 */
+  --layout-header-height: 4rem;         /* 64px */
+  --layout-content-padding: 1.5rem;     /* 24px - p-6 */
+  --layout-section-gap: 1.5rem;         /* 24px - gap-6 */
+  --layout-card-gap: 1rem;              /* 16px - gap-4 */
+  --layout-search-width: 16rem;         /* 256px - w-64 */
 }
 
 @theme inline {
@@ -242,5 +250,34 @@ html {
   .nav-hover:hover {
     background-color: var(--color-header-nav-hover);
     color: var(--color-header-nav-hover-foreground);
+  }
+  
+  /* Layout utilities */
+  .layout-sidebar {
+    width: var(--layout-sidebar-width);
+  }
+  
+  .layout-content-padding {
+    padding: var(--layout-content-padding);
+  }
+  
+  .layout-section-gap {
+    gap: var(--layout-section-gap);
+  }
+  
+  .layout-card-gap {
+    gap: var(--layout-card-gap);
+  }
+  
+  .layout-search-width {
+    width: var(--layout-search-width);
+  }
+  
+  .layout-standard-grid {
+    @apply grid-cols-1 md:grid-cols-2 lg:grid-cols-4;
+  }
+  
+  .layout-content-grid {
+    @apply grid-cols-1 lg:grid-cols-3;
   }
 }

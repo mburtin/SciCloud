@@ -14,7 +14,7 @@
       </Button>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid layout-content-grid layout-section-gap">
       <!-- Left Column: Notification Types -->
       <div class="lg:col-span-2 space-y-6">
         <Card>

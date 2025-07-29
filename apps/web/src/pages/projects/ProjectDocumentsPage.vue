@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
     <!-- Stat Cards -->
-    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+    <div class="grid layout-standard-grid layout-section-gap">
       <Card>
         <CardHeader class="flex flex-row items-center justify-between pb-2">
           <CardTitle class="text-sm font-medium">

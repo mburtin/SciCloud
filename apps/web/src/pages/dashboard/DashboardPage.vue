@@ -29,7 +29,7 @@
     <!-- Dashboard Content -->
     <div v-else class="space-y-6">
       <!-- Stat Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="grid layout-standard-grid layout-section-gap">
         <Card v-for="stat in statCards" :key="stat.title">
           <CardHeader class="flex flex-row items-center justify-between pb-2">
             <CardTitle class="text-sm font-medium">
@@ -50,7 +50,7 @@
       </div>
 
       <!-- Main Content -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="grid layout-content-grid layout-section-gap">
         <!-- Recent Projects -->
         <Card class="lg:col-span-2">
           <CardHeader>

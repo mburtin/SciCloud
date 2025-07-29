@@ -27,7 +27,7 @@
             </Button>
           </div>
           <div class="flex-1 space-y-4">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 layout-card-gap">
               <ProfileField label="First name" :value="user.firstName" @update="user.firstName = $event" />
               <ProfileField label="Last name" :value="user.lastName" @update="user.lastName = $event" />
             </div>
@@ -43,7 +43,7 @@
     </Card>
 
     <!-- Stats -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="grid layout-standard-grid layout-section-gap">
       <StatCard
         v-for="stat in user.stats"
         :key="stat.label"

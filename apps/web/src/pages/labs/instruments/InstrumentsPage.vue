@@ -19,7 +19,7 @@
     </div>
 
     <!-- Stat Cards -->
-    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+    <div class="grid layout-standard-grid layout-section-gap">
       <Card class="p-3">
         <div class="flex items-center gap-4">
           <div class="bg-blue-100 p-2 rounded-lg">

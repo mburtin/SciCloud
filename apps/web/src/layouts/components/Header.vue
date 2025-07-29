@@ -2,7 +2,7 @@
   <header class="header-bg border-b border-header-border">
     <div class="flex items-center justify-between py-4">
       <!-- Sidebar width placeholder (w-72 = 288px) -->
-      <div class="w-72 flex items-center gap-3 px-6">
+      <div class="layout-sidebar flex items-center gap-3 px-6">
         <!-- Logo -->
         <div class="flex items-center gap-2">
           <TestTube class="h-8 w-8 text-primary" />
@@ -60,7 +60,7 @@
           <Input 
             v-model="searchQuery"
             placeholder="Search..."
-            class="pl-10 w-64 bg-input-background border-border text-foreground placeholder:text-muted-foreground focus:bg-accent focus:border-primary/50 rounded-xl transition-all duration-300"
+            class="pl-10 layout-search-width bg-input-background border-border text-foreground placeholder:text-muted-foreground focus:bg-accent focus:border-primary/50 rounded-xl transition-all duration-300"
           />
         </div>
         

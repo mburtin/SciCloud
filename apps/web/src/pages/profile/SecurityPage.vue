@@ -42,7 +42,7 @@
       </CardFooter>
     </Card>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 layout-section-gap">
       <!-- 2FA and Security Settings -->
       <div class="space-y-6">
         <Card>

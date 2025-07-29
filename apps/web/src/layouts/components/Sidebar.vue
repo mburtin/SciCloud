@@ -1,5 +1,5 @@
 <template>
-  <aside class="w-72 h-full flex flex-col p-6 sidebar-bg border-r border-sidebar-border">
+  <aside class="layout-sidebar h-full flex flex-col layout-content-padding sidebar-bg border-r border-sidebar-border">
     <div class="flex-grow overflow-y-auto pr-2">
       <div class="space-y-8">
         <div v-for="section in sidebarSections" :key="section.title">
