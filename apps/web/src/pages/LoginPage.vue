@@ -296,13 +296,28 @@ const errorPages = [
 ];
 
 // Event Handlers
-const handleLogin = () => {
-  // In a real app, you would call an authentication service here.
-  // For now, we'll use the store to set the user as authenticated.
-  authStore.login();
+const handleLogin = async () => {
+  if (!email.value || !password.value) {
+    alert('Please enter your email and password');
+    return;
+  }
 
-  // Navigate to the dashboard after login
-  router.push('/dashboard');
+  try {
+    const result = await authStore.login({
+      email: email.value,
+      password: password.value
+    });
+
+    if (result.success) {
+      // Navigate to the dashboard after successful login
+      router.push('/dashboard');
+    } else {
+      alert('Login error: ' + (result.error || 'Invalid credentials'));
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    alert('Login error: ' + (error instanceof Error ? error.message : 'Unknown error'));
+  }
 };
 
 const handleRequestAccess = () => {

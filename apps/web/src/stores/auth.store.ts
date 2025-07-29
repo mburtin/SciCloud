@@ -1,49 +1,217 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import type { User as SupabaseUser } from '@supabase/supabase-js'
 import type { User } from '@/types/user'
-
-const AUTH_KEY = 'isAuthenticated'
-const USER_KEY = 'user'
+import type { LoginCredentials, RegisterCredentials } from '@/types/auth'
+import { supabase } from '@/lib/supabase'
 
 export const useAuthStore = defineStore('auth', () => {
-  const isAuthenticated = ref(localStorage.getItem(AUTH_KEY) === 'true')
-  const user = ref<Pick<User, 'id' | 'email'> | null>(
-    localStorage.getItem(USER_KEY) 
-      ? JSON.parse(localStorage.getItem(USER_KEY)!) 
-      : null
-  )
+  // State
+  const user = ref<SupabaseUser | null>(null)
+  const profile = ref<User | null>(null)
+  const loading = ref(true)
 
+  // Computed
+  const isAuthenticated = computed(() => !!user.value)
   const isLoggedIn = computed(() => isAuthenticated.value)
 
-  function login(userData?: Pick<User, 'id' | 'email'>) {
-    isAuthenticated.value = true
-    if (userData) {
-      user.value = userData
-      localStorage.setItem(USER_KEY, JSON.stringify(userData))
+  // Initialize auth state
+  async function initialize() {
+    try {
+      loading.value = true
+      
+      // Get current session
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (session?.user) {
+        user.value = session.user
+        await fetchProfile()
+      }
+
+      // Listen for auth changes
+      supabase.auth.onAuthStateChange(async (_, session) => {
+        if (session?.user) {
+          user.value = session.user
+          await fetchProfile()
+        } else {
+          user.value = null
+          profile.value = null
+        }
+      })
+    } catch (error) {
+      console.error('Error initializing auth:', error)
+    } finally {
+      loading.value = false
     }
-    localStorage.setItem(AUTH_KEY, 'true')
   }
 
-  function logout() {
-    isAuthenticated.value = false
-    user.value = null
-    localStorage.removeItem(AUTH_KEY)
-    localStorage.removeItem(USER_KEY)
+  // Fetch user profile
+  async function fetchProfile() {
+    if (!user.value) return
+
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.value.id)
+        .single()
+
+      if (error) {
+        console.error('Error fetching profile:', error)
+        return
+      }
+
+      if (data) {
+        profile.value = {
+          id: data.id,
+          firstName: data.first_name,
+          lastName: data.last_name,
+          email: user.value.email || '',
+          role: data.role as 'admin' | 'user' | 'viewer',
+          avatar_url: data.avatar_url,
+          biography: data.biography,
+          phone: data.phone,
+          location: data.location,
+          fullAddress: data.full_address,
+          created_by: data.created_by,
+          created_at: data.created_at,
+          updated_by: data.updated_by,
+          updated_at: data.updated_at,
+          version: data.version,
+          stats: [] // TODO: Calculate stats from other tables later
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error)
+    }
   }
 
-  function updateUser(userData: Partial<Pick<User, 'id' | 'email'>>) {
-    if (user.value) {
-      user.value = { ...user.value, ...userData }
-      localStorage.setItem(USER_KEY, JSON.stringify(user.value))
+  // Login with email and password
+  async function login(credentials: LoginCredentials) {
+    try {
+      loading.value = true
+      
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: credentials.email,
+        password: credentials.password
+      })
+
+      if (error) {
+        throw error
+      }
+
+      if (data.user) {
+        user.value = data.user
+        await fetchProfile()
+      }
+
+      return { success: true }
+    } catch (error: any) {
+      console.error('Login error:', error)
+      return { success: false, error: error.message }
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // Register new user
+  async function register(credentials: RegisterCredentials) {
+    try {
+      loading.value = true
+      
+      const { data, error } = await supabase.auth.signUp({
+        email: credentials.email,
+        password: credentials.password,
+        options: {
+          data: {
+            first_name: credentials.firstName,
+            last_name: credentials.lastName
+          }
+        }
+      })
+
+      if (error) {
+        throw error
+      }
+
+      return { success: true, data }
+    } catch (error: any) {
+      console.error('Register error:', error)
+      return { success: false, error: error.message }
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // Logout
+  async function logout() {
+    try {
+      const { error } = await supabase.auth.signOut()
+      if (error) {
+        throw error
+      }
+      
+      user.value = null
+      profile.value = null
+      
+      return { success: true }
+    } catch (error: any) {
+      console.error('Logout error:', error)
+      return { success: false, error: error.message }
+    }
+  }
+
+  // Update user profile
+  async function updateProfile(updates: Partial<User>) {
+    if (!user.value || !profile.value) return { success: false, error: 'Not authenticated' }
+
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .update({
+          first_name: updates.firstName,
+          last_name: updates.lastName,
+          biography: updates.biography,
+          phone: updates.phone,
+          location: updates.location,
+          full_address: updates.fullAddress,
+          avatar_url: updates.avatar_url,
+          updated_by: user.value.id
+        })
+        .eq('id', user.value.id)
+        .select()
+        .single()
+
+      if (error) {
+        throw error
+      }
+
+      // Refresh profile
+      await fetchProfile()
+      
+      return { success: true, data }
+    } catch (error: any) {
+      console.error('Update profile error:', error)
+      return { success: false, error: error.message }
     }
   }
 
   return { 
+    // State
+    user: computed(() => user.value),
+    profile: computed(() => profile.value),
+    loading: computed(() => loading.value),
+    
+    // Computed
     isAuthenticated,
-    user,
     isLoggedIn,
+    
+    // Actions
+    initialize,
+    fetchProfile,
     login, 
+    register,
     logout,
-    updateUser
+    updateProfile
   }
 })

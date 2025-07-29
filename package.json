@@ -4,10 +4,14 @@
   "type": "module",
   "description": "SciCloud - Cloud services for scientific research",
   "scripts": {
-    "web-dev": "pnpm --filter web dev",
-    "web-build": "pnpm --filter web build",
-    "web-preview": "pnpm --filter web preview",
-    "web-test": "pnpm --filter web test",
+    "dev": "concurrently \"pnpm supabase:start\" \"pnpm web:dev\"",
+    "web:dev": "pnpm --filter web dev",
+    "web:build": "pnpm --filter web build",
+    "web:preview": "pnpm --filter web preview",
+    "web:test": "pnpm --filter web test",
+    "supabase:start": "cd apps/supabase && supabase start",
+    "supabase:stop": "cd apps/supabase && supabase stop",
+    "supabase:status": "cd apps/supabase && supabase status",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "type-check": "vue-tsc --noEmit"
@@ -26,6 +30,7 @@
     "@types/node": "^24.0.15",
     "@typescript-eslint/eslint-plugin": "^8.38.0",
     "@typescript-eslint/parser": "^8.38.0",
+    "concurrently": "^9.2.0",
     "eslint": "^9.32.0",
     "globals": "^16.3.0"
   }

@@ -72,7 +72,12 @@ export function useUser() {
 
   const updateProfile = async (updates: Partial<User>) => {
     try {
-      const updatedProfile = await userService.updateProfile(updates)
+      const result = await userService.updateProfile(updates)
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to update profile')
+      }
+      
+      const updatedProfile = result.data!
       userProfile.value = updatedProfile
       
       // Update current user if basic info changed

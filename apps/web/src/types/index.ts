@@ -11,3 +11,9 @@ export * from './auth'
 export * from './projects'
 export * from './lab'
 export * from './ui'
+export * from './user'
+export * from './notifications'
+export * from './documents'
+
+// Database types
+export * from './supabase'
