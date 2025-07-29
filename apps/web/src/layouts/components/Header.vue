@@ -238,8 +238,15 @@ const user = computed(() => ({
 
 // Methods
 const logout = async () => {
-  await authStore.logout()
-  router.push('/login')
+  try {
+    await authStore.logout()
+    // Force navigation immediately after logout
+    window.location.href = '/login'
+  } catch (error) {
+    console.error('Logout failed:', error)
+    // Redirect to error page in case of logout failure
+    router.replace('/error/500')
+  }
 }
 
 const showAllNotifications = () => {
