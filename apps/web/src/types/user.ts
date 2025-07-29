@@ -25,5 +25,5 @@ export interface User extends AuditableRecord {
 export interface UserStat {
   label: string
   value: number
-  icon: any
+  icon: string
 }

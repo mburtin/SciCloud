@@ -4,11 +4,13 @@
 
 import { ref, computed, onMounted } from 'vue'
 import { navigationService } from '@/services/navigation.service'
+import type { NavigationModule } from '@/types/ui'
+import type { Notification } from '@/types/notifications'
 
 export function useNavigation() {
   // State
-  const mainModules = ref<any[]>([])
-  const notifications = ref<any[]>([])
+  const mainModules = ref<NavigationModule[]>([])
+  const notifications = ref<Notification[]>([])
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 

@@ -6,13 +6,14 @@ import { ref, computed } from 'vue'
 import { userService } from '@/services/user.service'
 import type { User } from '@/types/user'
 import type { Session } from '@/types/auth'
+import type { NotificationSettings } from '@/types/notifications'
 
 export function useUser() {
   // State
   const currentUser = ref<(Pick<User, 'firstName' | 'lastName' | 'email'> & { avatar_url?: string }) | null>(null)
   const userProfile = ref<User | null>(null)
   const userSessions = ref<Session[]>([])
-  const notificationSettings = ref<any>(null)
+  const notificationSettings = ref<NotificationSettings | null>(null)
   const isLoading = ref(false)
   const isLoadingProfile = ref(false)
   const error = ref<string | null>(null)
@@ -118,7 +119,7 @@ export function useUser() {
     }
   }
 
-  const updateNotificationSettings = async (settings: any) => {
+  const updateNotificationSettings = async (settings: NotificationSettings) => {
     try {
       const updatedSettings = await userService.updateNotificationSettings(settings)
       notificationSettings.value = updatedSettings

@@ -4,12 +4,13 @@
 
 import { ref, computed } from 'vue'
 import { labService } from '@/services/lab.service'
+import type { Instrument, Consumable, Animal } from '@/types/lab'
 
 export function useLab() {
   // State
-  const instruments = ref<any[]>([])
-  const consumables = ref<any[]>([])
-  const animals = ref<any[]>([])
+  const instruments = ref<Instrument[]>([])
+  const consumables = ref<Consumable[]>([])
+  const animals = ref<Animal[]>([])
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 

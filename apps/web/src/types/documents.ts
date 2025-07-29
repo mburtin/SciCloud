@@ -13,5 +13,5 @@ export interface Documents extends AuditableRecord {
   uploader: string
   size: string
   tags: string[]
-  icon?: any
+  icon?: string
 }

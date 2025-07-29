@@ -9,6 +9,7 @@ import { mockActiveSessions } from '@/mocks/security.mock'
 import { mockNotificationSettings } from '@/mocks/notification-settings.mock'
 import type { User } from '@/types/user'
 import type { Session } from '@/types/auth'
+import type { NotificationSettings } from '@/types/notifications'
 
 export class UserService {
   /**
@@ -95,7 +96,7 @@ export class UserService {
   /**
    * Update notification settings
    */
-  async updateNotificationSettings(settings: any) {
+  async updateNotificationSettings(settings: NotificationSettings) {
     // TODO: Replace with Supabase call
     // const { data: { user } } = await supabase.auth.getUser()
     // const { data, error } = await supabase

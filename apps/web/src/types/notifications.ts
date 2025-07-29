@@ -22,7 +22,7 @@ export interface NotificationMethod {
 export interface NotificationType {
   label: string
   description: string
-  icon: any
+  icon: string
   enabled: boolean
 }
 

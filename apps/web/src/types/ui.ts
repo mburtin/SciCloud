@@ -37,15 +37,15 @@ export type PageType =
   export interface NavigationModule {
   id: string
   label: string
-  icon: any
+  icon: string
   to: string
 }
 
 export interface StatCard {
   title: string
   value: string
-  icon: any
+  icon: string
   trendText: string
-  trendIcon: any
+  trendIcon: string
   trendClass: string
 }

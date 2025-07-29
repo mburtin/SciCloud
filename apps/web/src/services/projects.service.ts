@@ -93,6 +93,7 @@ export class ProjectsService {
     //   .from('projects')
     //   .delete()
     //   .eq('id', id)
+    console.log(`Deleting project with id: ${id}`)
     await new Promise(resolve => setTimeout(resolve, 150))
   }
 
