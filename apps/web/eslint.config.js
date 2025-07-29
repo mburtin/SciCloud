@@ -1,72 +1,59 @@
-import baseConfig from '../../eslint.config.js'
-import globals from "globals";
-import pluginVue from "eslint-plugin-vue";
-import parser from "vue-eslint-parser";
+import baseConfig from '../../eslint.config.js';
+import pluginVue from 'eslint-plugin-vue';
+import tsparser from '@typescript-eslint/parser';
+import vueParser from 'vue-eslint-parser';
+import globals from 'globals';
 
 export default [
+  // Extend base configuration
   ...baseConfig,
-
-  // Configuration for Vue.js files
-  ...pluginVue.configs["flat/recommended"],
+  
+  // Vue.js specific configuration
+  ...pluginVue.configs['flat/recommended'],
+  
+  // Override for TypeScript in browser environment
   {
-    files: ["**/*.vue"],
+    files: ['**/*.{ts,tsx}'],
     languageOptions: {
-      parser: parser,
+      globals: {
+        ...globals.browser,
+        ...globals.es2023
+      }
+    },
+    rules: {
+      // Allow console.log in development
+      'no-console': 'off'
+    }
+  },
+  
+  // Configuration for Vue files
+  {
+    files: ['**/*.vue'],
+    languageOptions: {
+      parser: vueParser,
       parserOptions: {
-        ecmaVersion: 2023,
-        sourceType: "module",
-        parser: "@typescript-eslint/parser", // For TypeScript support
+        parser: tsparser,
+        ecmaVersion: 'latest',
+        sourceType: 'module'
       },
       globals: {
         ...globals.browser,
-      },
+        ...globals.es2023
+      }
     },
     rules: {
-      // Specific rules
-      "vue/multi-word-component-names": "warn",
-      "vue/component-definition-name-casing": ["error", "PascalCase"],
-      "vue/component-name-in-template-casing": ["error", "PascalCase"],
-      "vue/prop-name-casing": ["error", "camelCase"],
-      "vue/attribute-hyphenation": ["error", "always"],
-      "vue/v-on-event-hyphenation": ["error", "always"],
-      "vue/html-indent": ["error", 2],
-      "vue/html-quotes": ["error", "double"],
-      "vue/html-self-closing": [
-        "error",
-        {
-          html: {
-            void: "never",
-            normal: "always",
-            component: "always",
-          },
-          svg: "always",
-          math: "always",
-        },
-      ],
-      "vue/max-attributes-per-line": [
-        "error",
-        {
-          singleline: { max: 3 },
-          multiline: { max: 1 },
-        },
-      ],
-      "vue/require-default-prop": "error",
-      "vue/require-prop-types": "error",
-      "vue/no-unused-vars": "warn",
-      "vue/no-unused-components": "warn",
-    },
+      // Vue-specific rules (simple ones to start)
+      'vue/multi-word-component-names': 'warn',
+      'vue/no-unused-vars': 'warn',
+      'vue/no-unused-components': 'warn',
+      // Allow console.log in development
+      'no-console': 'off'
+    }
   },
+  
   {
     ignores: [
-      "node_modules/**",
-      "dist/**",
-      "build/**",
-      ".git/**",
-      "coverage/**",
-      "eslint.config.js",
-      "*.config.js",
-      "*.config.ts",
-      "src/components/ui/**",
-    ],
-  },
+      'src/components/ui/**'
+    ]
+  }
 ];

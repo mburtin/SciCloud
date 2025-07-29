@@ -22,8 +22,11 @@
   "license": "MIT",
   "packageManager": "pnpm@10.13.1",
   "devDependencies": {
+    "@eslint/js": "^9.17.0",
     "@types/node": "^24.0.15",
-    "eslint": "^9.31.0",
+    "@typescript-eslint/eslint-plugin": "^8.38.0",
+    "@typescript-eslint/parser": "^8.38.0",
+    "eslint": "^9.32.0",
     "globals": "^16.3.0"
   }
 }

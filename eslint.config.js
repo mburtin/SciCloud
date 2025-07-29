@@ -1,37 +1,58 @@
-import globals from "globals";
+import js from '@eslint/js';
+import tseslint from '@typescript-eslint/eslint-plugin';
+import tsparser from '@typescript-eslint/parser';
+import globals from 'globals';
 
 export default [
+  js.configs.recommended,
+  
+  // JavaScript configuration
   {
-    files: ["**/*.{js,mjs,cjs,ts}"],
+    files: ['**/*.{js,mjs,cjs}'],
     languageOptions: {
       globals: {
-        ...globals.node,
-        ...globals.es2023,
-      },
-      ecmaVersion: 2023,
-      sourceType: "module",
+        ...globals.node
+      }
     },
     rules: {
-      // Basic rules for JavaScript/TypeScript
-      "no-unused-vars": "warn",
-      "no-undef": "error",
-      "prefer-const": "warn",
-      "no-var": "error",
-      quotes: ["error", "single"],
-      indent: ["error", 2],
-      "no-console": "warn",
-      eqeqeq: "error",
-      curly: "error",
-    },
+      'no-unused-vars': 'warn',
+      'no-console': 'warn'
+    }
   },
+  
+  // TypeScript configuration
+  {
+    files: ['**/*.{ts,tsx}'],
+    languageOptions: {
+      parser: tsparser,
+      globals: {
+        ...globals.node
+      },
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module'
+      }
+    },
+    plugins: {
+      '@typescript-eslint': tseslint
+    },
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      'prefer-const': 'warn',
+      'no-console': 'warn'
+    }
+  },
+  
   {
     ignores: [
-      "node_modules/**",
-      "dist/**",
-      "build/**",
-      ".git/**",
-      "coverage/**",
-      "**/eslint.config.js",
-    ],
-  },
+      'node_modules/**',
+      'dist/**',
+      'build/**',
+      '.git/**',
+      'coverage/**',
+      '**/*.vue',
+      '**/*.d.ts'
+    ]
+  }
 ];
