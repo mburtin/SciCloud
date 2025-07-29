@@ -1,8 +1,9 @@
 <template>
   <header class="header-bg border-b border-header-border">
-    <div class="flex items-center justify-between px-6 py-4">
-      <!-- Logo -->
-      <div class="flex items-center gap-3 mr-8">
+    <div class="flex items-center justify-between py-4">
+      <!-- Sidebar width placeholder (w-72 = 288px) -->
+      <div class="w-72 flex items-center gap-3 px-6">
+        <!-- Logo -->
         <div class="flex items-center gap-2">
           <TestTube class="h-8 w-8 text-primary" />
           <div>
@@ -52,7 +53,7 @@
       <div class="flex-1" />
 
       <!-- Right-side actions -->
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 pr-6">
         <!-- Search -->
         <div class="relative group">
           <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
