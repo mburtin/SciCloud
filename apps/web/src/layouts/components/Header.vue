@@ -1,6 +1,6 @@
 <template>
   <header class="header-bg border-b border-header-border">
-    <div class="flex items-center justify-between py-4">
+    <div class="flex items-center justify-between h-16">
       <!-- Sidebar width placeholder (w-72 = 288px) -->
       <div class="layout-sidebar flex items-center gap-3 px-6">
         <!-- Logo -->
