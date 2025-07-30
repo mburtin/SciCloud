@@ -60,7 +60,7 @@
           <Input 
             v-model="searchQuery"
             placeholder="Search..."
-            class="pl-10 layout-search-width bg-input-background border-border text-foreground placeholder:text-muted-foreground focus:bg-accent focus:border-primary/50 rounded-xl transition-all duration-300"
+            class="pl-10 layout-search-width !bg-white border-border text-foreground placeholder:text-muted-foreground focus:!bg-white focus:border-primary/50 rounded-xl transition-all duration-300"
           />
         </div>
         
