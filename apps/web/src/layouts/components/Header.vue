@@ -22,7 +22,7 @@
         <RouterLink
           v-for="module in mainModules"
           :key="module.id"
-          v-slot="{ href, navigate, isExactActive }"
+          v-slot="{ href, navigate }"
           :to="module.to"
           custom
         >
@@ -32,7 +32,7 @@
             size="sm"
             :class="[
               'flex items-center gap-2.5 px-4 py-2.5 rounded-lg transition-all duration-300 relative group',
-              isExactActive 
+              isModuleActive(module) 
                 ? 'nav-active shadow-md' 
                 : 'text-header-foreground hover:nav-hover'
             ]"
@@ -42,7 +42,7 @@
               :is="module.icon" 
               :class="[
                 'h-4 w-4 transition-transform duration-300',
-                isExactActive ? 'scale-110' : 'group-hover:scale-105'
+                isModuleActive(module) ? 'scale-110' : 'group-hover:scale-105'
               ]" 
             />
             <span class="font-medium">{{ module.label }}</span>
@@ -192,7 +192,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { 
   TestTube, Search, Bell, User, Settings, LogOut
 } from 'lucide-vue-next'
@@ -212,8 +212,10 @@ import {
 import { useAuthStore } from '@/stores/auth.store'
 import { useUser } from '@/composables/useUser'
 import { useNavigation } from '@/composables/useNavigation'
+import type { NavigationModule } from '@/types/ui'
 
 const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
 
 // Use composables
@@ -238,6 +240,23 @@ const user = computed(() => ({
 }))
 
 // Methods
+const isModuleActive = (module: NavigationModule) => {
+  const currentPath = route.path
+  
+  // Handle special cases for modules that have multiple sub-routes
+  switch (module.id) {
+    case 'laboratory':
+      return currentPath.startsWith('/lab/')
+    case 'projects':
+      return currentPath.startsWith('/projects')
+    case 'dashboard':
+      // Dashboard should be active for calendar, notes, and dashboard itself
+      return currentPath === '/dashboard' || currentPath === '/calendar' || currentPath === '/notes'
+    default:
+      return currentPath === module.to
+  }
+}
+
 const logout = async () => {
   try {
     await authStore.logout()
