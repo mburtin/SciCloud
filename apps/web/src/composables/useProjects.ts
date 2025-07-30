@@ -140,10 +140,10 @@ export function useProjects() {
     try {
       const updatedProject = await projectsService.toggleFavorite(id)
       
-      const index = projects.value.findIndex(p => p.id === id)
-      if (index !== -1) {
-        projects.value[index] = updatedProject
-      }
+      // Force reactivity by creating a new array with the updated project
+      projects.value = projects.value.map(p => 
+        p.id === id ? updatedProject : p
+      )
       
       return updatedProject
     } catch (err) {
@@ -157,10 +157,10 @@ export function useProjects() {
     try {
       const updatedProject = await projectsService.toggleArchive(id)
       
-      const index = projects.value.findIndex(p => p.id === id)
-      if (index !== -1) {
-        projects.value[index] = updatedProject
-      }
+      // Force reactivity by creating a new array with the updated project
+      projects.value = projects.value.map(p => 
+        p.id === id ? updatedProject : p
+      )
       
       return updatedProject
     } catch (err) {

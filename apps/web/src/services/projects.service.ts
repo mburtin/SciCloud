@@ -78,10 +78,19 @@ export class ProjectsService {
     //   .single()
     await new Promise(resolve => setTimeout(resolve, 200))
     
-    const project = mockProjects.find(p => p.id === id)
-    if (!project) throw new Error('Project not found')
+    const projectIndex = mockProjects.findIndex(p => p.id === id)
+    if (projectIndex === -1) throw new Error('Project not found')
     
-    return { ...project, ...updates, updated_at: new Date().toISOString() }
+    const updatedProject = { 
+      ...mockProjects[projectIndex], 
+      ...updates, 
+      updated_at: new Date().toISOString() 
+    }
+    
+    // Update the mock data in place
+    mockProjects[projectIndex] = updatedProject
+    
+    return updatedProject
   }
 
   /**

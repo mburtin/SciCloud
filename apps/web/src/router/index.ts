@@ -64,6 +64,18 @@ const routes = [
         meta: { title: 'Projects' }
       },
       {
+        path: '/projects/favorites',
+        name: 'projects-favorites',
+        component: ProjectsPage,
+        meta: { title: 'Favorite Projects' }
+      },
+      {
+        path: '/projects/archived',
+        name: 'projects-archived',
+        component: ProjectsPage,
+        meta: { title: 'Archived Projects' }
+      },
+      {
         path: '/projects/:id',
         component: ProjectDetailPage,
         meta: { title: 'Project Details' },
