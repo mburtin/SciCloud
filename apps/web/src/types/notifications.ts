@@ -4,13 +4,21 @@
 
 import type { UUID } from './base'
 
+// Notification type categories
+export type NotificationTypeCategory = 'project' | 'collaboration' | 'system' | 'document'
+
+// Notification priority levels
+export type NotificationPriority = 'low' | 'medium' | 'high'
+
 // Basic notification entity
-export interface Notification{
+export interface Notification {
   id: UUID
+  type: NotificationTypeCategory
   title: string
   message: string
   read: boolean
   timestamp: string
+  priority: NotificationPriority
 }
 
 // Notification settings types
