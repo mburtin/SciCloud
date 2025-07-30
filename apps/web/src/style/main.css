@@ -219,37 +219,37 @@ html {
   .header-bg {
     background-color: var(--header);
     color: var(--header-foreground);
-    border-bottom: 1px solid #475569;
+    border-bottom: 1px solid var(--header-border);
   }
   
   .sidebar-bg {
     background-color: var(--sidebar);
     color: var(--sidebar-foreground);
-    border-right: 1px solid #475569;
+    border-right: 1px solid var(--sidebar-border);
   }
   
   .sidebar-section {
-    color: var(--color-sidebar-section-foreground);
+    color: var(--sidebar-section-foreground);
   }
   
   .sidebar-hover {
-    background-color: var(--color-sidebar-hover);
-    color: var(--color-sidebar-hover-foreground);
+    background-color: var(--sidebar-hover);
+    color: var(--sidebar-hover-foreground);
   }
   
   .sidebar-active {
-    background-color: var(--color-sidebar-active);
-    color: var(--color-sidebar-active-foreground);
+    background-color: var(--sidebar-active);
+    color: var(--sidebar-active-foreground);
   }
   
   .nav-active {
-    background-color: var(--color-header-nav-active);
-    color: var(--color-header-nav-active-foreground);
+    background-color: var(--header-nav-active);
+    color: var(--header-nav-active-foreground);
   }
   
   .nav-hover:hover {
-    background-color: var(--color-header-nav-hover);
-    color: var(--color-header-nav-hover-foreground);
+    background-color: var(--header-nav-hover);
+    color: var(--header-nav-hover-foreground);
   }
   
   /* Layout utilities */
