@@ -1,10 +1,15 @@
 <template>
-  <Card class="w-full">
-    <CardHeader>
+  <div class="space-y-6">
+    <!-- Page Header -->
+    <div class="border-b border-border pb-4">
       <div class="flex items-center justify-between">
         <div>
-          <CardTitle>Detailed Schedule - 3-Day View</CardTitle>
-          <CardDescription>{{ dateRange }}</CardDescription>
+          <h1 class="text-2xl font-semibold text-foreground">
+            Calendar
+          </h1>
+          <p class="text-muted-foreground mt-1">
+            Detailed Schedule - 3-Day View ({{ dateRange }})
+          </p>
         </div>
         <div class="flex items-center gap-2">
           <Button variant="outline" size="icon" @click="previousDay">
@@ -19,22 +24,27 @@
           </Button>
         </div>
       </div>
-    </CardHeader>
-    <CardContent>
-      <!-- Day Headers -->
-      <div class="grid grid-cols-[auto_1fr_1fr_1fr] gap-x-4">
-        <div class="text-right pr-4">
+    </div>
+
+    <!-- Calendar Content -->
+    <Card class="w-full">
+      <CardHeader class="pb-2">
+        <!-- Day Headers -->
+        <div class="grid grid-cols-[auto_1fr_1fr_1fr] gap-x-4">
+          <div class="text-right pr-4">
 &nbsp;
-        </div> <!-- Spacer for alignment -->
-        <div v-for="day in displayedDays" :key="day.date" class="text-center py-2">
-          <p class="font-semibold">
-            {{ day.name }}
-          </p>
-          <p class="text-sm text-muted-foreground">
-            {{ day.eventCount }} event(s)
-          </p>
+          </div> <!-- Spacer for alignment -->
+          <div v-for="day in displayedDays" :key="day.date" class="text-center py-2">
+            <p class="font-semibold">
+              {{ day.name }}
+            </p>
+            <p class="text-sm text-muted-foreground">
+              {{ day.eventCount }} event(s)
+            </p>
+          </div>
         </div>
-      </div>
+      </CardHeader>
+    <CardContent>
 
       <!-- Calendar Grid -->
       <div class="grid grid-cols-[auto_1fr_1fr_1fr] gap-x-4 border-t border-border mt-2">
@@ -72,14 +82,15 @@
         </div>
       </div>
     </CardContent>
-  </Card>
+    </Card>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Clock, ChevronLeft, ChevronRight, Plus } from 'lucide-vue-next';
 import { format, addDays, subDays } from 'date-fns';
 
@@ -141,13 +152,14 @@ const displayedDays = computed<Day[]>(() => {
 const dateRange = computed(() => {
   const start = displayedDays.value[0];
   const end = displayedDays.value[2];
+  if (!start || !end) return '';
   return `${format(new Date(start.date), 'MMMM d')} - ${format(new Date(end.date), 'MMMM d, yyyy')}`;
 });
 
 // --- Methods --- //
 const timeToMinutes = (time: string) => {
   const [hours, minutes] = time.split(':').map(Number);
-  return hours * 60 + minutes;
+  return (hours || 0) * 60 + (minutes || 0);
 };
 
 const previousDay = () => {

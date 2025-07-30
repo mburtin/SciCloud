@@ -1,13 +1,17 @@
 <template>
   <div class="space-y-6">
     <!-- Page Header -->
-    <div>
-      <h1 class="text-3xl font-bold">
-        Dashboard
-      </h1>
-      <p class="text-muted-foreground">
-        Overview of your laboratory activity
-      </p>
+    <div class="border-b border-border pb-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-semibold text-foreground">
+            Dashboard
+          </h1>
+          <p class="text-muted-foreground mt-1">
+            Overview of your laboratory activity
+          </p>
+        </div>
+      </div>
     </div>
 
     <!-- Loading State -->
