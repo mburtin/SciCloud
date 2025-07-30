@@ -197,16 +197,16 @@
               class="cursor-pointer hover:bg-muted/50"
               @click="navigateToAnimalDetail(animal.id)"
             >
-              <TableCell>{{ animal.id }}</TableCell>
+              <TableCell>{{ animal.identifier }}</TableCell>
               <TableCell>
                 <div class="flex items-center gap-2">
-                  <span class="font-medium">{{ animal.species }}</span>
+                  <span class="font-medium">{{ getSpeciesLabel(animal.species) }}</span>
                   <Badge v-if="animal.strain" variant="outline">
                     {{ animal.strain }}
                   </Badge>
                 </div>
               </TableCell>
-              <TableCell>{{ animal.age }} weeks</TableCell>
+              <TableCell>{{ calculateAge(animal.birthDate) }}</TableCell>
               <TableCell>{{ animal.sex === 'male' ? 'M' : 'F' }}</TableCell>
               <TableCell>
                 <Badge :variant="getStatusVariant(animal.status)">
@@ -214,14 +214,14 @@
                 </Badge>
               </TableCell>
               <TableCell>
-                <div v-if="animal.project" class="text-sm">
-                  {{ animal.project }}
+                <div v-if="animal.protocols.length > 0" class="text-sm">
+                  {{ animal.protocols[0] }}
                 </div>
                 <div v-else class="text-sm text-muted-foreground">
-                  Unassigned
+                  No protocol
                 </div>
               </TableCell>
-              <TableCell>{{ formatDate(animal.lastUpdated) }}</TableCell>
+              <TableCell>{{ formatDate(animal.updated_at) }}</TableCell>
               <TableCell>
                 <DropdownMenu>
                   <DropdownMenuTrigger as-child>
@@ -436,10 +436,10 @@ const animals = ref<Animal[]>(mockAnimals)
 
 // Stats
 const totalAnimals = computed(() => animals.value.length)
-const aliveAnimals = computed(() => animals.value.filter(a => a.status !== 'archived').length)
-const experimentAnimals = computed(() => animals.value.filter(a => a.status === 'experiment').length)
-const healthMonitoringAnimals = computed(() => animals.value.filter(a => a.healthMonitoring).length)
-const upcomingExamsAnimals = computed(() => animals.value.filter(a => a.upcomingExams).length)
+const aliveAnimals = computed(() => animals.value.filter(a => a.status === 'alive').length)
+const experimentAnimals = computed(() => animals.value.filter(a => a.status === 'experimental').length)
+const healthMonitoringAnimals = computed(() => animals.value.filter(a => a.healthStatus === 'concerning' || a.healthStatus === 'critical').length)
+const upcomingExamsAnimals = computed(() => animals.value.filter(a => a.nextExamDate && new Date(a.nextExamDate) <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)).length)
 
 // Filter animals
 const filteredAnimals = computed(() => {
@@ -448,52 +448,87 @@ const filteredAnimals = computed(() => {
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
     filtered = filtered.filter(animal => 
-      animal.id.toLowerCase().includes(query) ||
+      animal.identifier.toLowerCase().includes(query) ||
       animal.species.toLowerCase().includes(query) ||
       (animal.strain && animal.strain.toLowerCase().includes(query)) ||
-      (animal.project && animal.project.toLowerCase().includes(query))
+      (animal.veterinarian && animal.veterinarian.toLowerCase().includes(query))
     )
   }
 
   if (filterSpecies.value !== 'all') {
     const speciesMap: Record<string, string> = {
-      'mouse': 'Mouse',
-      'rat': 'Rat',
-      'rabbit': 'Rabbit'
+      'mouse': 'Mus musculus',
+      'rat': 'Rattus norvegicus',
+      'rabbit': 'Oryctolagus cuniculus'
     }
     filtered = filtered.filter(animal => animal.species === speciesMap[filterSpecies.value])
   }
 
   if (filterStatus.value !== 'all') {
-    filtered = filtered.filter(animal => animal.status === filterStatus.value)
+    const statusMap: Record<string, string> = {
+      'active': 'alive',
+      'experiment': 'experimental'
+    }
+    const mappedStatus = statusMap[filterStatus.value] || filterStatus.value
+    filtered = filtered.filter(animal => animal.status === mappedStatus)
   }
 
   if (filterProject.value !== 'all') {
-    filtered = filtered.filter(animal => animal.project === filterProject.value)
+    filtered = filtered.filter(animal => 
+      animal.protocols.includes(filterProject.value) ||
+      animal.experimentalGroup === filterProject.value
+    )
   }
 
   return filtered
 })
 
 // Methods
+const getSpeciesLabel = (species: string) => {
+  const speciesLabels: Record<string, string> = {
+    'Mus musculus': 'Mouse',
+    'Rattus norvegicus': 'Rat',
+    'Oryctolagus cuniculus': 'Rabbit',
+    'Cavia porcellus': 'Guinea Pig'
+  }
+  return speciesLabels[species] || species
+}
+
 const getStatusLabel = (status: string) => {
   const labels: Record<string, string> = {
-    'active': 'Active',
-    'quarantine': 'Quarantine',
-    'experiment': 'In Experiment',
-    'archived': 'Archived'
+    'alive': 'Alive',
+    'deceased': 'Deceased',
+    'transferred': 'Transferred',
+    'experimental': 'In Experiment'
   }
   return labels[status] || status
 }
 
 const getStatusVariant = (status: string): 'default' | 'destructive' | 'outline' | 'secondary' => {
   const variants: Record<string, 'default' | 'destructive' | 'outline' | 'secondary'> = {
-    'active': 'default',
-    'quarantine': 'destructive',
-    'experiment': 'secondary',
-    'archived': 'outline'
+    'alive': 'default',
+    'deceased': 'destructive',
+    'transferred': 'outline',
+    'experimental': 'secondary'
   }
   return variants[status] || 'default'
+}
+
+const calculateAge = (birthDate: string) => {
+  const birth = new Date(birthDate)
+  const today = new Date()
+  const diffInDays = Math.floor((today.getTime() - birth.getTime()) / (1000 * 3600 * 24))
+  
+  if (diffInDays < 30) {
+    return `${diffInDays} days`
+  } else if (diffInDays < 365) {
+    const weeks = Math.floor(diffInDays / 7)
+    return `${weeks} weeks`
+  } else {
+    const years = Math.floor(diffInDays / 365)
+    const months = Math.floor((diffInDays % 365) / 30)
+    return `${years}y ${months}m`
+  }
 }
 
 const formatDate = (dateString: string) => {

@@ -2,6 +2,7 @@
 import { provide } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.store'
+import { Toaster } from 'vue-sonner'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -13,6 +14,7 @@ provide('authStore', authStore)
 <template>
   <div class="min-h-screen bg-background font-sans antialiased">
     <router-view />
+    <Toaster />
   </div>
 </template>
 
