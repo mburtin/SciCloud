@@ -219,11 +219,13 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useAuthStore } from '@/stores/auth.store'
 import { useNavigation } from '@/composables/useNavigation'
+import { useUser } from '@/composables/useUser'
 import type { NavigationModule } from '@/types/ui'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
+const { userProfile, fetchUserProfile } = useUser()
 
 // Use composables
 const { 
@@ -239,17 +241,17 @@ const {
 const searchQuery = ref('')
 const notificationsOpen = ref(false)
 
-// Computed - Use auth store instead of useUser composable
+// Computed - Use userProfile from useUser composable
 const user = computed(() => ({
-  name: authStore.profile ? `${authStore.profile.firstName} ${authStore.profile.lastName}` : '',
-  email: authStore.profile?.email || '',
-  avatar: authStore.profile?.avatar_url || ''
+  name: userProfile.value ? `${userProfile.value.firstName} ${userProfile.value.lastName}` : '',
+  email: userProfile.value?.email || '',
+  avatar: userProfile.value?.avatar_url || ''
 }))
 
 const userInitials = computed(() => {
-  if (!authStore.profile) return ''
-  const firstName = authStore.profile.firstName || ''
-  const lastName = authStore.profile.lastName || ''
+  if (!userProfile.value) return ''
+  const firstName = userProfile.value.firstName || ''
+  const lastName = userProfile.value.lastName || ''
   return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
 })
 
@@ -315,10 +317,10 @@ const truncateMessage = (message: string, maxLength: number) => {
   return message.length > maxLength ? `${message.substring(0, maxLength)}...` : message
 }
 
-// Initialize auth store on mount
+// Initialize user profile on mount
 onMounted(async () => {
-  if (!authStore.profile) {
-    await authStore.initialize()
+  if (!userProfile.value) {
+    await fetchUserProfile()
   }
 })
 </script>

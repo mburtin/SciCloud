@@ -1,104 +1,153 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { User as SupabaseUser } from '@supabase/supabase-js'
 import type { User } from '@/types/supabase'
-import type { LoginCredentials, RegisterCredentials } from '@/types/auth'
+import type { LoginCredentials, RegisterCredentials, Session, AuthEvent } from '@/types/auth'
 import { supabase } from '@/lib/supabase'
+import { sessionService } from '@/services/session.service'
 
 export const useAuthStore = defineStore('auth', () => {
-  // State
-  const user = ref<SupabaseUser | null>(null)
-  const profile = ref<User | null>(null)
+  // Modern session state
+  const currentSession = ref<Session>({
+    isAuthenticated: false,
+    user: null,
+    lastActive: 0,
+    isInitialized: false
+  })
+  
   const loading = ref(true)
+  const error = ref<string | null>(null)
+  
+  // Auth state change listener cleanup
+  let authUnsubscribe: (() => void) | null = null
 
   // Computed
-  const isAuthenticated = computed(() => !!user.value)
-  const isLoggedIn = computed(() => isAuthenticated.value)
+  const isAuthenticated = computed(() => currentSession.value.isAuthenticated)
+  const user = computed(() => currentSession.value.user)
+  const isInitialized = computed(() => currentSession.value.isInitialized)
 
-  // Initialize auth state
+  // Initialize auth state with modern session management
   async function initialize() {
+    if (currentSession.value.isInitialized) {
+      return // Already initialized
+    }
+    
     try {
       loading.value = true
+      error.value = null
       
-      // Get current session
-      const { data: { session } } = await supabase.auth.getSession()
+      // Get current session - Supabase 2025 security standard
+      const sessionInfo = await sessionService.getCurrentSession()
       
-      if (session?.user) {
-        user.value = session.user
-        await fetchProfile()
+      if (sessionInfo?.isValid) {
+        currentSession.value.user = sessionInfo.user
+        currentSession.value.isAuthenticated = true
+        currentSession.value.lastActive = Date.now()
+      } else {
+        currentSession.value.user = null
+        currentSession.value.isAuthenticated = false
       }
 
-      // Listen for auth changes
-      supabase.auth.onAuthStateChange(async (_, session) => {
-        if (session?.user) {
-          user.value = session.user
-          await fetchProfile()
-        } else {
-          user.value = null
-          profile.value = null
-        }
-      })
-    } catch (error) {
-      console.error('Error initializing auth:', error)
+      // Set up modern auth state change handling
+      setupAuthStateListener()
+      currentSession.value.isInitialized = true
+    } catch (err) {
+      console.error('Error initializing auth:', err)
+      error.value = err instanceof Error ? err.message : 'Auth initialization failed'
+      currentSession.value.isAuthenticated = false
     } finally {
       loading.value = false
     }
   }
 
-  // Fetch user profile
-  async function fetchProfile() {
-    if (!user.value) return
-
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.value.id)
-        .single()
-
-      if (error) {
-        console.error('Error fetching profile:', error)
-        return
-      }
-
-      if (data) {
-        profile.value = {
-          ...data,
-          email: user.value.email || '',
-          firstName: data.first_name,
-          lastName: data.last_name,
-          fullAddress: data.full_address,
-          stats: [] // TODO: Calculate stats from other tables later
+  // Set up modern auth state change listener
+  function setupAuthStateListener() {
+    // Clean up existing listener
+    if (authUnsubscribe) {
+      authUnsubscribe()
+    }
+    
+    // Set up new listener with session service
+    authUnsubscribe = sessionService.onAuthStateChange(async (event: AuthEvent) => {
+      console.log('Auth event received:', event.type)
+      
+      switch (event.type) {
+        case 'SIGNED_IN':
+          if (event.user) {
+            currentSession.value.user = event.user
+            currentSession.value.isAuthenticated = true
+            currentSession.value.lastActive = Date.now()
+          }
+          break
+          
+        case 'SIGNED_OUT':
+          currentSession.value.user = null
+          currentSession.value.isAuthenticated = false
+          currentSession.value.lastActive = 0
+          break
+          
+        case 'TOKEN_REFRESHED':
+          if (event.user) {
+            currentSession.value.user = event.user
+            currentSession.value.lastActive = Date.now()
+          }
+          break
+          
+        case 'USER_UPDATED':
+          if (event.user) {
+            currentSession.value.user = event.user
+          }
+          break
+          
+        case 'SESSION_EXPIRED':
+        default: {
+          // Handle session expiry or unknown events
+          const sessionInfo = await sessionService.getCurrentSession()
+          if (sessionInfo?.isValid) {
+            currentSession.value.user = sessionInfo.user
+            currentSession.value.isAuthenticated = true
+            currentSession.value.lastActive = Date.now()
+          } else {
+            currentSession.value.user = null
+            currentSession.value.isAuthenticated = false
+          }
+          break
         }
       }
-    } catch (error) {
-      console.error('Error fetching profile:', error)
-    }
+    })
   }
+
 
   // Login with email and password
   async function login(credentials: LoginCredentials) {
     try {
       loading.value = true
+      error.value = null
       
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
         email: credentials.email,
         password: credentials.password
       })
 
-      if (error) {
-        throw error
+      if (authError) {
+        throw authError
       }
 
       if (data.user) {
-        user.value = data.user
-        await fetchProfile()
+        // Session state will be updated via auth state change listener
+        // Just ensure we have the latest session info
+        const sessionInfo = await sessionService.getCurrentSession()
+        if (sessionInfo?.isValid) {
+          currentSession.value.user = sessionInfo.user
+          currentSession.value.isAuthenticated = true
+          currentSession.value.lastActive = Date.now()
+        }
       }
 
       return { success: true }
-    } catch (error: any) {
-      console.error('Login error:', error)
-      return { success: false, error: error.message }
+    } catch (err: any) {
+      console.error('Login error:', err)
+      error.value = err.message
+      return { success: false, error: err.message }
     } finally {
       loading.value = false
     }
@@ -133,30 +182,58 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // Logout
+  // Logout with modern session management
   async function logout() {
     try {
-      const { error } = await supabase.auth.signOut()
-      if (error) {
-        throw error
+      loading.value = true
+      
+      // Use session service for proper cleanup
+      const success = await sessionService.signOut()
+      
+      if (!success) {
+        throw new Error('Failed to sign out')
       }
       
-      user.value = null
-      profile.value = null
+      // State will be cleared via auth state change listener
+      return { success: true }
+    } catch (err: any) {
+      console.error('Logout error:', err)
+      error.value = err.message
+      return { success: false, error: err.message }
+    } finally {
+      loading.value = false
+    }
+  }
+  
+  // Logout from all sessions
+  async function logoutEverywhere() {
+    try {
+      loading.value = true
+      
+      const success = await sessionService.signOutEverywhere()
+      
+      if (!success) {
+        throw new Error('Failed to sign out from all sessions')
+      }
       
       return { success: true }
-    } catch (error: any) {
-      console.error('Logout error:', error)
-      return { success: false, error: error.message }
+    } catch (err: any) {
+      console.error('Global logout error:', err)
+      error.value = err.message
+      return { success: false, error: err.message }
+    } finally {
+      loading.value = false
     }
   }
 
   // Update user profile
   async function updateProfile(updates: Partial<User>) {
-    if (!user.value || !profile.value) return { success: false, error: 'Not authenticated' }
+    if (!currentSession.value.user) {
+      return { success: false, error: 'Not authenticated' }
+    }
 
     try {
-      const { data, error } = await supabase
+      const { data, error: updateError } = await supabase
         .from('profiles')
         .update({
           first_name: updates.firstName,
@@ -166,40 +243,49 @@ export const useAuthStore = defineStore('auth', () => {
           full_address: updates.fullAddress,
           avatar_url: updates.avatar_url,
         })
-        .eq('id', user.value.id)
+        .eq('id', currentSession.value.user.id)
         .select()
         .single()
 
-      if (error) {
-        throw error
+      if (updateError) {
+        throw updateError
       }
 
-      // Refresh profile
-      await fetchProfile()
       
       return { success: true, data }
-    } catch (error: any) {
-      console.error('Update profile error:', error)
-      return { success: false, error: error.message }
+    } catch (err: any) {
+      console.error('Update profile error:', err)
+      error.value = err.message
+      return { success: false, error: err.message }
+    }
+  }
+  
+  
+  // Cleanup on store disposal
+  function dispose() {
+    if (authUnsubscribe) {
+      authUnsubscribe()
+      authUnsubscribe = null
     }
   }
 
   return { 
     // State
-    user: computed(() => user.value),
-    profile: computed(() => profile.value),
+    user,
     loading: computed(() => loading.value),
+    error: computed(() => error.value),
     
     // Computed
     isAuthenticated,
-    isLoggedIn,
+    isInitialized,
     
     // Actions
     initialize,
-    fetchProfile,
     login, 
     register,
     logout,
-    updateProfile
+    logoutEverywhere,
+    updateProfile,
+    dispose
   }
 })

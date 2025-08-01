@@ -7,8 +7,22 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIU
 
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
+    // Core session management
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: true
+    detectSessionInUrl: true,
+    
+    // Supabase 2025 security standards
+    flowType: 'pkce', // Enhanced security for OAuth flows
+    
+    // Enhanced session security
+    debug: process.env.NODE_ENV === 'development'
+  },
+  
+  // Additional client options for better reliability
+  global: {
+    headers: {
+      'X-Client-Info': 'scicloud-web@1.0.0'
+    }
   }
 })

@@ -3,56 +3,20 @@
  * Now using Supabase for real data operations
  */
 
-import { supabase } from '@/lib/supabase'
 import { ProfileService } from './profile.service'
-import { mockActiveSessions } from '@/mocks/security.mock'
 import { mockNotificationSettings } from '@/mocks/notification-settings.mock'
+import { requireAuth, createAuthResult } from '@/utils/auth.utils'
 import type { User } from '@/types/supabase'
-import type { Session } from '@/types/auth'
 import type { NotificationSettings } from '@/types/notifications'
 
 export class UserService {
   /**
-   * Get current user basic info (for header, etc.)
-   */
-  async getCurrentUser(): Promise<Pick<User, 'firstName' | 'lastName' | 'email'> & { avatar_url?: string }> {
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      
-      if (!user) {
-        throw new Error('No authenticated user')
-      }
-
-      const profile = await ProfileService.getProfile(user.id)
-      
-      if (!profile) {
-        throw new Error('Profile not found')
-      }
-
-      return {
-        firstName: profile.firstName,
-        lastName: profile.lastName,
-        email: profile.email || '',
-        avatar_url: profile.avatar_url
-      }
-    } catch (error) {
-      console.error('Error getting current user:', error)
-      throw error
-    }
-  }
-
-  /**
-   * Get full user profile using combined view
+   * Get current user profile (unified method)
+   * Returns full profile or basic info subset
    */
   async getUserProfile(): Promise<User | null> {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      
-      if (!user) {
-        return null
-      }
-
-      // ProfileService now uses the combined view, no manual mapping needed!
+      const user = await requireAuth()
       return await ProfileService.getProfile(user.id)
     } catch (error) {
       console.error('Error getting user profile:', error)
@@ -61,35 +25,35 @@ export class UserService {
   }
 
   /**
-   * Update user profile
+   * Get current user basic info (for header, etc.)
+   * Legacy method - now uses getUserProfile internally
    */
-  async updateProfile(updates: Partial<User>): Promise<{ success: boolean; data?: User; error?: string }> {
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      
-      if (!user) {
-        return { success: false, error: 'No authenticated user' }
-      }
+  async getCurrentUser(): Promise<Pick<User, 'firstName' | 'lastName' | 'email'> & { avatar_url?: string }> {
+    const profile = await this.getUserProfile()
+    
+    if (!profile) {
+      throw new Error('Profile not found')
+    }
 
-      // ProfileService.updateProfile now accepts User type directly
-      return await ProfileService.updateProfile(user.id, updates)
-    } catch (error: any) {
-      console.error('Error updating profile:', error)
-      return { success: false, error: error.message }
+    return {
+      firstName: profile.firstName,
+      lastName: profile.lastName,
+      email: profile.email || '',
+      avatar_url: profile.avatar_url || undefined
     }
   }
 
   /**
-   * Get user sessions
+   * Update user profile
    */
-  async getUserSessions(): Promise<Session[]> {
-    // TODO: Replace with Supabase call
-    // const { data, error } = await supabase
-    //   .from('user_sessions')
-    //   .select('*')
-    //   .order('lastActive', { ascending: false })
-    await new Promise(resolve => setTimeout(resolve, 100))
-    return mockActiveSessions
+  async updateProfile(updates: Partial<User>): Promise<{ success: boolean; data?: User; error?: string }> {
+    try {
+      const user = await requireAuth()
+      return await ProfileService.updateProfile(user.id, updates)
+    } catch (error: any) {
+      console.error('Error updating profile:', error)
+      return createAuthResult(undefined, error.message)
+    }
   }
 
   /**

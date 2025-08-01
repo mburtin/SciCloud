@@ -4,6 +4,7 @@
 
 import { ref, computed } from 'vue'
 import { userService } from '@/services/user.service'
+import { sessionService } from '@/services/session.service'
 import type { User } from '@/types/supabase'
 import type { Session } from '@/types/auth'
 import type { NotificationSettings } from '@/types/notifications'
@@ -102,7 +103,7 @@ export function useUser() {
 
   const fetchUserSessions = async () => {
     try {
-      const sessions = await userService.getUserSessions()
+      const sessions = await sessionService.getUserSessions()
       userSessions.value = sessions
       return sessions
     } catch (err) {

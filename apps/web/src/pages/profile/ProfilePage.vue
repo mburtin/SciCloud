@@ -86,19 +86,19 @@ import { Button } from '@/components/ui/button';
 import ProfileField from '@/components/shared/ProfileField.vue';
 import StatCard from '@/components/shared/StatCard.vue';
 import { Camera } from 'lucide-vue-next';
-import { useAuthStore } from '@/stores/auth.store';
+import { useUser } from '@/composables/useUser';
 
-const authStore = useAuthStore();
+const { userProfile, fetchUserProfile } = useUser();
 
-// Initialize auth store if needed
+// Initialize user profile
 onMounted(async () => {
-  if (!authStore.profile) {
-    await authStore.fetchProfile();
+  if (!userProfile.value) {
+    await fetchUserProfile();
   }
 });
 
-// Use profile from auth store
-const user = computed(() => authStore.profile);
+// Use profile from useUser composable
+const user = computed(() => userProfile.value);
 
 // Computed property for user initials
 const userInitials = computed(() => {

@@ -120,7 +120,7 @@
                   {{ session.device }}
                 </p>
                 <p class="text-sm text-muted-foreground">
-                  {{ session.location }} • Last active {{ session.lastActive }}
+                  {{ session.location }} • Last active {{ formatLastActive(session.lastActive) }}
                 </p>
               </div>
             </div>
@@ -143,7 +143,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -152,7 +152,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Key, Fingerprint, Shield, Monitor } from 'lucide-vue-next';
-import { mockActiveSessions } from '@/mocks/security.mock';
+import { sessionService } from '@/services/session.service';
+import type { Session } from '@/types/auth';
 
 // State for password change form
 const passwordForm = ref({
@@ -168,8 +169,26 @@ const securitySettings = ref({
   loginNotifications: true,
 });
 
-// Active sessions data
-const activeSessions = ref(mockActiveSessions);
+// Active sessions data - now using real Supabase session service
+const activeSessions = ref<Session[]>([]);
+const isLoadingSessions = ref(false);
+
+// Load sessions on component mount
+onMounted(async () => {
+  await loadSessions();
+});
+
+const loadSessions = async () => {
+  try {
+    isLoadingSessions.value = true;
+    const sessions = await sessionService.getUserSessions();
+    activeSessions.value = sessions;
+  } catch (error) {
+    console.error('Failed to load sessions:', error);
+  } finally {
+    isLoadingSessions.value = false;
+  }
+};
 
 // --- Handlers ---
 const handlePasswordChange = () => {
@@ -187,10 +206,44 @@ const handlePasswordChange = () => {
   passwordForm.value = { current: '', new: '', confirm: '' };
 };
 
-const terminateSession = (sessionId: string) => {
-  console.log('Terminating session:', sessionId);
-  activeSessions.value = activeSessions.value.filter(s => s.id !== sessionId);
-  alert(`Session ${sessionId} terminated.`);
+// Format timestamp to readable string
+const formatLastActive = (timestamp?: number): string => {
+  if (!timestamp) return 'Unknown';
+  
+  const now = Date.now();
+  const diff = now - timestamp;
+  
+  // If it's within the last minute, show "Active now"
+  if (diff < 60 * 1000) {
+    return 'Active now';
+  }
+  
+  // Otherwise format as relative time
+  const minutes = Math.floor(diff / (60 * 1000));
+  const hours = Math.floor(diff / (60 * 60 * 1000));
+  const days = Math.floor(diff / (24 * 60 * 60 * 1000));
+  
+  if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
+  if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+  return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+};
+
+const terminateSession = async (sessionId: string) => {
+  try {
+    console.log('Terminating session:', sessionId);
+    const success = await sessionService.revokeSession(sessionId);
+    
+    if (success) {
+      // Remove from local state
+      activeSessions.value = activeSessions.value.filter(s => s.id !== sessionId);
+      alert(`Session terminated successfully.`);
+    } else {
+      alert('Failed to terminate session.');
+    }
+  } catch (error) {
+    console.error('Error terminating session:', error);
+    alert('Error terminating session.');
+  }
 };
 
 const saveAllSettings = () => {
