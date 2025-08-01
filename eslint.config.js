@@ -26,6 +26,7 @@ export default [
     languageOptions: {
       parser: tsparser,
       globals: {
+        ...globals.browser,
         ...globals.node
       },
       parserOptions: {

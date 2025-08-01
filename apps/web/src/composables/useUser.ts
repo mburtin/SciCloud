@@ -42,7 +42,6 @@ export function useUser() {
       currentUser.value = user
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to load user data'
-      console.error('User fetch error:', err)
     } finally {
       isLoading.value = false
     }
@@ -58,7 +57,6 @@ export function useUser() {
       return profile
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to load user profile'
-      console.error('User profile fetch error:', err)
       return null
     } finally {
       isLoadingProfile.value = false
@@ -90,7 +88,6 @@ export function useUser() {
       return updatedProfile
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to update profile'
-      console.error('Profile update error:', err)
       throw err
     }
   }
@@ -103,7 +100,6 @@ export function useUser() {
       return settings
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to load notification settings'
-      console.error('Notification settings fetch error:', err)
       return null
     }
   }
@@ -115,7 +111,6 @@ export function useUser() {
       return updatedSettings
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to update notification settings'
-      console.error('Notification settings update error:', err)
       throw err
     }
   }

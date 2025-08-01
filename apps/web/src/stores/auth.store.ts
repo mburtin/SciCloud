@@ -40,7 +40,6 @@ export const useAuthStore = defineStore('auth', () => {
       setupAuthStateListener()
       isInitialized.value = true
     } catch (err) {
-      console.error('Error initializing auth:', err)
       error.value = err instanceof Error ? err.message : 'Auth initialization failed'
     } finally {
       loading.value = false
@@ -55,7 +54,6 @@ export const useAuthStore = defineStore('auth', () => {
     
     // Use simplified auth service listener
     authUnsubscribe = authService.onAuthStateChange((event, newSession) => {
-      console.log('Auth state changed:', event)
       
       // Update state directly from Supabase events - single source of truth
       session.value = newSession
@@ -78,10 +76,10 @@ export const useAuthStore = defineStore('auth', () => {
 
       // Auth state listener will automatically update session/user state
       return { success: true }
-    } catch (err: any) {
-      console.error('Login error:', err)
-      error.value = err.message
-      return { success: false, error: err.message }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Login failed'
+      error.value = errorMessage
+      return { success: false, error: errorMessage }
     } finally {
       loading.value = false
     }
@@ -99,9 +97,9 @@ export const useAuthStore = defineStore('auth', () => {
       }
 
       return { success: true, data: result.data }
-    } catch (error: any) {
-      console.error('Register error:', error)
-      return { success: false, error: error.message }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Registration failed'
+      return { success: false, error: errorMessage }
     } finally {
       loading.value = false
     }
@@ -120,10 +118,10 @@ export const useAuthStore = defineStore('auth', () => {
       
       // Auth state listener will automatically clear session/user state
       return { success: true }
-    } catch (err: any) {
-      console.error('Logout error:', err)
-      error.value = err.message
-      return { success: false, error: err.message }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Logout failed'
+      error.value = errorMessage
+      return { success: false, error: errorMessage }
     } finally {
       loading.value = false
     }
@@ -141,10 +139,10 @@ export const useAuthStore = defineStore('auth', () => {
       }
       
       return { success: true }
-    } catch (err: any) {
-      console.error('Global logout error:', err)
-      error.value = err.message
-      return { success: false, error: err.message }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Global logout failed'
+      error.value = errorMessage
+      return { success: false, error: errorMessage }
     } finally {
       loading.value = false
     }
@@ -166,10 +164,10 @@ export const useAuthStore = defineStore('auth', () => {
       }
 
       return { success: true, data: result.data }
-    } catch (err: any) {
-      console.error('Update profile error:', err)
-      error.value = err.message
-      return { success: false, error: err.message }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Profile update failed'
+      error.value = errorMessage
+      return { success: false, error: errorMessage }
     }
   }
   

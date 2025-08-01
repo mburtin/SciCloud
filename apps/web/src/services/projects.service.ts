@@ -96,13 +96,12 @@ export class ProjectsService {
   /**
    * Delete project
    */
-  async deleteProject(id: string): Promise<void> {
+  async deleteProject(): Promise<void> {
     // TODO: Replace with Supabase call
     // const { error } = await supabase
     //   .from('projects')
     //   .delete()
     //   .eq('id', id)
-    console.log(`Deleting project with id: ${id}`)
     await new Promise(resolve => setTimeout(resolve, 150))
   }
 

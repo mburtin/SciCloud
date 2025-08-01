@@ -18,8 +18,7 @@ export class UserService {
     try {
       const user = await requireAuth()
       return await ProfileService.getProfile(user.id)
-    } catch (error) {
-      console.error('Error getting user profile:', error)
+    } catch {
       return null
     }
   }
@@ -50,9 +49,9 @@ export class UserService {
     try {
       const user = await requireAuth()
       return await ProfileService.updateProfile(user.id, updates)
-    } catch (error: any) {
-      console.error('Error updating profile:', error)
-      return createAuthResult(undefined, error.message)
+    } catch (_error) {
+      const errorMessage = _error instanceof Error ? _error.message : 'Unknown error'
+      return createAuthResult(undefined, errorMessage)
     }
   }
 

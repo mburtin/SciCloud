@@ -11,7 +11,7 @@ import type { Session } from '@supabase/supabase-js'
 
 export interface AuthResult {
   success: boolean
-  data?: any
+  data?: unknown
   error?: string
 }
 
@@ -27,8 +27,9 @@ export async function getCurrentSession(): Promise<AuthResult> {
     }
 
     return { success: true, data }
-  } catch (err: any) {
-    return { success: false, error: err.message }
+  } catch (err) {
+    const error = err instanceof Error ? err.message : 'Unknown error'
+    return { success: false, error }
   }
 }
 
@@ -44,8 +45,9 @@ export async function getCurrentUser(): Promise<AuthResult> {
     }
 
     return { success: true, data }
-  } catch (err: any) {
-    return { success: false, error: err.message }
+  } catch (err) {
+    const error = err instanceof Error ? err.message : 'Unknown error'
+    return { success: false, error }
   }
 }
 
@@ -53,11 +55,10 @@ export async function getCurrentUser(): Promise<AuthResult> {
  * Set up auth state change listener
  */
 export function onAuthStateChange(
+  // eslint-disable-next-line no-unused-vars
   callback: (event: string, session: Session | null) => void
 ): () => void {
-  const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-    callback(event, session)
-  })
+  const { data: { subscription } } = supabase.auth.onAuthStateChange(callback)
   return () => subscription.unsubscribe()
 }
 
@@ -76,8 +77,9 @@ export async function signInWithPassword(credentials: LoginCredentials): Promise
     }
 
     return { success: true, data }
-  } catch (err: any) {
-    return { success: false, error: err.message }
+  } catch (err) {
+    const error = err instanceof Error ? err.message : 'Unknown error'
+    return { success: false, error }
   }
 }
 
@@ -102,8 +104,9 @@ export async function signUpWithPassword(credentials: RegisterCredentials): Prom
     }
 
     return { success: true, data }
-  } catch (err: any) {
-    return { success: false, error: err.message }
+  } catch (err) {
+    const error = err instanceof Error ? err.message : 'Unknown error'
+    return { success: false, error }
   }
 }
 
@@ -119,8 +122,9 @@ export async function signOut(): Promise<AuthResult> {
     }
 
     return { success: true }
-  } catch (err: any) {
-    return { success: false, error: err.message }
+  } catch (err) {
+    const error = err instanceof Error ? err.message : 'Unknown error'
+    return { success: false, error }
   }
 }
 
@@ -136,8 +140,9 @@ export async function signOutEverywhere(): Promise<AuthResult> {
     }
 
     return { success: true }
-  } catch (err: any) {
-    return { success: false, error: err.message }
+  } catch (err) {
+    const error = err instanceof Error ? err.message : 'Unknown error'
+    return { success: false, error }
   }
 }
 
@@ -165,7 +170,8 @@ export async function updateUserProfile(userId: string, updates: Partial<User>):
     }
 
     return { success: true, data }
-  } catch (err: any) {
-    return { success: false, error: err.message }
+  } catch (err) {
+    const error = err instanceof Error ? err.message : 'Unknown error'
+    return { success: false, error }
   }
 }

@@ -45,19 +45,14 @@ export function useDashboard() {
       upcomingDeadlines.value = deadlinesData
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to load dashboard data'
-      console.error('Dashboard data fetch error:', err)
     } finally {
       isLoading.value = false
     }
   }
 
   const refreshStats = async () => {
-    try {
-      const statsData = await dashboardService.getStatCards()
-      statCards.value = statsData
-    } catch (err) {
-      console.error('Stats refresh error:', err)
-    }
+    const statsData = await dashboardService.getStatCards()
+    statCards.value = statsData
   }
 
   return {

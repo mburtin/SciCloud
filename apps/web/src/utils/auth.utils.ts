@@ -13,7 +13,6 @@ export async function requireAuth(): Promise<SupabaseUser> {
   const { data: { user }, error } = await supabase.auth.getUser()
   
   if (error) {
-    console.error('Auth validation error:', error)
     throw new Error('Authentication failed')
   }
   
@@ -28,9 +27,8 @@ export async function requireAuth(): Promise<SupabaseUser> {
  * Unified error handler for auth operations
  * Standardizes error handling across services
  */
-export function handleAuthError(error: unknown, context: string): never {
+export function handleAuthError(error: unknown): never {
   const message = error instanceof Error ? error.message : 'Unknown error occurred'
-  console.error(`${context} error:`, error)
   throw new Error(message)
 }
 

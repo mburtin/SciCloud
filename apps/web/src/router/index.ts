@@ -23,7 +23,7 @@ import { useAuthStore } from '@/stores/auth.store'
 import { labRoutes } from './modules/lab.routes';
 import profileRoutes from './modules/profile.routes';
 
-// Declaration to extend the RouteMeta type
+// Route meta type extensions
 declare module 'vue-router' {
   interface RouteMeta {
     requiresAuth?: boolean

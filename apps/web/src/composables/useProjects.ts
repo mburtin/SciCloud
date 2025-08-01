@@ -63,7 +63,6 @@ export function useProjects() {
       projects.value = data
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to load projects'
-      console.error('Projects fetch error:', err)
     } finally {
       isLoading.value = false
     }
@@ -79,7 +78,6 @@ export function useProjects() {
       return project
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to load project'
-      console.error('Project fetch error:', err)
       return null
     } finally {
       isLoadingProject.value = false
@@ -93,7 +91,6 @@ export function useProjects() {
       return newProject
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to create project'
-      console.error('Project creation error:', err)
       throw err
     }
   }
@@ -116,7 +113,6 @@ export function useProjects() {
       return updatedProject
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to update project'
-      console.error('Project update error:', err)
       throw err
     }
   }
@@ -131,7 +127,6 @@ export function useProjects() {
       }
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to delete project'
-      console.error('Project deletion error:', err)
       throw err
     }
   }
@@ -148,7 +143,6 @@ export function useProjects() {
       return updatedProject
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to toggle favorite'
-      console.error('Toggle favorite error:', err)
       throw err
     }
   }
@@ -165,7 +159,6 @@ export function useProjects() {
       return updatedProject
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to toggle archive'
-      console.error('Toggle archive error:', err)
       throw err
     }
   }

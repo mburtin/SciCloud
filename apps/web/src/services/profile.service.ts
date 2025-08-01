@@ -3,6 +3,7 @@
  */
 import { supabase } from '@/lib/supabase'
 import type { Database, User, UserUpdate, UserProfileView } from '@/types/supabase'
+import type { User as SupabaseUser } from '@supabase/supabase-js'
 
 type ProfileRow = Database['public']['Tables']['profiles']['Row']
 
@@ -16,7 +17,6 @@ export class ProfileService {
       const { data: { user }, error: authError } = await supabase.auth.getUser()
       
       if (authError || !user) {
-        console.error('Error getting auth user:', authError)
         return null
       }
 
@@ -28,13 +28,11 @@ export class ProfileService {
         .single()
 
       if (profileError) {
-        console.error('Error fetching user profile:', profileError)
         return null
       }
 
       return this.mapProfileToUser(profile, user)
-    } catch (error) {
-      console.error('Error in getProfile:', error)
+    } catch {
       return null
     }
   }
@@ -50,13 +48,11 @@ export class ProfileService {
         .order('first_name', { ascending: true })
 
       if (error) {
-        console.error('Error fetching user profiles:', error)
         return []
       }
 
       return data.map(profile => this.mapViewToUser(profile))
-    } catch (error) {
-      console.error('Error in getAllProfiles:', error)
+    } catch {
       return []
     }
   }
@@ -83,7 +79,7 @@ export class ProfileService {
         }
       })
 
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('profiles')
         .update(profileUpdate)
         .eq('id', userId)
@@ -91,7 +87,6 @@ export class ProfileService {
         .single()
 
       if (error) {
-        console.error('Error updating profile:', error)
         return { success: false, error: error.message }
       }
 
@@ -105,9 +100,9 @@ export class ProfileService {
         success: true, 
         data: updatedProfile
       }
-    } catch (error: any) {
-      console.error('Error in updateProfile:', error)
-      return { success: false, error: error.message }
+    } catch (_error) {
+      const errorMessage = _error instanceof Error ? _error.message : 'Unknown error'
+      return { success: false, error: errorMessage }
     }
   }
 
@@ -122,14 +117,13 @@ export class ProfileService {
         .eq('id', userId)
 
       if (error) {
-        console.error('Error deleting profile:', error)
         return { success: false, error: error.message }
       }
 
       return { success: true }
-    } catch (error: any) {
-      console.error('Error in deleteProfile:', error)
-      return { success: false, error: error.message }
+    } catch (_error) {
+      const errorMessage = _error instanceof Error ? _error.message : 'Unknown error'
+      return { success: false, error: errorMessage }
     }
   }
 
@@ -147,7 +141,6 @@ export class ProfileService {
         .upload(filePath, file)
 
       if (uploadError) {
-        console.error('Error uploading avatar:', uploadError)
         return { success: false, error: uploadError.message }
       }
 
@@ -164,9 +157,9 @@ export class ProfileService {
       }
 
       return { success: true, url: data.publicUrl }
-    } catch (error: any) {
-      console.error('Error in uploadAvatar:', error)
-      return { success: false, error: error.message }
+    } catch (_error) {
+      const errorMessage = _error instanceof Error ? _error.message : 'Unknown error'
+      return { success: false, error: errorMessage }
     }
   }
 
@@ -182,13 +175,11 @@ export class ProfileService {
         .order('first_name', { ascending: true })
 
       if (error) {
-        console.error('Error searching user profiles:', error)
         return []
       }
 
       return data.map(profile => this.mapViewToUser(profile))
-    } catch (error) {
-      console.error('Error in searchProfiles:', error)
+    } catch {
       return []
     }
   }
@@ -205,13 +196,11 @@ export class ProfileService {
         .order('first_name', { ascending: true })
 
       if (error) {
-        console.error('Error fetching user profiles by role:', error)
         return []
       }
 
       return data.map(profile => this.mapViewToUser(profile))
-    } catch (error) {
-      console.error('Error in getProfilesByRole:', error)
+    } catch {
       return []
     }
   }
@@ -232,13 +221,13 @@ export class ProfileService {
   /**
    * Map profile data and auth user data to User interface
    */
-  private static mapProfileToUser(profile: ProfileRow, authUser: any): User {
+  private static mapProfileToUser(profile: ProfileRow, authUser: SupabaseUser): User {
     return {
       id: profile.id,
-      email: authUser.email || '',
-      phone: authUser.phone || '',
-      created_at: authUser.created_at || null,
-      updated_at: authUser.updated_at || null,
+      email: authUser?.email || '',
+      phone: authUser?.phone || '',
+      created_at: authUser?.created_at || null,
+      updated_at: authUser?.updated_at || null,
       first_name: profile.first_name,
       last_name: profile.last_name,
       biography: profile.biography,

@@ -37,7 +37,6 @@ export function useLab() {
       instruments.value = data
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to load instruments'
-      console.error('Instruments fetch error:', err)
     } finally {
       isLoading.value = false
     }
@@ -52,7 +51,6 @@ export function useLab() {
       consumables.value = data
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to load consumables'
-      console.error('Consumables fetch error:', err)
     } finally {
       isLoading.value = false
     }
@@ -67,7 +65,6 @@ export function useLab() {
       animals.value = data
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to load animals'
-      console.error('Animals fetch error:', err)
     } finally {
       isLoading.value = false
     }
@@ -85,12 +82,11 @@ export function useLab() {
       return updatedConsumable
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to update stock'
-      console.error('Stock update error:', err)
       throw err
     }
   }
 
-  const updateInstrumentStatus = async (id: string, status: string) => {
+  const updateInstrumentStatus = async (id: string, status: 'available' | 'in-use' | 'maintenance' | 'broken') => {
     try {
       const updatedInstrument = await labService.updateInstrumentStatus(id, status)
       
@@ -102,7 +98,6 @@ export function useLab() {
       return updatedInstrument
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to update instrument status'
-      console.error('Instrument status update error:', err)
       throw err
     }
   }
