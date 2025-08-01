@@ -166,12 +166,17 @@
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" class="w-56 border-border shadow-xl bg-popover/95 backdrop-blur-md rounded-xl">
             <DropdownMenuLabel class="px-4 py-3">
-              <p class="font-semibold text-popover-foreground">
-                {{ user.name }}
-              </p>
-              <p class="text-sm text-muted-foreground font-normal">
-                {{ user.email }}
-              </p>
+              <div v-if="authStore.loading" class="flex items-center gap-2">
+                <div class="animate-pulse h-4 bg-muted rounded w-20"></div>
+              </div>
+              <div v-else>
+                <p class="font-semibold text-popover-foreground">
+                  {{ user.name || 'User' }}
+                </p>
+                <p class="text-sm text-muted-foreground font-normal">
+                  {{ user.email || 'No email' }}
+                </p>
+              </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem @click="() => router.push('/profile')">
@@ -213,7 +218,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useAuthStore } from '@/stores/auth.store'
-import { useUser } from '@/composables/useUser'
 import { useNavigation } from '@/composables/useNavigation'
 import type { NavigationModule } from '@/types/ui'
 
@@ -222,7 +226,6 @@ const route = useRoute()
 const authStore = useAuthStore()
 
 // Use composables
-const { currentUser, userInitials, fetchCurrentUser } = useUser()
 const { 
   mainModules, 
   notifications, 
@@ -236,12 +239,19 @@ const {
 const searchQuery = ref('')
 const notificationsOpen = ref(false)
 
-// Computed
+// Computed - Use auth store instead of useUser composable
 const user = computed(() => ({
-  name: currentUser.value ? `${currentUser.value.firstName} ${currentUser.value.lastName}` : '',
-  email: currentUser.value?.email || '',
-  avatar: currentUser.value?.avatar_url || ''
+  name: authStore.profile ? `${authStore.profile.firstName} ${authStore.profile.lastName}` : '',
+  email: authStore.profile?.email || '',
+  avatar: authStore.profile?.avatar_url || ''
 }))
+
+const userInitials = computed(() => {
+  if (!authStore.profile) return ''
+  const firstName = authStore.profile.firstName || ''
+  const lastName = authStore.profile.lastName || ''
+  return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
+})
 
 const recentNotifications = computed(() => notifications.value.slice(0, 5))
 const hasMoreNotifications = computed(() => notifications.value.length > 5)
@@ -305,9 +315,11 @@ const truncateMessage = (message: string, maxLength: number) => {
   return message.length > maxLength ? `${message.substring(0, maxLength)}...` : message
 }
 
-// Load user data on mount
-onMounted(() => {
-  fetchCurrentUser()
+// Initialize auth store on mount
+onMounted(async () => {
+  if (!authStore.profile) {
+    await authStore.initialize()
+  }
 })
 </script>
 
