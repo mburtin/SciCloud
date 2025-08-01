@@ -112,29 +112,26 @@
           </p>
         </CardHeader>
         <CardContent class="space-y-4">
-          <div v-for="session in activeSessions" :key="session.id" class="flex items-center justify-between p-3 border rounded-lg">
+          <div v-if="currentSession" class="flex items-center justify-between p-3 border rounded-lg">
             <div class="flex items-center gap-3">
               <Monitor class="h-5 w-5 text-muted-foreground" />
               <div>
                 <p class="font-medium">
-                  {{ session.device }}
+                  Current Browser Session
                 </p>
                 <p class="text-sm text-muted-foreground">
-                  {{ session.location }} • Last active {{ formatLastActive(session.lastActive) }}
+                  Expires: {{ new Date(currentSession.expires_at || 0).toLocaleString() }}
                 </p>
               </div>
             </div>
-            <Button
-              v-if="!session.isCurrent"
-              variant="outline"
-              size="sm"
-              @click="terminateSession(session.id)"
-            >
-              Terminate
-            </Button>
-            <Badge v-else variant="secondary">
-              Current
-            </Badge>
+            <div class="flex gap-2">
+              <Badge variant="secondary">
+                Current
+              </Badge>
+            </div>
+          </div>
+          <div v-else class="text-center py-4 text-muted-foreground">
+            No active sessions found
           </div>
         </CardContent>
       </Card>
@@ -143,7 +140,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -152,8 +149,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Key, Fingerprint, Shield, Monitor } from 'lucide-vue-next';
-import { sessionService } from '@/services/session.service';
-import type { Session } from '@/types/auth';
+import { useAuthStore } from '@/stores/auth.store';
 
 // State for password change form
 const passwordForm = ref({
@@ -169,26 +165,10 @@ const securitySettings = ref({
   loginNotifications: true,
 });
 
-// Active sessions data - now using real Supabase session service
-const activeSessions = ref<Session[]>([]);
-const isLoadingSessions = ref(false);
-
-// Load sessions on component mount
-onMounted(async () => {
-  await loadSessions();
-});
-
-const loadSessions = async () => {
-  try {
-    isLoadingSessions.value = true;
-    const sessions = await sessionService.getUserSessions();
-    activeSessions.value = sessions;
-  } catch (error) {
-    console.error('Failed to load sessions:', error);
-  } finally {
-    isLoadingSessions.value = false;
-  }
-};
+// Get auth store for session info
+const authStore = useAuthStore();
+const currentSession = computed(() => authStore.session);
+const currentUser = computed(() => authStore.user);
 
 // --- Handlers ---
 const handlePasswordChange = () => {
@@ -228,18 +208,11 @@ const formatLastActive = (timestamp?: number): string => {
   return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
 };
 
-const terminateSession = async (sessionId: string) => {
+const terminateCurrentSession = async () => {
   try {
-    console.log('Terminating session:', sessionId);
-    const success = await sessionService.revokeSession(sessionId);
-    
-    if (success) {
-      // Remove from local state
-      activeSessions.value = activeSessions.value.filter(s => s.id !== sessionId);
-      alert(`Session terminated successfully.`);
-    } else {
-      alert('Failed to terminate session.');
-    }
+    console.log('Terminating current session');
+    await authStore.logout();
+    alert('Session terminated successfully. You will be redirected to login.');
   } catch (error) {
     console.error('Error terminating session:', error);
     alert('Error terminating session.');

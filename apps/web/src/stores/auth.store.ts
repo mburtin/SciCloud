@@ -1,148 +1,82 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { User } from '@/types/supabase'
-import type { LoginCredentials, RegisterCredentials, Session, AuthEvent } from '@/types/auth'
-import { supabase } from '@/lib/supabase'
-import { sessionService } from '@/services/session.service'
+import type { LoginCredentials, RegisterCredentials } from '@/types/auth'
+import * as authService from '@/services/auth.service'
+import type { Session, User as SupabaseUser } from '@supabase/supabase-js'
 
 export const useAuthStore = defineStore('auth', () => {
-  // Modern session state
-  const currentSession = ref<Session>({
-    isAuthenticated: false,
-    user: null,
-    lastActive: 0,
-    isInitialized: false
-  })
-  
-  const loading = ref(true)
+  // Simplified reactive state - following modern Supabase patterns
+  const session = ref<Session | null>(null)
+  const user = ref<SupabaseUser | null>(null)  // Use Supabase's native User type for auth
+  const loading = ref(false)
   const error = ref<string | null>(null)
+  const isInitialized = ref(false)
   
   // Auth state change listener cleanup
   let authUnsubscribe: (() => void) | null = null
 
   // Computed
-  const isAuthenticated = computed(() => currentSession.value.isAuthenticated)
-  const user = computed(() => currentSession.value.user)
-  const isInitialized = computed(() => currentSession.value.isInitialized)
+  const isAuthenticated = computed(() => !!session.value?.user)
 
-  // Initialize auth state with modern session management
+  // Simplified initialization following modern Supabase patterns
   async function initialize() {
-    if (currentSession.value.isInitialized) {
-      return // Already initialized
+    if (isInitialized.value) {
+      return
     }
     
     try {
       loading.value = true
       error.value = null
       
-      // Get current session - Supabase 2025 security standard
-      const sessionInfo = await sessionService.getCurrentSession()
-      
-      if (sessionInfo?.isValid) {
-        currentSession.value.user = sessionInfo.user
-        currentSession.value.isAuthenticated = true
-        currentSession.value.lastActive = Date.now()
-      } else {
-        currentSession.value.user = null
-        currentSession.value.isAuthenticated = false
+      // Get current session using simplified auth service
+      const result = await authService.getCurrentSession()
+      if (result.success) {
+        session.value = result.data?.session || null
+        user.value = result.data?.session?.user || null
       }
 
-      // Set up modern auth state change handling
+      // Set up auth state change listener
       setupAuthStateListener()
-      currentSession.value.isInitialized = true
+      isInitialized.value = true
     } catch (err) {
       console.error('Error initializing auth:', err)
       error.value = err instanceof Error ? err.message : 'Auth initialization failed'
-      currentSession.value.isAuthenticated = false
     } finally {
       loading.value = false
     }
   }
 
-  // Set up modern auth state change listener
+  // Simplified auth state listener using Supabase's native patterns
   function setupAuthStateListener() {
-    // Clean up existing listener
     if (authUnsubscribe) {
       authUnsubscribe()
     }
     
-    // Set up new listener with session service
-    authUnsubscribe = sessionService.onAuthStateChange(async (event: AuthEvent) => {
-      console.log('Auth event received:', event.type)
+    // Use simplified auth service listener
+    authUnsubscribe = authService.onAuthStateChange((event, newSession) => {
+      console.log('Auth state changed:', event)
       
-      switch (event.type) {
-        case 'SIGNED_IN':
-          if (event.user) {
-            currentSession.value.user = event.user
-            currentSession.value.isAuthenticated = true
-            currentSession.value.lastActive = Date.now()
-          }
-          break
-          
-        case 'SIGNED_OUT':
-          currentSession.value.user = null
-          currentSession.value.isAuthenticated = false
-          currentSession.value.lastActive = 0
-          break
-          
-        case 'TOKEN_REFRESHED':
-          if (event.user) {
-            currentSession.value.user = event.user
-            currentSession.value.lastActive = Date.now()
-          }
-          break
-          
-        case 'USER_UPDATED':
-          if (event.user) {
-            currentSession.value.user = event.user
-          }
-          break
-          
-        case 'SESSION_EXPIRED':
-        default: {
-          // Handle session expiry or unknown events
-          const sessionInfo = await sessionService.getCurrentSession()
-          if (sessionInfo?.isValid) {
-            currentSession.value.user = sessionInfo.user
-            currentSession.value.isAuthenticated = true
-            currentSession.value.lastActive = Date.now()
-          } else {
-            currentSession.value.user = null
-            currentSession.value.isAuthenticated = false
-          }
-          break
-        }
-      }
+      // Update state directly from Supabase events - single source of truth
+      session.value = newSession
+      user.value = newSession?.user || null
     })
   }
 
 
-  // Login with email and password
+  // Simplified login - let auth state listener handle updates
   async function login(credentials: LoginCredentials) {
     try {
       loading.value = true
       error.value = null
       
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email: credentials.email,
-        password: credentials.password
-      })
-
-      if (authError) {
-        throw authError
+      const result = await authService.signInWithPassword(credentials)
+      
+      if (!result.success) {
+        throw new Error(result.error)
       }
 
-      if (data.user) {
-        // Session state will be updated via auth state change listener
-        // Just ensure we have the latest session info
-        const sessionInfo = await sessionService.getCurrentSession()
-        if (sessionInfo?.isValid) {
-          currentSession.value.user = sessionInfo.user
-          currentSession.value.isAuthenticated = true
-          currentSession.value.lastActive = Date.now()
-        }
-      }
-
+      // Auth state listener will automatically update session/user state
       return { success: true }
     } catch (err: any) {
       console.error('Login error:', err)
@@ -158,22 +92,13 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       loading.value = true
       
-      const { data, error } = await supabase.auth.signUp({
-        email: credentials.email,
-        password: credentials.password,
-        options: {
-          data: {
-            first_name: credentials.firstName,
-            last_name: credentials.lastName
-          }
-        }
-      })
-
-      if (error) {
-        throw error
+      const result = await authService.signUpWithPassword(credentials)
+      
+      if (!result.success) {
+        throw new Error(result.error)
       }
 
-      return { success: true, data }
+      return { success: true, data: result.data }
     } catch (error: any) {
       console.error('Register error:', error)
       return { success: false, error: error.message }
@@ -182,19 +107,18 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // Logout with modern session management
+  // Simplified logout - let auth state listener handle state clearing
   async function logout() {
     try {
       loading.value = true
       
-      // Use session service for proper cleanup
-      const success = await sessionService.signOut()
+      const result = await authService.signOut()
       
-      if (!success) {
-        throw new Error('Failed to sign out')
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to sign out')
       }
       
-      // State will be cleared via auth state change listener
+      // Auth state listener will automatically clear session/user state
       return { success: true }
     } catch (err: any) {
       console.error('Logout error:', err)
@@ -210,10 +134,10 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       loading.value = true
       
-      const success = await sessionService.signOutEverywhere()
+      const result = await authService.signOutEverywhere()
       
-      if (!success) {
-        throw new Error('Failed to sign out from all sessions')
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to sign out from all sessions')
       }
       
       return { success: true }
@@ -226,40 +150,28 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // Update user profile
+  // Update user profile (needs proper User type conversion)
   async function updateProfile(updates: Partial<User>) {
-    if (!currentSession.value.user) {
+    if (!user.value) {
       return { success: false, error: 'Not authenticated' }
     }
 
     try {
-      const { data, error: updateError } = await supabase
-        .from('profiles')
-        .update({
-          first_name: updates.firstName,
-          last_name: updates.lastName,
-          biography: updates.biography,
-          location: updates.location,
-          full_address: updates.fullAddress,
-          avatar_url: updates.avatar_url,
-        })
-        .eq('id', currentSession.value.user.id)
-        .select()
-        .single()
-
-      if (updateError) {
-        throw updateError
+      // Note: This will need to be updated when profile management is implemented
+      // For now, just use the user ID from Supabase auth
+      const result = await authService.updateUserProfile(user.value.id, updates)
+      
+      if (!result.success) {
+        throw new Error(result.error)
       }
 
-      
-      return { success: true, data }
+      return { success: true, data: result.data }
     } catch (err: any) {
       console.error('Update profile error:', err)
       error.value = err.message
       return { success: false, error: err.message }
     }
   }
-  
   
   // Cleanup on store disposal
   function dispose() {
@@ -271,13 +183,14 @@ export const useAuthStore = defineStore('auth', () => {
 
   return { 
     // State
-    user,
+    session: computed(() => session.value),
+    user: computed(() => user.value),
     loading: computed(() => loading.value),
     error: computed(() => error.value),
     
     // Computed
     isAuthenticated,
-    isInitialized,
+    isInitialized: computed(() => isInitialized.value),
     
     // Actions
     initialize,

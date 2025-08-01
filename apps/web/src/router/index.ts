@@ -151,28 +151,20 @@ router.beforeEach(async (to, _from, next) => {
   const requiresAuth = to.matched.some(record => record.meta?.requiresAuth !== false)
 
   if (requiresAuth) {
-    // Validate current session with server - Supabase 2025 security standard
-    try {
-      if (!authStore.isAuthenticated) {
-        // Try to initialize auth if not already done
-        await authStore.initialize()
-      }
-      
-      if (!authStore.isAuthenticated) {
-        // Redirect to login if no valid session
-        next('/login')
-        return
-      }
-      
-      // User is authenticated, allow navigation
-      next()
-    } catch (error) {
-      console.error('Router auth validation error:', error)
-      // On auth error, redirect to login
-      next('/login')
+    // Initialize auth if not already done
+    if (!authStore.isInitialized) {
+      await authStore.initialize()
     }
+    
+    // Simple authentication check - trust the store state
+    if (!authStore.isAuthenticated) {
+      next('/login')
+      return
+    }
+    
+    next()
   } else if (to.path === '/login' && authStore.isAuthenticated) {
-    // If user is logged in and tries to access login page, redirect to home
+    // Redirect authenticated users away from login page
     next('/')
   } else {
     // Public route, allow navigation

@@ -4,16 +4,13 @@
 
 import { ref, computed } from 'vue'
 import { userService } from '@/services/user.service'
-import { sessionService } from '@/services/session.service'
 import type { User } from '@/types/supabase'
-import type { Session } from '@/types/auth'
 import type { NotificationSettings } from '@/types/notifications'
 
 export function useUser() {
   // State
   const currentUser = ref<(Pick<User, 'firstName' | 'lastName' | 'email'> & { avatar_url?: string }) | null>(null)
   const userProfile = ref<User | null>(null)
-  const userSessions = ref<Session[]>([])
   const notificationSettings = ref<NotificationSettings | null>(null)
   const isLoading = ref(false)
   const isLoadingProfile = ref(false)
@@ -32,9 +29,6 @@ export function useUser() {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
   })
 
-  const activeSessions = computed(() => 
-    userSessions.value.filter(session => session.isActive)
-  )
 
   // Methods
   const fetchCurrentUser = async () => {
@@ -101,17 +95,6 @@ export function useUser() {
     }
   }
 
-  const fetchUserSessions = async () => {
-    try {
-      const sessions = await sessionService.getUserSessions()
-      userSessions.value = sessions
-      return sessions
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to load user sessions'
-      console.error('User sessions fetch error:', err)
-      return []
-    }
-  }
 
   const fetchNotificationSettings = async () => {
     try {
@@ -141,7 +124,6 @@ export function useUser() {
     // State
     currentUser,
     userProfile,
-    userSessions,
     notificationSettings,
     isLoading,
     isLoadingProfile,
@@ -150,13 +132,11 @@ export function useUser() {
     // Computed
     userDisplayName,
     userInitials,
-    activeSessions,
 
     // Methods
     fetchCurrentUser,
     fetchUserProfile,
     updateProfile,
-    fetchUserSessions,
     fetchNotificationSettings,
     updateNotificationSettings
   }
