@@ -7,7 +7,7 @@ import { supabase } from '@/lib/supabase'
 import { ProfileService } from './profile.service'
 import { mockActiveSessions } from '@/mocks/security.mock'
 import { mockNotificationSettings } from '@/mocks/notification-settings.mock'
-import type { User } from '@/types/user'
+import type { User } from '@/types/supabase'
 import type { Session } from '@/types/auth'
 import type { NotificationSettings } from '@/types/notifications'
 
@@ -32,7 +32,7 @@ export class UserService {
       return {
         firstName: profile.firstName,
         lastName: profile.lastName,
-        email: user.email || '',
+        email: profile.email || '',
         avatar_url: profile.avatar_url
       }
     } catch (error) {
@@ -42,7 +42,7 @@ export class UserService {
   }
 
   /**
-   * Get full user profile
+   * Get full user profile using combined view
    */
   async getUserProfile(): Promise<User | null> {
     try {
@@ -52,14 +52,8 @@ export class UserService {
         return null
       }
 
-      const profile = await ProfileService.getProfile(user.id)
-      
-      if (profile) {
-        // Add email from auth.users
-        profile.email = user.email || ''
-      }
-
-      return profile
+      // ProfileService now uses the combined view, no manual mapping needed!
+      return await ProfileService.getProfile(user.id)
     } catch (error) {
       console.error('Error getting user profile:', error)
       return null
@@ -77,14 +71,8 @@ export class UserService {
         return { success: false, error: 'No authenticated user' }
       }
 
-      const result = await ProfileService.updateProfile(user.id, updates)
-      
-      if (result.success && result.data) {
-        // Add email from auth.users
-        result.data.email = user.email || ''
-      }
-
-      return result
+      // ProfileService.updateProfile now accepts User type directly
+      return await ProfileService.updateProfile(user.id, updates)
     } catch (error: any) {
       console.error('Error updating profile:', error)
       return { success: false, error: error.message }

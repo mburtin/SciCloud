@@ -3,7 +3,7 @@
  */
 
 import type { UUID, Timestamp, Priority, AuditableRecord } from './base'
-import type { User } from './user'
+import type { User } from './supabase'
 import { Documents } from './documents'
 
 // Project-specific enums

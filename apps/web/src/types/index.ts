@@ -11,7 +11,7 @@ export * from './auth'
 export * from './projects'
 export * from './lab'
 export * from './ui'
-export * from './user'
+export * from './supabase'
 export * from './notifications'
 export * from './documents'
 

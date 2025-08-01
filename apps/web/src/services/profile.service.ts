@@ -2,30 +2,37 @@
  * Profile service for managing user profiles with Supabase
  */
 import { supabase } from '@/lib/supabase'
-import type { User } from '@/types/user'
-import type { Database } from '@/types/supabase'
+import type { Database, User, UserUpdate, UserProfileView } from '@/types/supabase'
 
 type ProfileRow = Database['public']['Tables']['profiles']['Row']
-type ProfileUpdate = Database['public']['Tables']['profiles']['Update']
 
 export class ProfileService {
   /**
-   * Get user profile by ID
+   * Get user profile by ID using profiles table and auth data
    */
   static async getProfile(userId: string): Promise<User | null> {
     try {
-      const { data, error } = await supabase
+      // Get auth user data
+      const { data: { user }, error: authError } = await supabase.auth.getUser()
+      
+      if (authError || !user) {
+        console.error('Error getting auth user:', authError)
+        return null
+      }
+
+      // Get profile data
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single()
 
-      if (error) {
-        console.error('Error fetching profile:', error)
+      if (profileError) {
+        console.error('Error fetching user profile:', profileError)
         return null
       }
 
-      return this.mapProfileToUser(data)
+      return this.mapProfileToUser(profile, user)
     } catch (error) {
       console.error('Error in getProfile:', error)
       return null
@@ -33,21 +40,21 @@ export class ProfileService {
   }
 
   /**
-   * Get all profiles (for team collaboration)
+   * Get all profiles (for team collaboration) using combined view
    */
   static async getAllProfiles(): Promise<User[]> {
     try {
       const { data, error } = await supabase
-        .from('profiles')
+        .from('user_profiles')
         .select('*')
-        .order('created_at', { ascending: false })
+        .order('first_name', { ascending: true })
 
       if (error) {
-        console.error('Error fetching profiles:', error)
+        console.error('Error fetching user profiles:', error)
         return []
       }
 
-      return data.map(profile => this.mapProfileToUser(profile))
+      return data.map(profile => this.mapViewToUser(profile))
     } catch (error) {
       console.error('Error in getAllProfiles:', error)
       return []
@@ -59,23 +66,20 @@ export class ProfileService {
    */
   static async updateProfile(userId: string, updates: Partial<User>): Promise<{ success: boolean; data?: User; error?: string }> {
     try {
-      const profileUpdate: ProfileUpdate = {
+      const profileUpdate: UserUpdate = {
         first_name: updates.firstName,
         last_name: updates.lastName,
         biography: updates.biography,
-        phone: updates.phone,
         location: updates.location,
         full_address: updates.fullAddress,
         avatar_url: updates.avatar_url,
         role: updates.role,
-        updated_by: userId,
-        updated_at: new Date().toISOString()
       }
 
       // Remove undefined values
       Object.keys(profileUpdate).forEach(key => {
-        if (profileUpdate[key as keyof ProfileUpdate] === undefined) {
-          delete profileUpdate[key as keyof ProfileUpdate]
+        if (profileUpdate[key as keyof UserUpdate] === undefined) {
+          delete profileUpdate[key as keyof UserUpdate]
         }
       })
 
@@ -91,9 +95,15 @@ export class ProfileService {
         return { success: false, error: error.message }
       }
 
+      // Get updated profile using the combined view
+      const updatedProfile = await this.getProfile(userId)
+      if (!updatedProfile) {
+        return { success: false, error: 'Failed to retrieve updated profile' }
+      }
+      
       return { 
         success: true, 
-        data: this.mapProfileToUser(data)
+        data: updatedProfile
       }
     } catch (error: any) {
       console.error('Error in updateProfile:', error)
@@ -161,22 +171,22 @@ export class ProfileService {
   }
 
   /**
-   * Search profiles by name or email
+   * Search profiles by name or email using combined view
    */
   static async searchProfiles(query: string): Promise<User[]> {
     try {
       const { data, error } = await supabase
-        .from('profiles')
+        .from('user_profiles')
         .select('*')
-        .or(`first_name.ilike.%${query}%,last_name.ilike.%${query}%`)
-        .order('created_at', { ascending: false })
+        .or(`first_name.ilike.%${query}%,last_name.ilike.%${query}%,email.ilike.%${query}%`)
+        .order('first_name', { ascending: true })
 
       if (error) {
-        console.error('Error searching profiles:', error)
+        console.error('Error searching user profiles:', error)
         return []
       }
 
-      return data.map(profile => this.mapProfileToUser(profile))
+      return data.map(profile => this.mapViewToUser(profile))
     } catch (error) {
       console.error('Error in searchProfiles:', error)
       return []
@@ -184,22 +194,22 @@ export class ProfileService {
   }
 
   /**
-   * Get profiles by role
+   * Get profiles by role using combined view
    */
   static async getProfilesByRole(role: 'admin' | 'user' | 'viewer'): Promise<User[]> {
     try {
       const { data, error } = await supabase
-        .from('profiles')
+        .from('user_profiles')
         .select('*')
         .eq('role', role)
-        .order('created_at', { ascending: false })
+        .order('first_name', { ascending: true })
 
       if (error) {
-        console.error('Error fetching profiles by role:', error)
+        console.error('Error fetching user profiles by role:', error)
         return []
       }
 
-      return data.map(profile => this.mapProfileToUser(profile))
+      return data.map(profile => this.mapViewToUser(profile))
     } catch (error) {
       console.error('Error in getProfilesByRole:', error)
       return []
@@ -207,25 +217,38 @@ export class ProfileService {
   }
 
   /**
-   * Map database profile to User interface
+   * Map view data to User interface
    */
-  private static mapProfileToUser(profile: ProfileRow): User {
+  private static mapViewToUser(viewData: UserProfileView): User {
+    return {
+      ...viewData,
+      firstName: viewData.first_name,
+      lastName: viewData.last_name,
+      fullAddress: viewData.full_address,
+      stats: [] // TODO: Calculate stats from other tables later
+    }
+  }
+
+  /**
+   * Map profile data and auth user data to User interface
+   */
+  private static mapProfileToUser(profile: ProfileRow, authUser: any): User {
     return {
       id: profile.id,
+      email: authUser.email || '',
+      phone: authUser.phone || '',
+      created_at: authUser.created_at || null,
+      updated_at: authUser.updated_at || null,
+      first_name: profile.first_name,
+      last_name: profile.last_name,
+      biography: profile.biography,
+      location: profile.location,
+      full_address: profile.full_address,
+      avatar_url: profile.avatar_url,
+      role: profile.role,
       firstName: profile.first_name,
       lastName: profile.last_name,
-      email: '', // Email comes from auth.users, will be set by the auth store
-      role: profile.role as 'admin' | 'user' | 'viewer',
-      avatar_url: profile.avatar_url || undefined,
-      biography: profile.biography,
-      phone: profile.phone,
-      location: profile.location,
       fullAddress: profile.full_address,
-      created_by: profile.created_by || '',
-      created_at: profile.created_at,
-      updated_by: profile.updated_by || '',
-      updated_at: profile.updated_at,
-      version: profile.version,
       stats: [] // TODO: Calculate stats from other tables later
     }
   }

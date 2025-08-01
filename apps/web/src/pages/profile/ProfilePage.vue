@@ -18,7 +18,7 @@
         <div class="flex flex-col sm:flex-row items-center gap-6">
           <div class="relative">
             <Avatar class="h-24 w-24 text-3xl">
-              <AvatarImage v-if="user.avatar_url" :src="user.avatar_url" :alt="user.firstName" />
+              <AvatarImage v-if="user?.avatar_url" :src="user.avatar_url" :alt="user.firstName" />
               <AvatarFallback>{{ userInitials }}</AvatarFallback>
             </Avatar>
             <Button size="icon" variant="outline" class="absolute bottom-0 right-0 rounded-full h-8 w-8">
@@ -26,14 +26,14 @@
               <span class="sr-only">Change photo</span>
             </Button>
           </div>
-          <div class="flex-1 space-y-4">
+          <div class="flex-1 space-y-4" v-if="user">
             <div class="grid grid-cols-1 sm:grid-cols-2 layout-card-gap">
               <ProfileField label="First name" :value="user.firstName" @update="user.firstName = $event" />
               <ProfileField label="Last name" :value="user.lastName" @update="user.lastName = $event" />
             </div>
             <ProfileField
               label="Biography"
-              :value="user.biography"
+              :value="user.biography || ''"
               multiline
               @update="user.biography = $event"
             />
@@ -43,7 +43,7 @@
     </Card>
 
     <!-- Stats -->
-    <div class="grid layout-standard-grid layout-section-gap">
+    <div class="grid layout-standard-grid layout-section-gap" v-if="user?.stats">
       <StatCard
         v-for="stat in user.stats"
         :key="stat.label"
@@ -58,40 +58,51 @@
       <CardHeader>
         <CardTitle>Contact Information</CardTitle>
       </CardHeader>
-      <CardContent class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
+      <CardContent class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6" v-if="user">
         <ProfileField
           label="Email"
-          :value="user.email"
+          :value="user.email || ''"
           type="email"
           @update="user.email = $event"
         />
         <ProfileField
           label="Phone"
-          :value="user.phone"
+          :value="user.phone || ''"
           type="tel"
           @update="user.phone = $event"
         />
-        <ProfileField label="Location" :value="user.location" @update="user.location = $event" />
-        <ProfileField label="Full address" :value="user.fullAddress" @update="user.fullAddress = $event" />
+        <ProfileField label="Location" :value="user.location || ''" @update="user.location = $event" />
+        <ProfileField label="Full address" :value="user.fullAddress || ''" @update="user.fullAddress = $event" />
       </CardContent>
     </Card>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import ProfileField from '@/components/shared/ProfileField.vue';
 import StatCard from '@/components/shared/StatCard.vue';
 import { Camera } from 'lucide-vue-next';
-import { mockUserProfile } from '@/mocks/profile.mock';
+import { useAuthStore } from '@/stores/auth.store';
 
-const user = ref(mockUserProfile);
+const authStore = useAuthStore();
+
+// Initialize auth store if needed
+onMounted(async () => {
+  if (!authStore.profile) {
+    await authStore.fetchProfile();
+  }
+});
+
+// Use profile from auth store
+const user = computed(() => authStore.profile);
 
 // Computed property for user initials
 const userInitials = computed(() => {
+  if (!user.value) return '';
   return `${user.value.firstName[0] || ''}${user.value.lastName[0] || ''}`.toUpperCase();
 });
 

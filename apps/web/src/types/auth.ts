@@ -3,7 +3,7 @@
  */
 
 import { UUID } from 'crypto'
-import type { User } from './user'
+import type { User } from './supabase'
 
 // Auth-specific types (for session management)
 export interface AuthUser extends Pick<User, 'id' | 'email' | 'firstName' | 'lastName'> {

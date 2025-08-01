@@ -4,7 +4,7 @@
 
 import { ref, computed } from 'vue'
 import { userService } from '@/services/user.service'
-import type { User } from '@/types/user'
+import type { User } from '@/types/supabase'
 import type { Session } from '@/types/auth'
 import type { NotificationSettings } from '@/types/notifications'
 

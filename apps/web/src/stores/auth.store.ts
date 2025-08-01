@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
-import type { User } from '@/types/user'
+import type { User } from '@/types/supabase'
 import type { LoginCredentials, RegisterCredentials } from '@/types/auth'
 import { supabase } from '@/lib/supabase'
 
@@ -63,21 +63,11 @@ export const useAuthStore = defineStore('auth', () => {
 
       if (data) {
         profile.value = {
-          id: data.id,
+          ...data,
+          email: user.value.email || '',
           firstName: data.first_name,
           lastName: data.last_name,
-          email: user.value.email || '',
-          role: data.role as 'admin' | 'user' | 'viewer',
-          avatar_url: data.avatar_url,
-          biography: data.biography,
-          phone: data.phone,
-          location: data.location,
           fullAddress: data.full_address,
-          created_by: data.created_by,
-          created_at: data.created_at,
-          updated_by: data.updated_by,
-          updated_at: data.updated_at,
-          version: data.version,
           stats: [] // TODO: Calculate stats from other tables later
         }
       }
@@ -172,11 +162,9 @@ export const useAuthStore = defineStore('auth', () => {
           first_name: updates.firstName,
           last_name: updates.lastName,
           biography: updates.biography,
-          phone: updates.phone,
           location: updates.location,
           full_address: updates.fullAddress,
           avatar_url: updates.avatar_url,
-          updated_by: user.value.id
         })
         .eq('id', user.value.id)
         .select()
