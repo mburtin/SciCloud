@@ -31,9 +31,9 @@ export const useAuthStore = defineStore('auth', () => {
       
       // Get current session using simplified auth service
       const result = await authService.getCurrentSession()
-      if (result.success) {
-        session.value = result.data?.session || null
-        user.value = result.data?.session?.user || null
+      if (result.success && result.data) {
+        session.value = result.data.session
+        user.value = result.data.session?.user || null
       }
 
       // Set up auth state change listener

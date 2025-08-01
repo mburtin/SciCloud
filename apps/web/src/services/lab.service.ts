@@ -60,7 +60,7 @@ export class LabService {
     //   .single()
     await new Promise(resolve => setTimeout(resolve, 100))
     
-    const consumable = mockConsumables.find(c => c.id === id)
+    const consumable = mockConsumables.find(c => c.id === id) as any
     if (consumable) {
       consumable.stock = newStock
     }

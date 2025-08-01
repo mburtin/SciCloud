@@ -81,22 +81,27 @@ export class ProjectsService {
     const projectIndex = mockProjects.findIndex(p => p.id === id)
     if (projectIndex === -1) throw new Error('Project not found')
     
+    // Filter out undefined values from updates
+    const filteredUpdates = Object.fromEntries(
+      Object.entries(updates).filter(([_, value]) => value !== undefined)
+    )
+    
     const updatedProject = { 
       ...mockProjects[projectIndex], 
-      ...updates, 
+      ...filteredUpdates, 
       updated_at: new Date().toISOString() 
     }
     
     // Update the mock data in place
-    mockProjects[projectIndex] = updatedProject
+    mockProjects[projectIndex] = updatedProject as any
     
-    return updatedProject
+    return updatedProject as any
   }
 
   /**
    * Delete project
    */
-  async deleteProject(): Promise<void> {
+  async deleteProject(id: string): Promise<void> {
     // TODO: Replace with Supabase call
     // const { error } = await supabase
     //   .from('projects')

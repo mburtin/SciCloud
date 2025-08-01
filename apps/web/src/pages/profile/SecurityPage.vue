@@ -168,7 +168,6 @@ const securitySettings = ref({
 // Get auth store for session info
 const authStore = useAuthStore();
 const currentSession = computed(() => authStore.session);
-const currentUser = computed(() => authStore.user);
 
 // --- Handlers ---
 const handlePasswordChange = () => {
@@ -187,37 +186,7 @@ const handlePasswordChange = () => {
 };
 
 // Format timestamp to readable string
-const formatLastActive = (timestamp?: number): string => {
-  if (!timestamp) return 'Unknown';
-  
-  const now = Date.now();
-  const diff = now - timestamp;
-  
-  // If it's within the last minute, show "Active now"
-  if (diff < 60 * 1000) {
-    return 'Active now';
-  }
-  
-  // Otherwise format as relative time
-  const minutes = Math.floor(diff / (60 * 1000));
-  const hours = Math.floor(diff / (60 * 60 * 1000));
-  const days = Math.floor(diff / (24 * 60 * 60 * 1000));
-  
-  if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
-  if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
-  return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
-};
 
-const terminateCurrentSession = async () => {
-  try {
-    console.log('Terminating current session');
-    await authStore.logout();
-    alert('Session terminated successfully. You will be redirected to login.');
-  } catch (error) {
-    console.error('Error terminating session:', error);
-    alert('Error terminating session.');
-  }
-};
 
 const saveAllSettings = () => {
   console.log('Saving security settings:', JSON.parse(JSON.stringify(securitySettings.value)));

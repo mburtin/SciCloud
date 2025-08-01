@@ -1,6 +1,3 @@
-import {
-  FolderOpen, AlertTriangle, Users, Clock, TrendingUp, BarChart, CheckCircle
-} from 'lucide-vue-next'
 import type { StatCard } from '@/types/ui'
 import type { RecentProject, Deadline } from '@/types/projects'
 
@@ -8,33 +5,33 @@ export const mockStatCards: StatCard[] = [
   {
     title: 'Active projects',
     value: '12',
-    icon: FolderOpen,
+    icon: 'folder-open',
     trendText: '+2 since last month',
-    trendIcon: TrendingUp,
+    trendIcon: 'trending-up',
     trendClass: 'text-green-500'
   },
   {
     title: 'Ongoing analyses',
     value: '247',
-    icon: AlertTriangle,
+    icon: 'alert-triangle',
     trendText: '34 completed this week',
-    trendIcon: BarChart,
+    trendIcon: 'bar-chart',
     trendClass: 'text-blue-500'
   },
   {
     title: 'Active team',
     value: '8',
-    icon: Users,
+    icon: 'users',
     trendText: 'All connected',
-    trendIcon: CheckCircle,
+    trendIcon: 'check-circle',
     trendClass: 'text-green-500'
   },
   {
     title: 'Deadlines',
     value: '3',
-    icon: Clock,
+    icon: 'clock',
     trendText: 'This week',
-    trendIcon: AlertTriangle,
+    trendIcon: 'alert-triangle',
     trendClass: 'text-orange-500'
   }
 ]

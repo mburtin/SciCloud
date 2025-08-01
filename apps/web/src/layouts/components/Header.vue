@@ -202,13 +202,12 @@ import { useRouter, useRoute } from 'vue-router'
 import { 
   TestTube, Search, Bell, User, Settings, LogOut,
   FolderOpen, UserPlus, AlertCircle, FileText, Info,
-  MoreHorizontal, CheckCircle, Clock
+  MoreHorizontal
 } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   DropdownMenu,
   DropdownMenuContent,

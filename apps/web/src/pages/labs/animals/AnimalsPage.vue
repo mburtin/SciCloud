@@ -540,7 +540,7 @@ const formatDate = (dateString: string) => {
 }
 
 const isNewAnimalDialogOpen = ref(false)
-const newAnimalForm = ref<Partial<Animal>>({})
+const newAnimalForm = ref<any>({})
 
 const resetNewAnimalForm = () => {
   newAnimalForm.value = {
@@ -549,7 +549,7 @@ const resetNewAnimalForm = () => {
     strain: '',
     age: 8,
     sex: 'male',
-    status: 'active',
+    status: 'alive',
     project: '',
     lastUpdated: new Date().toISOString(),
     healthMonitoring: false,
@@ -568,7 +568,7 @@ const handleCreateAnimal = () => {
 }
 
 const isEditDialogOpen = ref(false);
-const editingAnimal = ref<Animal | null>(null);
+const editingAnimal = ref<any>(null);
 
 const openEditAnimalDialog = (animal: Animal) => {
   editingAnimal.value = JSON.parse(JSON.stringify(animal));

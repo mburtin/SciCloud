@@ -9,16 +9,16 @@ import type { LoginCredentials, RegisterCredentials } from '@/types/auth'
 import type { User } from '@/types/supabase'
 import type { Session } from '@supabase/supabase-js'
 
-export interface AuthResult {
+export interface AuthResult<T = unknown> {
   success: boolean
-  data?: unknown
+  data?: T
   error?: string
 }
 
 /**
  * Get current session
  */
-export async function getCurrentSession(): Promise<AuthResult> {
+export async function getCurrentSession(): Promise<AuthResult<{ session: Session | null }>> {
   try {
     const { data, error } = await supabase.auth.getSession()
 

@@ -1,5 +1,7 @@
 import type { Project } from '@/types/projects'
 
+export type { Project }
+
 export const mockProjects: Project[] = [
   {
     id: '1',

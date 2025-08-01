@@ -16,7 +16,7 @@ export function useLab() {
 
   // Computed
   const availableInstruments = computed(() => 
-    instruments.value.filter(instrument => instrument.status === 'Available')
+    instruments.value.filter(instrument => instrument.status === 'available')
   )
 
   const lowStockConsumables = computed(() => 
@@ -24,7 +24,7 @@ export function useLab() {
   )
 
   const activeAnimals = computed(() => 
-    animals.value.filter(animal => animal.status === 'active')
+    animals.value.filter(animal => animal.status === 'alive')
   )
 
   // Methods

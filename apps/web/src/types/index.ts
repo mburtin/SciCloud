@@ -14,6 +14,3 @@ export * from './ui'
 export * from './supabase'
 export * from './notifications'
 export * from './documents'
-
-// Database types
-export * from './supabase'

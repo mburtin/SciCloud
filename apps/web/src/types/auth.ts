@@ -4,7 +4,7 @@
  */
 
 // Re-export Supabase types for convenience
-export type { User, Session } from '@supabase/supabase-js'
+export type { User as SupabaseAuthUser, Session } from '@supabase/supabase-js'
 
 // Form handling types
 

@@ -1,6 +1,4 @@
-import type { Consumable } from '@/types/lab'
-
-export const mockConsumables: Consumable[] = [
+export const mockConsumables = [
   {
     id: 'C001',
     reference: 'R-1234',
