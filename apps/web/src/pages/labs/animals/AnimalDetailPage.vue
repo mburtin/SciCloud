@@ -419,7 +419,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { toast } from 'vue-sonner'
 import { 
@@ -622,14 +622,14 @@ const handleSaveAnimal = (updatedAnimal: Animal) => {
 
 const handleAddMeasurement = (newMeasurement: Omit<Measurement, 'id'>) => {
   if (!animal.value) return
-  
+
   const measurementWithId = {
     ...newMeasurement,
     id: `meas-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
   }
-  
+
   const index = animalData.value.findIndex(a => a.id === animalId)
-  if (index > -1) {
+  if (index > -1 && animalData.value[index]) {
     animalData.value[index].measurements.unshift(measurementWithId)
     toast.success('Measurement successfully added')
   }
@@ -637,14 +637,14 @@ const handleAddMeasurement = (newMeasurement: Omit<Measurement, 'id'>) => {
 
 const handleAddMedicalRecord = (newRecord: Omit<MedicalRecord, 'id'>) => {
   if (!animal.value) return
-  
+
   const recordWithId = {
     ...newRecord,
     id: `med-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
   }
-  
+
   const index = animalData.value.findIndex(a => a.id === animalId)
-  if (index > -1) {
+  if (index > -1 && animalData.value[index]) {
     animalData.value[index].medicalHistory.unshift(recordWithId)
     animalData.value[index].lastExamDate = newRecord.date
     // Update health status based on severity
@@ -652,16 +652,16 @@ const handleAddMedicalRecord = (newRecord: Omit<MedicalRecord, 'id'>) => {
       newRecord.severity === 'severe' ? 'critical' :
       newRecord.severity === 'moderate' ? 'concerning' :
       newRecord.severity === 'minor' ? 'good' : 'excellent'
-    
+
     toast.success('Medical record successfully added')
   }
 }
 
 const handleAddDocuments = (newDocuments: AnimalDocument[]) => {
   if (!animal.value) return
-  
+
   const index = animalData.value.findIndex(a => a.id === animalId)
-  if (index > -1) {
+  if (index > -1 && animalData.value[index]) {
     animalData.value[index].documents.push(...newDocuments)
   }
 }

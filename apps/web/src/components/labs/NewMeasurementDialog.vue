@@ -274,14 +274,15 @@ const availableUnits = computed(() => {
   return commonUnits[formData.type] || []
 })
 
-const handleTypeChange = (type: Measurement['type']) => {
+const handleTypeChange = (type: unknown) => {
+  if (typeof type !== 'string' || !measurementTypes.some(t => t.value === type)) return // Ensure type is valid
   const selectedType = measurementTypes.find(t => t.value === type)
   formData.unit = selectedType?.defaultUnit || 'none'
   formData.value = ''
 }
 
-const formatDate = (dateString: string) => {
-  if (!dateString) return ''
+const formatDate = (dateString: string | undefined) => {
+  if (!dateString) return '' // Handle undefined case
   const date = new Date(dateString)
   return date.toLocaleDateString('en-US')
 }

@@ -4,7 +4,7 @@
 
 import { ref, computed } from 'vue'
 import { labService } from '@/services/lab.service'
-import type { Instrument, Consumable, Animal } from '@/types/lab'
+import type { Instrument, Consumable, Animal, StockLevel } from '@/types/lab'
 
 export function useLab() {
   // State
@@ -48,7 +48,15 @@ export function useLab() {
 
     try {
       const data = await labService.getConsumables()
-      consumables.value = data
+      consumables.value = data.map(item => ({
+        ...item,
+        stock: item.quantity, // Assuming `quantity` maps to `stock`
+        minStock: 0, // Default value, adjust as needed
+        created_by: '', // Default value, adjust as needed
+        updated_by: '', // Default value, adjust as needed
+        version: 1, // Default value, adjust as needed
+        stockLevel: item.stockLevel as StockLevel // Explicitly cast to `StockLevel`
+      }))
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to load consumables'
     } finally {
