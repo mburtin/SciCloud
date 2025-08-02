@@ -14,7 +14,7 @@
     "supabase:status": "cd apps/supabase && supabase status",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "type-check": "vue-tsc --noEmit"
+    "type-check": "pnpm --filter web type-check"
   },
   "keywords": [
     "scientific research",
