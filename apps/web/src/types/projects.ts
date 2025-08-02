@@ -24,25 +24,9 @@ export interface Project extends AuditableRecord {
   created_by: UUID
   tags?: string[]
   // Relations (optional for populated queries)
-  members?: ProjectMember[]
-  documents?: Documents[]
-  tasks?: Task[]
-  deadline: string
+  members?: User[]
   budget: number
-  isFavorite: boolean
   isArchived: boolean
-}
-
-// Project member entity
-export interface ProjectMember extends AuditableRecord {
-  id: UUID
-  project_id: UUID
-  user_id: UUID
-  role: ProjectMemberRole
-  joined_at: Timestamp
-  // Relations
-  user?: User
-  project?: Project
 }
 
 // Task entity
