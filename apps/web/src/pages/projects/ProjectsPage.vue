@@ -37,15 +37,14 @@
     <div v-else class="space-y-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
-          <Input
-            v-model="searchQuery" 
-            placeholder="Search projects..."
-            class="w-64"
-          >
-            <template #prefix>
-              <Search class="h-4 w-4" />
-            </template>
-          </Input>
+          <div class="relative">
+            <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              v-model="searchQuery" 
+              placeholder="Search projects..."
+              class="w-64 pl-10"
+            />
+          </div>
         </div>
         <Button v-if="pageInfo.showCreateButton" @click="handleNewProject">
           <Plus class="h-4 w-4 mr-2" />
