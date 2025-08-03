@@ -12,7 +12,25 @@
     <!-- General Information -->
     <Card>
       <CardHeader>
-        <CardTitle>General Information</CardTitle>
+        <div class="flex justify-between items-center">
+          <CardTitle>General Information</CardTitle>
+          <div class="flex gap-2">
+            <Button v-if="!isEditing" @click="startEditing" variant="outline" size="sm">
+              <Pencil class="h-4 w-4 mr-2" />
+              Edit
+            </Button>
+            <template v-else>
+              <Button @click="saveProfile" :disabled="isSaving" size="sm">
+                <Check class="h-4 w-4 mr-2" />
+                {{ isSaving ? 'Saving...' : 'Save' }}
+              </Button>
+              <Button @click="cancelEditing" variant="outline" size="sm">
+                <X class="h-4 w-4 mr-2" />
+                Cancel
+              </Button>
+            </template>
+          </div>
+        </div>
       </CardHeader>
       <CardContent class="space-y-6">
         <div class="flex flex-col sm:flex-row items-center gap-6">
@@ -28,14 +46,25 @@
           </div>
           <div class="flex-1 space-y-4" v-if="user">
             <div class="grid grid-cols-1 sm:grid-cols-2 layout-card-gap">
-              <ProfileField label="First name" :value="user.first_name" @update="user.first_name = $event" />
-              <ProfileField label="Last name" :value="user.last_name" @update="user.last_name = $event" />
+              <ProfileField 
+                label="First name" 
+                :value="isEditing ? (editedUser.first_name || '') : (user.first_name || '')" 
+                :is-editable="isEditing"
+                @update="editedUser.first_name = $event" 
+              />
+              <ProfileField 
+                label="Last name" 
+                :value="isEditing ? (editedUser.last_name || '') : (user.last_name || '')" 
+                :is-editable="isEditing"
+                @update="editedUser.last_name = $event" 
+              />
             </div>
             <ProfileField
               label="Biography"
-              :value="user.biography || ''"
+              :value="isEditing ? editedUser.biography || '' : user.biography || ''"
+              :is-editable="isEditing"
               multiline
-              @update="user.biography = $event"
+              @update="editedUser.biography = $event"
             />
           </div>
         </div>
@@ -63,33 +92,51 @@
         <ProfileField
           label="Email"
           :value="user.email || ''"
+          :is-editable="isEditing"
+          :is-disabled="true"
           type="email"
-          @update="user.email = $event"
         />
         <ProfileField
           label="Phone"
-          :value="user.phone || ''"
+          :value="isEditing ? editedUser.phone || '' : user.phone || ''"
+          :is-editable="isEditing"
           type="tel"
-          @update="user.phone = $event"
+          @update="editedUser.phone = $event"
         />
-        <ProfileField label="Location" :value="user.location || ''" @update="user.location = $event" />
-        <ProfileField label="Full address" :value="user.full_address || ''" @update="user.full_address = $event" />
+        <ProfileField 
+          label="Location" 
+          :value="isEditing ? editedUser.location || '' : user.location || ''" 
+          :is-editable="isEditing"
+          @update="editedUser.location = $event" 
+        />
+        <ProfileField 
+          label="Full address" 
+          :value="isEditing ? editedUser.full_address || '' : user.full_address || ''" 
+          :is-editable="isEditing"
+          @update="editedUser.full_address = $event" 
+        />
       </CardContent>
     </Card>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import ProfileField from '@/components/shared/ProfileField.vue';
 // import StatCard from '@/components/shared/StatCard.vue';
-import { Camera } from 'lucide-vue-next';
+import { Camera, Pencil, Check, X } from 'lucide-vue-next';
 import { useUserStore } from '@/stores/user.store';
+import type { User } from '@/types/supabase';
 
 const userStore = useUserStore();
+
+// Edit state
+const isEditing = ref(false);
+const isSaving = ref(false);
+const editedUser = ref<Partial<User>>({});
 
 // Initialize user profile
 onMounted(async () => {
@@ -105,7 +152,52 @@ const userInitials = computed(() => {
   return `${user.value.first_name[0] || ''}${user.value.last_name[0] || ''}`.toUpperCase();
 });
 
-// TODO: Implement edit functionality for profile fields
+// Edit functions
+const startEditing = () => {
+  if (!user.value) return;
+  
+  editedUser.value = {
+    first_name: user.value.first_name,
+    last_name: user.value.last_name,
+    biography: user.value.biography,
+    email: user.value.email,
+    phone: user.value.phone,
+    location: user.value.location,
+    full_address: user.value.full_address
+  };
+  isEditing.value = true;
+};
+
+const cancelEditing = () => {
+  isEditing.value = false;
+  editedUser.value = {};
+};
+
+const saveProfile = async () => {
+  if (!user.value || !editedUser.value) return;
+  
+  try {
+    isSaving.value = true;
+    
+    // Exclude email and phone from profile update as they're in auth.users table
+    const { email, phone, ...profileData } = editedUser.value;
+    
+    const result = await userStore.updateProfile(user.value.id, profileData);
+    
+    if (result.success) {
+      isEditing.value = false;
+      editedUser.value = {};
+    } else {
+      // Handle error - you might want to add a toast notification here
+      console.error('Failed to update profile:', result.error);
+    }
+  } catch (error) {
+    console.error('Error saving profile:', error);
+  } finally {
+    isSaving.value = false;
+  }
+};
+
 // TODO: Implement avatar upload functionality
 
 </script>
