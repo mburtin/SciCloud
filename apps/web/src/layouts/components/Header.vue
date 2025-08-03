@@ -38,13 +38,6 @@
             ]"
             @click="navigate"
           >
-            <component 
-              :is="module.icon" 
-              :class="[
-                'h-4 w-4 transition-transform duration-300',
-                isModuleActive(module) ? 'scale-110' : 'group-hover:scale-105'
-              ]" 
-            />
             <span class="font-medium">{{ module.label }}</span>
           </Button>
         </RouterLink>
