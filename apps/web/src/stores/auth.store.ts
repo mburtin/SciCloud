@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { User } from '@/types/supabase'
 import type { LoginCredentials, RegisterCredentials } from '@/types/auth'
 import * as authService from '@/services/auth.service'
 import type { Session, User as SupabaseUser } from '@supabase/supabase-js'
@@ -148,28 +147,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // Update user profile (needs proper User type conversion)
-  async function updateProfile(updates: Partial<User>) {
-    if (!user.value) {
-      return { success: false, error: 'Not authenticated' }
-    }
-
-    try {
-      // Note: This will need to be updated when profile management is implemented
-      // For now, just use the user ID from Supabase auth
-      const result = await authService.updateUserProfile(user.value.id, updates)
-      
-      if (!result.success) {
-        throw new Error(result.error)
-      }
-
-      return { success: true, data: result.data }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Profile update failed'
-      error.value = errorMessage
-      return { success: false, error: errorMessage }
-    }
-  }
   
   // Cleanup on store disposal
   function dispose() {
@@ -196,7 +173,6 @@ export const useAuthStore = defineStore('auth', () => {
     register,
     logout,
     logoutEverywhere,
-    updateProfile,
     dispose
   }
 })

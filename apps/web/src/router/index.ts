@@ -18,15 +18,18 @@ const ErrorPage = () => import('@/pages/ErrorPage.vue')
 
 // Authentication is now handled by the Pinia auth store.
 import { useAuthStore } from '@/stores/auth.store'
+import { useUserStore } from '@/stores/user.store'
 
 // Import route modules
 import { labRoutes } from './modules/lab.routes';
 import profileRoutes from './modules/profile.routes';
+import adminRoutes from './modules/admin.routes';
 
 // Route meta type extensions
 declare module 'vue-router' {
   interface RouteMeta {
     requiresAuth?: boolean
+    requiresAdmin?: boolean
     title?: string
   }
 }
@@ -118,6 +121,7 @@ const routes = [
       },
       ...labRoutes,
       ...profileRoutes,
+      ...adminRoutes,
 
     ]
   },
@@ -146,9 +150,11 @@ const router = createRouter({
 
 router.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore()
+  const userStore = useUserStore()
 
   // Check if the route requires authentication
   const requiresAuth = to.matched.some(record => record.meta?.requiresAuth !== false)
+  const requiresAdmin = to.matched.some(record => record.meta?.requiresAdmin === true)
 
   if (requiresAuth) {
     // Initialize auth if not already done
@@ -160,6 +166,26 @@ router.beforeEach(async (to, _from, next) => {
     if (!authStore.isAuthenticated) {
       next('/login')
       return
+    }
+
+    // Check admin permissions if required
+    if (requiresAdmin) {
+      try {
+        // Load current user profile if not already loaded
+        if (!userStore.currentUserProfile) {
+          await userStore.loadCurrentUserProfile()
+        }
+        
+        // Check if user has admin role
+        if (!userStore.currentUserProfile || userStore.currentUserProfile.role !== 'admin') {
+          next('/error/403')
+          return
+        }
+      } catch (error) {
+        console.error('Error checking admin permissions:', error)
+        next('/error/500')
+        return
+      }
     }
     
     next()

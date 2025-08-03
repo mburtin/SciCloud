@@ -1,89 +1,248 @@
-/**
- * User service - Handles user data operations
- * Now using Supabase for real data operations
- */
-
-import { ProfileService } from './profile.service'
-import { mockNotificationSettings } from '@/mocks/notification-settings.mock'
-import { requireAuth, createAuthResult } from '@/utils/auth.utils'
-import type { User } from '@/types/supabase'
-import type { NotificationSettings } from '@/types/notifications'
+import { supabase } from '@/lib/supabase'
+import type { User, ProfileUpdate, UserRole } from '@/types/supabase'
 
 export class UserService {
-  /**
-   * Get current user profile (unified method)
-   * Returns full profile or basic info subset
-   */
-  async getUserProfile(): Promise<User | null> {
-    try {
-      const user = await requireAuth()
-      return await ProfileService.getProfile(user.id)
-    } catch {
-      return null
-    }
-  }
 
-  /**
-   * Get current user basic info (for header, etc.)
-   * Legacy method - now uses getUserProfile internally
-   */
-  async getCurrentUser(): Promise<Pick<User, 'firstName' | 'lastName' | 'email'> & { avatar_url?: string }> {
-    const profile = await this.getUserProfile()
+    // Fetch user by ID using secure function with proper permissions
+    static async fetchUser(userId: string): Promise<User | null> {
+        try {
+            const { data, error } = await supabase
+                .rpc('get_user_profile', { user_id: userId })
+                .single()
+
+            if (error) {
+                console.error('Error fetching user profile:', error)
+                return null
+            }
+
+            return data as User
+        } catch (error) {
+            console.error('Unexpected error fetching user:', error)
+            return null
+        }
+    }
+
+    // Fetch all users using secure function (admin only)
+    static async fetchAllUsers(): Promise<User[]> {
+        try {
+            const { data, error } = await supabase
+                .rpc('get_all_user_profiles')
+
+            if (error) {
+                console.error('Error fetching all users:', error)
+                return []
+            }
+
+            return data || []
+        } catch (error) {
+            console.error('Unexpected error fetching all users:', error)
+            return []
+        }
+    }
+
+    // Create a new user using Edge Function (secure server-side creation)
+    static async createUser(userData: {
+        email: string
+        password: string
+        first_name: string
+        last_name: string
+        biography?: string
+        location?: string
+        full_address?: string
+        avatar_url?: string
+        role?: UserRole
+    }): Promise<{ success: boolean; data?: User; error?: string }> {
+        try {
+            // Call our secure Edge Function for user creation
+            const { data, error } = await supabase.functions.invoke('create-user', {
+                body: {
+                    email: userData.email,
+                    password: userData.password,
+                    first_name: userData.first_name,
+                    last_name: userData.last_name,
+                    biography: userData.biography,
+                    location: userData.location,
+                    full_address: userData.full_address,
+                    avatar_url: userData.avatar_url,
+                    role: userData.role
+                }
+            })
+
+            if (error) {
+                console.error('Failed to call user creation function:', error)
+                return { success: false, error: error.message || 'Failed to call user creation function' }
+            }
+
+            // Edge function returns { success, data?, error? }
+            if (!data?.success) {
+                return { success: false, error: data?.error || 'Unknown error from user creation function' }
+            }
+
+            // If successful, fetch the complete user data to ensure consistency
+            if (data.data?.id) {
+                const completeUser = await this.fetchUser(data.data.id)
+                if (completeUser) {
+                    return { success: true, data: completeUser }
+                }
+            }
+
+            // Fallback: return the data from Edge function if fetch fails
+            return { success: true, data: data.data as User }
+        } catch (error) {
+            console.error('Unexpected error in createUser:', error)
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+            return { success: false, error: errorMessage }
+        }
+    }
     
-    if (!profile) {
-      throw new Error('Profile not found')
+    // Delete user using Edge Function (secure server-side deletion)
+    static async deleteUser(userId: string): Promise<{ success: boolean; error?: string }> {
+        try {
+            // Call our secure Edge Function for user deletion
+            const { data, error } = await supabase.functions.invoke('delete-user', {
+                body: {
+                    userId: userId
+                }
+            })
+
+            if (error) {
+                console.error('Failed to call user deletion function:', error)
+                return { success: false, error: error.message || 'Failed to call user deletion function' }
+            }
+
+            // Edge function returns { success, error? }
+            if (!data?.success) {
+                return { success: false, error: data?.error || 'Unknown error from user deletion function' }
+            }
+            return { success: true }
+        } catch (error) {
+            console.error('Unexpected error in deleteUser:', error)
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+            return { success: false, error: errorMessage }
+        }
     }
 
-    return {
-      firstName: profile.firstName,
-      lastName: profile.lastName,
-      email: profile.email || '',
-      avatar_url: profile.avatar_url || undefined
+    // Update profile data (including role)
+    static async updateProfile(userId: string, profileData: Partial<ProfileUpdate>): Promise<{ success: boolean; data?: User; error?: string }> {
+        try {
+            // Remove undefined values
+            const cleanProfileData = Object.fromEntries(
+                Object.entries(profileData).filter(([_, value]) => value !== undefined)
+            ) as ProfileUpdate
+
+            // If updating role, use the admin RPC function for proper permissions
+            if (cleanProfileData.role !== undefined) {
+                const { error: roleError } = await supabase
+                    .rpc('admin_update_user_role', {
+                        target_user_id: userId,
+                        new_role: cleanProfileData.role
+                    })
+
+                if (roleError) {
+                    return { success: false, error: roleError.message }
+                }
+
+                // Remove role from profileData since it's already updated via RPC
+                const { role, ...profileDataWithoutRole } = cleanProfileData
+                
+                // Update remaining profile fields if any
+                if (Object.keys(profileDataWithoutRole).length > 0) {
+                    const { error } = await supabase
+                        .from('profiles')
+                        .update(profileDataWithoutRole)
+                        .eq('id', userId)
+
+                    if (error) {
+                        return { success: false, error: error.message }
+                    }
+                }
+            } else {
+                // No role update, just update profile fields
+                const { error } = await supabase
+                    .from('profiles')
+                    .update(cleanProfileData)
+                    .eq('id', userId)
+
+                if (error) {
+                    return { success: false, error: error.message }
+                }
+            }
+
+            // Fetch updated user data
+            const updatedUser = await this.fetchUser(userId)
+            if (!updatedUser) {
+                return { success: false, error: 'Profile updated but could not fetch updated data' }
+            }
+
+            return { success: true, data: updatedUser }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+            return { success: false, error: errorMessage }
+        }
     }
-  }
 
-  /**
-   * Update user profile
-   */
-  async updateProfile(updates: Partial<User>): Promise<{ success: boolean; data?: User; error?: string }> {
-    try {
-      const user = await requireAuth()
-      return await ProfileService.updateProfile(user.id, updates)
-    } catch (_error) {
-      const errorMessage = _error instanceof Error ? _error.message : 'Unknown error'
-      return createAuthResult(undefined, errorMessage)
+    // Update user email
+    static async updateUserEmail(userId: string, newEmail: string): Promise<{ success: boolean; error?: string }> {
+        try {
+            const { error } = await supabase.auth.admin.updateUserById(userId, {
+                email: newEmail
+            })
+
+            if (error) {
+                return { success: false, error: error.message }
+            }
+
+            return { success: true }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+            return { success: false, error: errorMessage }
+        }
     }
-  }
 
-  /**
-   * Get notification settings
-   */
-  async getNotificationSettings() {
-    // TODO: Replace with Supabase call
-    // const { data: { user } } = await supabase.auth.getUser()
-    // const { data, error } = await supabase
-    //   .from('notification_settings')
-    //   .select('*')
-    //   .eq('user_id', user.id)
-    //   .single()
-    await new Promise(resolve => setTimeout(resolve, 100))
-    return mockNotificationSettings
-  }
+    // Update user password
+    static async updateUserPassword(userId: string, newPassword: string): Promise<{ success: boolean; error?: string }> {
+        try {
+            const { error } = await supabase.auth.admin.updateUserById(userId, {
+                password: newPassword
+            })
 
-  /**
-   * Update notification settings
-   */
-  async updateNotificationSettings(settings: NotificationSettings) {
-    // TODO: Replace with Supabase call
-    // const { data: { user } } = await supabase.auth.getUser()
-    // const { data, error } = await supabase
-    //   .from('notification_settings')
-    //   .upsert({ ...settings, user_id: user.id })
-    //   .select()
-    //   .single()
-    await new Promise(resolve => setTimeout(resolve, 150))
-    return { ...mockNotificationSettings, ...settings }
-  }
+            if (error) {
+                return { success: false, error: error.message }
+            }
+
+            return { success: true }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+            return { success: false, error: errorMessage }
+        }
+    }
+
+    // Search user ID by first name or last name (profiles table only)
+    static async searchUserID(query: string): Promise<string | null> {
+        try {
+            if (!query.trim()) {
+                return null
+            }
+
+            const searchTerm = query.trim().toLowerCase()
+
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('id')
+                .or(`first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%`)
+                .limit(1)
+                .single()
+
+            if (error) {
+                console.error('Error searching user ID:', error)
+                return null
+            }
+
+            return data?.id || null
+        } catch (error) {
+            console.error('Unexpected error searching user ID:', error)
+            return null
+        }
+    }
+
 }
-
-export const userService = new UserService()

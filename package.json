@@ -4,7 +4,7 @@
   "type": "module",
   "description": "SciCloud - Cloud services for scientific research",
   "scripts": {
-    "dev": "concurrently \"pnpm supabase:start\" \"pnpm web:dev\"",
+    "dev": "concurrently \"pnpm supabase:start\" \"pnpm supabase:functions\" \"pnpm web:dev\"",
     "web:dev": "pnpm --filter web dev",
     "web:build": "pnpm --filter web build",
     "web:preview": "pnpm --filter web preview",
@@ -12,6 +12,7 @@
     "supabase:start": "cd apps/supabase && supabase start",
     "supabase:stop": "cd apps/supabase && supabase stop",
     "supabase:status": "cd apps/supabase && supabase status",
+    "supabase:functions": "sleep 5 && cd apps/supabase && supabase functions serve --no-verify-jwt",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "type-check": "pnpm --filter web type-check"

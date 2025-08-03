@@ -39,14 +39,23 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { Badge } from '@/components/ui/badge'
 import {
-  LayoutDashboard, Folder, Star, Archive, Lock, Calendar, FileText, Eye, Book, Microscope, Package, Activity, User, Bell
+  LayoutDashboard, Folder, Star, Archive, Lock, Calendar, FileText, Eye, Book, Microscope, Package, Activity, User, Bell, Users
 } from 'lucide-vue-next'
+import { useUserStore } from '@/stores/user.store'
 
 const route = useRoute()
+const userStore = useUserStore()
+
+// Load user profile on mount to check role
+onMounted(async () => {
+  if (!userStore.currentUserProfile) {
+    await userStore.loadCurrentUserProfile()
+  }
+})
 
 // Interface for sidebar items
 interface SidebarItem {
@@ -89,6 +98,13 @@ const labSection: SidebarSection = {
   ]
 };
 
+const adminSection: SidebarSection = {
+  title: 'Administration',
+  items: [
+    { id: 'members', label: 'Members', icon: Users, to: '/admin/settings' }
+  ]
+};
+
 // Sidebar sections based on the active module
 const sidebarSections = computed<SidebarSection[]>(() => {
   const path = route.path;
@@ -108,6 +124,9 @@ const sidebarSections = computed<SidebarSection[]>(() => {
   }
 
   // Main sections - order is important, from most specific to least
+  if (path.startsWith('/admin')) {
+    return [adminSection];
+  }
   if (path.startsWith('/projects')) {
     return [myProjectsSection];
   }

@@ -182,7 +182,7 @@
             <DropdownMenuItem @click="() => router.push('/profile')">
               <User class="h-4 w-4 mr-2" /> Profile
             </DropdownMenuItem>
-            <DropdownMenuItem @click="() => router.push('/settings')">
+            <DropdownMenuItem v-if="userStore.currentUserProfile?.role === 'admin'" @click="() => router.push('/admin/settings')">
               <Settings class="h-4 w-4 mr-2" /> Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -218,13 +218,13 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useAuthStore } from '@/stores/auth.store'
 import { useNavigation } from '@/composables/useNavigation'
-import { useUser } from '@/composables/useUser'
+import { useUserStore } from '@/stores/user.store'
 import type { NavigationModule } from '@/types/ui'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
-const { userProfile, fetchUserProfile } = useUser()
+const userStore = useUserStore()
 
 // Use composables
 const { 
@@ -242,15 +242,15 @@ const notificationsOpen = ref(false)
 
 // Computed - Use userProfile from useUser composable
 const user = computed(() => ({
-  name: userProfile.value ? `${userProfile.value.firstName} ${userProfile.value.lastName}` : '',
-  email: userProfile.value?.email || '',
-  avatar: userProfile.value?.avatar_url || ''
+  name: userStore.currentUserProfile ? `${userStore.currentUserProfile.first_name} ${userStore.currentUserProfile.last_name}` : '',
+  email: userStore.currentUserProfile?.email || '',
+  avatar: userStore.currentUserProfile?.avatar_url || ''
 }))
 
 const userInitials = computed(() => {
-  if (!userProfile.value) return ''
-  const firstName = userProfile.value.firstName || ''
-  const lastName = userProfile.value.lastName || ''
+  if (!userStore.currentUserProfile) return ''
+  const firstName = userStore.currentUserProfile.first_name || ''
+  const lastName = userStore.currentUserProfile.last_name || ''
   return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
 })
 
@@ -318,8 +318,8 @@ const truncateMessage = (message: string, maxLength: number) => {
 
 // Initialize user profile on mount
 onMounted(async () => {
-  if (!userProfile.value) {
-    await fetchUserProfile()
+  if (!userStore.currentUserProfile) {
+    await userStore.loadCurrentUserProfile()
   }
 })
 </script>

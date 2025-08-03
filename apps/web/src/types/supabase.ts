@@ -15,7 +15,7 @@ export interface Database {
           location: string
           full_address: string
           avatar_url: string | null
-          role: 'admin' | 'user' | 'viewer'
+          role: 'admin' | 'user'
         }
         Insert: {
           id: string
@@ -25,7 +25,7 @@ export interface Database {
           location?: string
           full_address?: string
           avatar_url?: string | null
-          role?: 'admin' | 'user' | 'viewer'
+          role?: 'admin' | 'user'
         }
         Update: {
           id?: string
@@ -35,7 +35,7 @@ export interface Database {
           location?: string
           full_address?: string
           avatar_url?: string | null
-          role?: 'admin' | 'user' | 'viewer'
+          role?: 'admin' | 'user'
         }
       }
     }
@@ -53,7 +53,7 @@ export interface Database {
           location: string
           full_address: string
           avatar_url: string | null
-          role: 'admin' | 'user' | 'viewer'
+          role: 'admin' | 'user'
         }
       }
     }
@@ -63,25 +63,13 @@ export interface Database {
   }
 }
 
-// Type helpers for better usability
-export type UserRole = Database['public']['Tables']['profiles']['Row']['role']
-export type UserInsert = Database['public']['Tables']['profiles']['Insert']
-export type UserUpdate = Database['public']['Tables']['profiles']['Update']
+// Unified User type based on user_profiles view (combines auth.users + profiles)
+export type User = Database['public']['Views']['user_profiles']['Row']
 
-// Combined user_profiles view (raw data from SQL)
-export type UserProfileView = Database['public']['Views']['user_profiles']['Row']
+// Profile-specific types (for direct profile table operations)
+export type Profile = Database['public']['Tables']['profiles']['Row']
+export type ProfileInsert = Database['public']['Tables']['profiles']['Insert']
+export type ProfileUpdate = Database['public']['Tables']['profiles']['Update']
 
-// Main User type based on combined view with camelCase mapping
-export type User = UserProfileView & {
-  firstName: string
-  lastName: string
-  fullAddress: string
-  stats: UserStat[]
-}
-
-// User statistics interface (from previous user.ts)
-export interface UserStat {
-  label: string
-  value: number
-  icon: string
-}
+// User role type
+export type UserRole = 'admin' | 'user'

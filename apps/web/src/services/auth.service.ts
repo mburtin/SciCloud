@@ -6,7 +6,6 @@
 
 import { supabase } from '@/lib/supabase'
 import type { LoginCredentials, RegisterCredentials } from '@/types/auth'
-import type { User } from '@/types/supabase'
 import type { Session } from '@supabase/supabase-js'
 
 export interface AuthResult<T = unknown> {
@@ -146,32 +145,3 @@ export async function signOutEverywhere(): Promise<AuthResult> {
   }
 }
 
-/**
- * Update user profile in database
- */
-export async function updateUserProfile(userId: string, updates: Partial<User>): Promise<AuthResult> {
-  try {
-    const { data, error } = await supabase
-      .from('profiles')
-      .update({
-        first_name: updates.firstName,
-        last_name: updates.lastName,
-        biography: updates.biography,
-        location: updates.location,
-        full_address: updates.fullAddress,
-        avatar_url: updates.avatar_url,
-      })
-      .eq('id', userId)
-      .select()
-      .single()
-
-    if (error) {
-      return { success: false, error: error.message }
-    }
-
-    return { success: true, data }
-  } catch (err) {
-    const error = err instanceof Error ? err.message : 'Unknown error'
-    return { success: false, error }
-  }
-}
