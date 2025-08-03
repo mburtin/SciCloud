@@ -2,10 +2,12 @@
 import { provide } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.store'
-import { Toaster } from 'vue-sonner'
+import { useNotification } from '@/composables/useNotification'
+import NotificationDialog from '@/components/ui/notification/NotificationDialog.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const { notificationState, hideNotification } = useNotification()
 
 provide('router', router)
 provide('authStore', authStore)
@@ -14,7 +16,15 @@ provide('authStore', authStore)
 <template>
   <div class="min-h-screen bg-background font-sans antialiased">
     <router-view />
-    <Toaster />
+    
+    <!-- Global notification dialog -->
+    <NotificationDialog
+      :open="notificationState.open"
+      :title="notificationState.title"
+      :message="notificationState.message"
+      :variant="notificationState.variant"
+      @close="hideNotification"
+    />
   </div>
 </template>
 

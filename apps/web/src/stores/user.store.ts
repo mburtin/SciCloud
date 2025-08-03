@@ -143,13 +143,13 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  // Update user email
-  async function updateEmail(userId: string, newEmail: string): Promise<{ success: boolean; error?: string }> {
+  // Update current user's email
+  async function updateEmail(newEmail: string): Promise<{ success: boolean; error?: string }> {
     try {
       loading.value = true
       error.value = null
 
-      const result = await UserService.updateUserEmail(userId, newEmail)
+      const result = await UserService.updateEmail(newEmail)
 
       if (!result.success && result.error) {
         error.value = result.error
@@ -165,13 +165,13 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  // Update user password
-  async function updatePassword(userId: string, newPassword: string): Promise<{ success: boolean; error?: string }> {
+  // Update current user's password
+  async function updatePassword(currentPassword: string, newPassword: string, userEmail: string): Promise<{ success: boolean; error?: string }> {
     try {
       loading.value = true
       error.value = null
 
-      const result = await UserService.updateUserPassword(userId, newPassword)
+      const result = await UserService.updatePassword(currentPassword, newPassword, userEmail)
 
       if (!result.success && result.error) {
         error.value = result.error

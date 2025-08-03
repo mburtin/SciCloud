@@ -181,11 +181,42 @@ export class UserService {
         }
     }
 
-    // Update user email
-    static async updateUserEmail(userId: string, newEmail: string): Promise<{ success: boolean; error?: string }> {
+    // Verify current password by attempting to sign in
+    static async verifyCurrentPassword(email: string, currentPassword: string): Promise<{ success: boolean; error?: string }> {
         try {
-            const { error } = await supabase.auth.admin.updateUserById(userId, {
-                email: newEmail
+            // Sign in with current credentials to verify password
+            const { error } = await supabase.auth.signInWithPassword({
+                email,
+                password: currentPassword
+            })
+
+            if (error) {
+                return { success: false, error: 'Current password is incorrect' }
+            }
+
+            return { success: true }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Failed to verify password'
+            return { success: false, error: errorMessage }
+        }
+    }
+
+    // Update current user's password (self-service)
+    static async updatePassword(currentPassword: string, newPassword: string, userEmail: string): Promise<{ success: boolean; error?: string }> {
+        try {
+            // First verify the current password
+            const verifyResult = await this.verifyCurrentPassword(userEmail, currentPassword)
+            if (!verifyResult.success) {
+                return verifyResult
+            }
+
+            // Check if new password is different from current
+            if (currentPassword === newPassword) {
+                return { success: false, error: 'New password must be different from your current password' }
+            }
+
+            const { error } = await supabase.auth.updateUser({
+                password: newPassword
             })
 
             if (error) {
@@ -199,11 +230,11 @@ export class UserService {
         }
     }
 
-    // Update user password
-    static async updateUserPassword(userId: string, newPassword: string): Promise<{ success: boolean; error?: string }> {
+    // Update current user's email (self-service)
+    static async updateEmail(newEmail: string): Promise<{ success: boolean; error?: string }> {
         try {
-            const { error } = await supabase.auth.admin.updateUserById(userId, {
-                password: newPassword
+            const { error } = await supabase.auth.updateUser({
+                email: newEmail
             })
 
             if (error) {

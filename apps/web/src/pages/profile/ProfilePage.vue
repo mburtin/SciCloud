@@ -160,8 +160,6 @@ const startEditing = () => {
     first_name: user.value.first_name,
     last_name: user.value.last_name,
     biography: user.value.biography,
-    email: user.value.email,
-    phone: user.value.phone,
     location: user.value.location,
     full_address: user.value.full_address
   };

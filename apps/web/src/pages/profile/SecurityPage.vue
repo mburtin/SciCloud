@@ -10,37 +10,131 @@
         </p>
       </div>
       <Button @click="saveAllSettings">
-        Save Changes
+        Save Settings
       </Button>
     </div>
 
-    <!-- Password Change -->
-    <Card>
-      <CardHeader>
-        <CardTitle class="flex items-center gap-2">
-          <Key class="h-5 w-5" /> Change Password
-        </CardTitle>
-      </CardHeader>
-      <CardContent class="space-y-4">
-        <div class="space-y-2">
-          <Label for="current-password">Current Password</Label>
-          <Input id="current-password" v-model="passwordForm.current" type="password" />
-        </div>
-        <div class="space-y-2">
-          <Label for="new-password">New Password</Label>
-          <Input id="new-password" v-model="passwordForm.new" type="password" />
-        </div>
-        <div class="space-y-2">
-          <Label for="confirm-password">Confirm New Password</Label>
-          <Input id="confirm-password" v-model="passwordForm.confirm" type="password" />
-        </div>
-      </CardContent>
-      <CardFooter>
-        <Button @click="handlePasswordChange">
-          Update Password
-        </Button>
-      </CardFooter>
-    </Card>
+    <!-- Password and Email Change -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 layout-section-gap">
+      <!-- Password Change -->
+      <Card>
+        <CardHeader>
+          <CardTitle class="flex items-center gap-2">
+            <Key class="h-5 w-5" /> Change Password
+          </CardTitle>
+        </CardHeader>
+        <CardContent class="space-y-4">
+          <div class="space-y-2">
+            <Label for="current-password">Current Password</Label>
+            <Input 
+              id="current-password" 
+              v-model="passwordForm.current" 
+              type="password"
+              :class="{ 'border-red-500': passwordForm.current.length > 0 && !passwordValidation.currentNotEmpty }"
+            />
+          </div>
+          <div class="space-y-2">
+            <Label for="new-password">New Password</Label>
+            <Input 
+              id="new-password" 
+              v-model="passwordForm.new" 
+              type="password"
+              :class="{ 
+                'border-red-500': passwordMessages.newPassword.error,
+                'border-green-500': passwordMessages.newPassword.success && passwordForm.new.length > 0
+              }"
+            />
+            <p v-if="passwordMessages.newPassword.error" class="text-sm text-red-500">
+              {{ passwordMessages.newPassword.error }}
+            </p>
+            <p v-if="passwordMessages.newPassword.success && !passwordMessages.newPassword.error" class="text-sm text-green-600">
+              {{ passwordMessages.newPassword.success }}
+            </p>
+          </div>
+          <div class="space-y-2">
+            <Label for="confirm-password">Confirm New Password</Label>
+            <Input 
+              id="confirm-password" 
+              v-model="passwordForm.confirm" 
+              type="password"
+              :class="{ 
+                'border-red-500': passwordMessages.confirmPassword.error,
+                'border-green-500': passwordMessages.confirmPassword.success && passwordForm.confirm.length > 0
+              }"
+            />
+            <p v-if="passwordMessages.confirmPassword.error" class="text-sm text-red-500">
+              {{ passwordMessages.confirmPassword.error }}
+            </p>
+            <p v-if="passwordMessages.confirmPassword.success && !passwordMessages.confirmPassword.error" class="text-sm text-green-600">
+              {{ passwordMessages.confirmPassword.success }}
+            </p>
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Button 
+            @click="handlePasswordChange" 
+            :disabled="isUpdatingPassword || !passwordValidation.currentNotEmpty || !passwordValidation.newMinLength || !passwordValidation.passwordsMatch || !passwordValidation.newDifferentFromCurrent"
+          >
+            {{ isUpdatingPassword ? 'Updating...' : 'Update Password' }}
+          </Button>
+        </CardFooter>
+      </Card>
+
+      <!-- Email Change -->
+      <Card>
+        <CardHeader>
+          <CardTitle class="flex items-center gap-2">
+            <Mail class="h-5 w-5" /> Change Email
+          </CardTitle>
+        </CardHeader>
+        <CardContent class="space-y-4">
+          <div class="space-y-2">
+            <Label for="new-email">New Email</Label>
+            <Input 
+              id="new-email" 
+              v-model="emailForm.new" 
+              type="email"
+              :class="{ 
+                'border-red-500': emailMessages.newEmail.error,
+                'border-green-500': emailMessages.newEmail.success && emailForm.new.length > 0
+              }"
+            />
+            <p v-if="emailMessages.newEmail.error" class="text-sm text-red-500">
+              {{ emailMessages.newEmail.error }}
+            </p>
+            <p v-if="emailMessages.newEmail.success && !emailMessages.newEmail.error" class="text-sm text-green-600">
+              {{ emailMessages.newEmail.success }}
+            </p>
+          </div>
+          <div class="space-y-2">
+            <Label for="confirm-email">Confirm New Email</Label>
+            <Input 
+              id="confirm-email" 
+              v-model="emailForm.confirm" 
+              type="email"
+              :class="{ 
+                'border-red-500': emailMessages.confirmEmail.error,
+                'border-green-500': emailMessages.confirmEmail.success && emailForm.confirm.length > 0
+              }"
+            />
+            <p v-if="emailMessages.confirmEmail.error" class="text-sm text-red-500">
+              {{ emailMessages.confirmEmail.error }}
+            </p>
+            <p v-if="emailMessages.confirmEmail.success && !emailMessages.confirmEmail.error" class="text-sm text-green-600">
+              {{ emailMessages.confirmEmail.success }}
+            </p>
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Button 
+            @click="handleEmailChange" 
+            :disabled="isUpdatingEmail || !emailValidation.newValidFormat || !emailValidation.emailsMatch"
+          >
+            {{ isUpdatingEmail ? 'Updating...' : 'Update Email' }}
+          </Button>
+        </CardFooter>
+      </Card>
+    </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 layout-section-gap">
       <!-- 2FA and Security Settings -->
@@ -148,8 +242,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Key, Fingerprint, Shield, Monitor } from 'lucide-vue-next';
+import { Key, Fingerprint, Shield, Monitor, Mail } from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/auth.store';
+import { useUserStore } from '@/stores/user.store';
+import { useNotification } from '@/composables/useNotification';
 
 // State for password change form
 const passwordForm = ref({
@@ -158,6 +254,75 @@ const passwordForm = ref({
   confirm: ''
 });
 
+// State for email change form
+const emailForm = ref({
+  new: '',
+  confirm: ''
+});
+
+// Loading states
+const isUpdatingPassword = ref(false);
+const isUpdatingEmail = ref(false);
+
+// Password validation computed properties
+const passwordValidation = computed(() => {
+  const form = passwordForm.value;
+  return {
+    currentNotEmpty: form.current.length > 0,
+    newNotEmpty: form.new.length > 0,
+    newMinLength: form.new.length >= 6,
+    passwordsMatch: form.new === form.confirm && form.new.length > 0,
+    confirmNotEmpty: form.confirm.length > 0,
+    newDifferentFromCurrent: form.current !== form.new || form.current.length === 0
+  };
+});
+
+// Email validation computed properties
+const emailValidation = computed(() => {
+  const form = emailForm.value;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return {
+    newNotEmpty: form.new.length > 0,
+    newValidFormat: emailRegex.test(form.new),
+    emailsMatch: form.new === form.confirm && form.new.length > 0,
+    confirmNotEmpty: form.confirm.length > 0
+  };
+});
+
+// Password validation messages
+const passwordMessages = computed(() => ({
+  newPassword: {
+    error: passwordValidation.value.newNotEmpty && !passwordValidation.value.newMinLength 
+      ? 'Password must be at least 6 characters long' 
+      : passwordValidation.value.newNotEmpty && !passwordValidation.value.newDifferentFromCurrent
+      ? 'New password must be different from current password'
+      : '',
+    success: passwordValidation.value.newMinLength && passwordValidation.value.newDifferentFromCurrent ? 'Valid password' : ''
+  },
+  confirmPassword: {
+    error: passwordValidation.value.confirmNotEmpty && !passwordValidation.value.passwordsMatch 
+      ? 'Passwords do not match' 
+      : '',
+    success: passwordValidation.value.passwordsMatch ? 'Passwords match' : ''
+  }
+}));
+
+// Email validation messages  
+const emailMessages = computed(() => ({
+  newEmail: {
+    error: emailValidation.value.newNotEmpty && !emailValidation.value.newValidFormat 
+      ? 'Please enter a valid email address' 
+      : '',
+    success: emailValidation.value.newValidFormat ? 'Valid email format' : ''
+  },
+  confirmEmail: {
+    error: emailValidation.value.confirmNotEmpty && !emailValidation.value.emailsMatch 
+      ? 'Emails do not match' 
+      : '',
+    success: emailValidation.value.emailsMatch ? 'Emails match' : ''
+  }
+}));
+
 // State for other security settings
 const securitySettings = ref({
   twoFactorEnabled: false,
@@ -165,24 +330,102 @@ const securitySettings = ref({
   loginNotifications: true,
 });
 
-// Get auth store for session info
+// Get stores
 const authStore = useAuthStore();
+const userStore = useUserStore();
+const notification = useNotification();
+
 const currentSession = computed(() => authStore.session);
+const currentUser = computed(() => authStore.user);
 
 // --- Handlers ---
-const handlePasswordChange = () => {
-  if (passwordForm.value.new !== passwordForm.value.confirm) {
-    alert('New passwords do not match.');
+const handlePasswordChange = async () => {
+  // Use real-time validation instead of manual checks
+  const validation = passwordValidation.value;
+  
+  if (!validation.currentNotEmpty) {
+    notification.error('Current Password Required', 'Please enter your current password.');
     return;
   }
-  if (!passwordForm.value.new) {
-    alert('New password cannot be empty.');
+  if (!validation.newNotEmpty) {
+    notification.error('New Password Required', 'Please enter a new password.');
     return;
   }
-  console.log('Changing password...', JSON.parse(JSON.stringify(passwordForm.value)));
-  alert('Password change request sent!');
-  // Reset form
-  passwordForm.value = { current: '', new: '', confirm: '' };
+  if (!validation.newMinLength) {
+    notification.error('Password Too Short', 'Password must be at least 6 characters long.');
+    return;
+  }
+  if (!validation.newDifferentFromCurrent) {
+    notification.warning('Same Password', 'New password must be different from your current password.');
+    return;
+  }
+  if (!validation.passwordsMatch) {
+    notification.error('Passwords Don\'t Match', 'New passwords do not match.');
+    return;
+  }
+
+  if (!currentUser.value?.email) {
+    notification.error('User Error', 'User email not found.');
+    return;
+  }
+
+  isUpdatingPassword.value = true;
+  
+  try {
+    const result = await userStore.updatePassword(
+      passwordForm.value.current, 
+      passwordForm.value.new, 
+      currentUser.value.email
+    );
+    
+    if (result.success) {
+      notification.success('Success!', 'Your password has been updated successfully.');
+      // Reset form
+      passwordForm.value = { current: '', new: '', confirm: '' };
+    } else {
+      notification.error('Update Failed', result.error || 'Failed to update password.');
+    }
+  } catch (error) {
+    notification.error('Unexpected Error', 'An unexpected error occurred. Please try again.');
+  } finally {
+    isUpdatingPassword.value = false;
+  }
+};
+
+const handleEmailChange = async () => {
+  // Use real-time validation instead of manual checks
+  const validation = emailValidation.value;
+  
+  if (!validation.newNotEmpty) {
+    notification.error('Email Required', 'Please enter a new email address.');
+    return;
+  }
+  if (!validation.newValidFormat) {
+    notification.error('Invalid Email', 'Please enter a valid email address.');
+    return;
+  }
+  if (!validation.emailsMatch) {
+    notification.error('Emails Don\'t Match', 'Email addresses do not match.');
+    return;
+  }
+
+  isUpdatingEmail.value = true;
+  
+  try {
+    const result = await userStore.updateEmail(emailForm.value.new);
+    
+    if (result.success) {
+      notification.success('Email Updated!', 'Please check your new email for confirmation.');
+      // Reset form
+      emailForm.value = { new: '', confirm: '' };
+    } else {
+      notification.error('Update Failed', result.error || 'Failed to update email.');
+    }
+  } catch (error) {
+    notification.error('Unexpected Error', 'An unexpected error occurred. Please try again.');
+  } finally {
+    isUpdatingEmail.value = false;
+  }
 };
 
 // Format timestamp to readable string
