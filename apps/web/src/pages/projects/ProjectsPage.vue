@@ -187,7 +187,7 @@
               >
                 <TableCell>
                   <div class="flex items-center gap-3">
-                    <Star v-if="project.isFavorite" class="h-4 w-4 text-yellow-500 fill-current" />
+                    <Star v-if="project.is_favorite" class="h-4 w-4 text-yellow-500 fill-current" />
                     <div>
                       <div class="font-medium">
                         {{ project.name }}
@@ -212,7 +212,7 @@
                 <TableCell>
                   <div class="flex items-center gap-2">
                     <Calendar class="h-4 w-4 text-muted-foreground" />
-                    <span>{{ formatDate(project.deadline) }}</span>
+                    <span>{{ formatDate((project as any).deadline || project.created_at) }}</span>
                   </div>
                 </TableCell>
                 <TableCell>
@@ -235,10 +235,10 @@
                         View Details
                       </DropdownMenuItem>
                       <DropdownMenuItem @click.stop="handleProjectAction('favorite', project.id)">
-                        {{ project.isFavorite ? 'Remove from favorites' : 'Add to favorites' }}
+                        {{ project.is_favorite ? 'Remove from favorites' : 'Add to favorites' }}
                       </DropdownMenuItem>
                       <DropdownMenuItem @click.stop="handleProjectAction('archive', project.id)">
-                        {{ project.isArchived ? 'Restore' : 'Archive' }}
+                        {{ project.status === 'archived' ? 'Restore' : 'Archive' }}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -249,6 +249,90 @@
         </CardContent>
       </Card>
     </div>
+
+    <!-- New Project Dialog -->
+    <Dialog v-model:open="showNewProjectDialog">
+      <DialogContent class="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Create New Project</DialogTitle>
+          <DialogDescription>
+            Create a new project to start organizing your work.
+          </DialogDescription>
+        </DialogHeader>
+        <div class="grid gap-4 py-4">
+          <div class="grid gap-2">
+            <Label for="name">Project Name *</Label>
+            <Input
+              id="name"
+              v-model="newProjectForm.name"
+              placeholder="Enter project name"
+              :disabled="isCreatingProject"
+            />
+          </div>
+          <div class="grid gap-2">
+            <Label for="category">Category *</Label>
+            <Input
+              id="category"
+              v-model="newProjectForm.category"
+              placeholder="e.g., Research, Development, Analysis"
+              :disabled="isCreatingProject"
+            />
+          </div>
+          <div class="grid gap-2">
+            <Label for="description">Description</Label>
+            <Textarea
+              id="description"
+              v-model="newProjectForm.description"
+              placeholder="Optional project description"
+              :disabled="isCreatingProject"
+            />
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="grid gap-2">
+              <Label for="priority">Priority</Label>
+              <Select v-model="newProjectForm.priority" :disabled="isCreatingProject">
+                <SelectTrigger>
+                  <SelectValue placeholder="Select priority" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div class="grid gap-2">
+              <Label for="budget">Budget ($)</Label>
+              <Input
+                id="budget"
+                v-model.number="newProjectForm.budget"
+                type="number"
+                min="0"
+                step="100"
+                placeholder="0"
+                :disabled="isCreatingProject"
+              />
+            </div>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button 
+            variant="outline" 
+            @click="showNewProjectDialog = false"
+            :disabled="isCreatingProject"
+          >
+            Cancel
+          </Button>
+          <Button 
+            @click="handleCreateProject"
+            :disabled="isCreatingProject || !newProjectForm.name.trim() || !newProjectForm.category.trim()"
+          >
+            <Plus v-if="!isCreatingProject" class="h-4 w-4 mr-2" />
+            {{ isCreatingProject ? 'Creating...' : 'Create Project' }}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
 
@@ -276,25 +360,59 @@ import {
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
 import { Progress } from '@/components/ui/progress';
-import { useProjects } from '@/composables/useProjects'
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { useProjectsStore } from '@/stores/projects.store'
+import { storeToRefs } from 'pinia'
+import { supabase } from '@/lib/supabase'
 
 // Reactive state
 const router = useRouter();
 const route = useRoute();
 const searchQuery = ref('');
 
-// Use projects composable
-const {
-  projects,
-  isLoading,
-  error,
-  fetchProjects,
-  toggleFavorite,
-  toggleArchive,
-  getStatusLabel,
-  getStatusVariant,
-  getFilteredProjects
-} = useProjects()
+// Use projects store
+const projectsStore = useProjectsStore()
+const { projects, loading: isLoading, error } = storeToRefs(projectsStore)
+
+// Utility functions for status display
+const getStatusLabel = (status: string) => {
+  const labels: Record<string, string> = {
+    'active': 'Active',
+    'planning': 'Planning',
+    'completed': 'Completed',
+    'paused': 'Paused',
+    'archived': 'Archived'
+  }
+  return labels[status] || status
+}
+
+const getStatusVariant = (status: string): 'default' | 'destructive' | 'outline' | 'secondary' => {
+  const variants: Record<string, 'default' | 'destructive' | 'outline' | 'secondary'> = {
+    'active': 'default',
+    'planning': 'secondary',
+    'completed': 'outline',
+    'paused': 'destructive',
+    'archived': 'outline'
+  }
+  return variants[status] || 'default'
+}
 
 // Determine current page type based on route
 const currentPageType = computed(() => {
@@ -342,13 +460,13 @@ const filteredProjects = computed(() => {
   // Filter by page type first
   switch (currentPageType.value) {
     case 'projects':
-      filtered = filtered.filter(p => !p.isArchived)
+      filtered = filtered.filter(p => p.status !== 'archived')
       break
     case 'projects-favorites':
-      filtered = filtered.filter(p => p.isFavorite && !p.isArchived)
+      filtered = filtered.filter(p => p.is_favorite && p.status !== 'archived')
       break
     case 'projects-archived':
-      filtered = filtered.filter(p => p.isArchived)
+      filtered = filtered.filter(p => p.status === 'archived')
       break
   }
 
@@ -358,7 +476,6 @@ const filteredProjects = computed(() => {
     filtered = filtered.filter(project => 
       project.name.toLowerCase().includes(query) ||
       project.description?.toLowerCase().includes(query) ||
-      project.responsible.toLowerCase().includes(query) ||
       project.category.toLowerCase().includes(query)
     )
   }
@@ -369,12 +486,12 @@ const filteredProjects = computed(() => {
 // Statistics for the current page type
 const projectStats = computed(() => {
   const total = projects.value.length
-  const active = projects.value.filter(p => p.status === 'active' && !p.isArchived).length
-  const planning = projects.value.filter(p => p.status === 'planning' && !p.isArchived).length  
-  const completed = projects.value.filter(p => p.status === 'completed' && !p.isArchived).length
-  const paused = projects.value.filter(p => p.status === 'paused' && !p.isArchived).length
-  const favorites = projects.value.filter(p => p.isFavorite && !p.isArchived).length
-  const archived = projects.value.filter(p => p.isArchived).length
+  const active = projects.value.filter(p => p.status === 'active').length
+  const planning = projects.value.filter(p => p.status === 'planning').length  
+  const completed = projects.value.filter(p => p.status === 'completed').length
+  const paused = projects.value.filter(p => p.status === 'paused').length
+  const favorites = projects.value.filter(p => p.is_favorite && p.status !== 'archived').length
+  const archived = projects.value.filter(p => p.status === 'archived').length
   
   return { total, active, planning, completed, paused, favorites, archived }
 })
@@ -388,9 +505,70 @@ const formatDate = (dateString: string) => {
   });
 }
 
+// New project dialog state
+const showNewProjectDialog = ref(false)
+const newProjectForm = ref({
+  name: '',
+  description: '',
+  category: '',
+  priority: 'medium' as 'low' | 'medium' | 'high',
+  budget: 0
+})
+const isCreatingProject = ref(false)
+
 const handleNewProject = () => {
-  // TODO: Implement New Project Dialog
-  console.log('Create a new project')
+  showNewProjectDialog.value = true
+}
+
+const resetNewProjectForm = () => {
+  newProjectForm.value = {
+    name: '',
+    description: '',
+    category: '',
+    priority: 'medium',
+    budget: 0
+  }
+}
+
+const handleCreateProject = async () => {
+  if (!newProjectForm.value.name.trim() || !newProjectForm.value.category.trim()) {
+    return
+  }
+
+  try {
+    isCreatingProject.value = true
+    
+    // Get current user for responsible field
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      throw new Error('User must be authenticated')
+    }
+
+    const projectData = {
+      name: newProjectForm.value.name.trim(),
+      description: newProjectForm.value.description.trim() || null,
+      category: newProjectForm.value.category.trim(),
+      priority: newProjectForm.value.priority,
+      budget: newProjectForm.value.budget,
+      responsible: user.id,
+      created_by: user.id,
+      updated_by: user.id
+    }
+
+    const newProject = await projectsStore.createProject(projectData)
+    
+    if (newProject) {
+      showNewProjectDialog.value = false
+      resetNewProjectForm()
+      // Navigate to the new project
+      router.push(`/projects/${newProject.id}/summary`)
+    }
+  } catch (err) {
+    console.error('Failed to create project:', err)
+    // TODO: Show error toast/notification
+  } finally {
+    isCreatingProject.value = false
+  }
 }
 
 const handleProjectClick = (projectId: string) => {
@@ -400,9 +578,9 @@ const handleProjectClick = (projectId: string) => {
 const handleProjectAction = async (action: string, projectId: string) => {
   try {
     if (action === 'favorite') {
-      await toggleFavorite(projectId)
+      await projectsStore.toggleFavorite(projectId)
     } else if (action === 'archive') {
-      await toggleArchive(projectId)
+      await projectsStore.toggleArchive(projectId)
     } else if (action === 'view') {
       handleProjectClick(projectId)
     }
@@ -413,6 +591,6 @@ const handleProjectAction = async (action: string, projectId: string) => {
 
 // Load projects on mount
 onMounted(() => {
-  fetchProjects()
+  projectsStore.fetchProjects()
 })
 </script>

@@ -33,23 +33,33 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft } from 'lucide-vue-next';
-import { mockProjects, type Project } from '@/mocks/projects.mock';
-
-// Use centralized mock data
-const projects = mockProjects;
+import { useProjectsStore } from '@/stores/projects.store';
+import { storeToRefs } from 'pinia';
+import type { Project } from '@/types/supabase';
 
 const route = useRoute();
 const router = useRouter();
 
+// Use projects store
+const projectsStore = useProjectsStore();
+const { projects } = storeToRefs(projectsStore);
+
 const project = computed((): Project | undefined => {
   const projectId = route.params.id as string;
-  return projects.find(p => p.id === projectId);
+  return projects.value.find(p => p.id === projectId);
+});
+
+// Load projects if not already loaded
+onMounted(() => {
+  if (!projectsStore.isInitialized) {
+    projectsStore.fetchProjects();
+  }
 });
 
 const goBack = () => {

@@ -11,6 +11,7 @@
     "web:test": "pnpm --filter web test",
     "supabase:start": "cd apps/supabase && supabase start",
     "supabase:stop": "cd apps/supabase && supabase stop",
+    "supabase:reset": "cd apps/supabase && supabase db reset",
     "supabase:status": "cd apps/supabase && supabase status",
     "supabase:functions": "sleep 5 && cd apps/supabase && supabase functions serve --no-verify-jwt",
     "lint": "eslint .",
