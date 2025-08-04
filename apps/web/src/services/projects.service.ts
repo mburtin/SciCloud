@@ -123,7 +123,40 @@ export class ProjectsService {
         throw new Error(`Failed to create project: ${error.message}`)
       }
 
-      // Creator and responsible are automatically added as members via database trigger
+      // Add the creator as an owner of the project
+      const { error: memberError } = await supabase
+        .from('project_members')
+        .insert({
+          project_id: data.id,
+          user_id: user.id,
+          role: 'owner',
+          created_by: user.id,
+          updated_by: user.id
+        })
+
+      if (memberError) {
+        console.error('Error adding creator as project member:', memberError)
+        // Note: We don't throw here as the project was created successfully
+        // The user might still be able to access it as the creator
+      }
+
+      // If responsible person is different from creator, add them as admin
+      if (data.responsible !== user.id) {
+        const { error: responsibleMemberError } = await supabase
+          .from('project_members')
+          .insert({
+            project_id: data.id,
+            user_id: data.responsible,
+            role: 'admin',
+            created_by: user.id,
+            updated_by: user.id
+          })
+
+        if (responsibleMemberError) {
+          console.error('Error adding responsible person as project member:', responsibleMemberError)
+          // Note: We don't throw here as the project was created successfully
+        }
+      }
 
       // Transform the data to match our Project interface
       return {
@@ -171,6 +204,21 @@ export class ProjectsService {
       delete dbUpdates.created_by
       delete dbUpdates.version
 
+      // First check if project exists and user has permission
+      const { error: checkError } = await supabase
+        .from('projects')
+        .select('id, status')
+        .eq('id', id)
+        .single()
+
+      if (checkError) {
+        console.error('Error checking project existence:', checkError)
+        if (checkError.code === 'PGRST116') {
+          throw new Error('Project not found or access denied')
+        }
+        throw new Error(`Failed to check project: ${checkError.message}`)
+      }
+
       const { data, error } = await supabase
         .from('projects')
         .update(dbUpdates)
@@ -198,13 +246,16 @@ export class ProjectsService {
 
       if (error) {
         console.error('Error updating project:', error)
+        if (error.code === 'PGRST116') {
+          throw new Error('Project not found or access denied after update')
+        }
         throw new Error(`Failed to update project: ${error.message}`)
       }
 
       // Transform the data to match our Project interface
       return {
         ...data,
-        members: data.project_members?.map(member => ({
+        members: data.project_members?.map((member: any) => ({
           id: member.user.id,
           first_name: member.user.first_name,
           last_name: member.user.last_name,

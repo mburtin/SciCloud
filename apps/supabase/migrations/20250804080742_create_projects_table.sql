@@ -46,11 +46,12 @@ CREATE POLICY "Public view of projects"
   FOR SELECT
   USING ( TRUE );
 
--- Allow project members to update projects
+-- Allow project members, creators, and responsible users to update projects
 CREATE POLICY "Project members can update"
   ON public.projects
   FOR UPDATE
   USING (
+    -- User is a project member
     EXISTS (
       SELECT 1
       FROM public.project_members pm
@@ -58,13 +59,18 @@ CREATE POLICY "Project members can update"
         pm.project_id = public.projects.id
         AND pm.user_id = auth.uid()
     )
+    -- OR user is the creator
+    OR created_by = auth.uid()
+    -- OR user is responsible for the project
+    OR responsible = auth.uid()
   );
 
--- Allow project members to delete projects
+-- Allow project members, creators, and responsible users to delete projects
 CREATE POLICY "Project members can delete"
   ON public.projects
   FOR DELETE
   USING (
+    -- User is a project member
     EXISTS (
       SELECT 1
       FROM public.project_members pm
@@ -72,6 +78,10 @@ CREATE POLICY "Project members can delete"
         pm.project_id = public.projects.id
         AND pm.user_id = auth.uid()
     )
+    -- OR user is the creator
+    OR created_by = auth.uid()
+    -- OR user is responsible for the project
+    OR responsible = auth.uid()
   );
 
   -- Allow authenticated users to create projects

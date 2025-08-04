@@ -463,7 +463,7 @@ const filteredProjects = computed(() => {
       filtered = filtered.filter(p => p.status !== 'archived')
       break
     case 'projects-favorites':
-      filtered = filtered.filter(p => p.is_favorite && p.status !== 'archived')
+      filtered = filtered.filter(p => p.is_favorite)
       break
     case 'projects-archived':
       filtered = filtered.filter(p => p.status === 'archived')
@@ -490,7 +490,7 @@ const projectStats = computed(() => {
   const planning = projects.value.filter(p => p.status === 'planning').length  
   const completed = projects.value.filter(p => p.status === 'completed').length
   const paused = projects.value.filter(p => p.status === 'paused').length
-  const favorites = projects.value.filter(p => p.is_favorite && p.status !== 'archived').length
+  const favorites = projects.value.filter(p => p.is_favorite).length
   const archived = projects.value.filter(p => p.status === 'archived').length
   
   return { total, active, planning, completed, paused, favorites, archived }
