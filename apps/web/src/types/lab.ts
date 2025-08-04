@@ -40,40 +40,6 @@ export interface Measurement {
   notes?: string
 }
 
-// Laboratory entity types
-export interface Animal extends AuditableRecord {
-  id: UUID
-  identifier: string
-  species: string
-  strain: string
-  line?: string
-  sex: 'male' | 'female'
-  birthDate: string
-  arrivalDate: string
-  currentWeight: number
-  supplier: string
-  status: 'alive' | 'deceased' | 'transferred' | 'experimental'
-  location: {
-    facility: string
-    room: string
-    rack: string
-    cage: string
-  }
-  housingType: 'individual' | 'pair' | 'group'
-  groupSize?: number
-  protocols: string[]
-  experimentalGroup?: string
-  veterinarian: string
-  lastExamDate?: string
-  nextExamDate?: string
-  healthStatus: 'excellent' | 'good' | 'concerning' | 'critical'
-  notes: string
-  ethicsApproval: string
-  documents: AnimalDocument[]
-  medicalHistory: MedicalRecord[]
-  measurements: Measurement[]
-}
-
 // Utility constants and labels
 export const speciesLabels = {
   'Mus musculus': 'Mouse',

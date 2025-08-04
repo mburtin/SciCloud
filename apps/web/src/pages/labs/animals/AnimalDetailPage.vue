@@ -18,7 +18,7 @@
               </Badge>
             </h1>
             <p class="text-muted-foreground">
-              {{ animal.strain }} • {{ animal.line }} • {{ calculateAge(animal.birthDate) }}
+              {{ animal.strain }} • {{ animal.line }} • {{ calculateAge(animal.birth_date) }}
             </p>
           </div>
         </div>
@@ -47,9 +47,9 @@
         <Badge :class="getStatusInfo(animal.status).color">
           {{ getStatusInfo(animal.status).label }}
         </Badge>
-        <Badge :class="getHealthStatusInfo(animal.healthStatus).color">
-          <component :is="getHealthStatusInfo(animal.healthStatus).icon" class="h-3 w-3 mr-1" />
-          {{ getHealthStatusInfo(animal.healthStatus).label }}
+        <Badge :class="getHealthStatusInfo(animal.health_status).color">
+          <component :is="getHealthStatusInfo(animal.health_status).icon" class="h-3 w-3 mr-1" />
+          {{ getHealthStatusInfo(animal.health_status).label }}
         </Badge>
         <Badge variant="outline">
           <UserCheck class="h-3 w-3 mr-1" />
@@ -121,17 +121,17 @@
                 <div class="grid grid-cols-2 gap-4">
                   <div>
                     <Label class="text-sm text-muted-foreground">Birth date</Label>
-                    <p class="font-medium">{{ formatDate(animal.birthDate) }}</p>
+                    <p class="font-medium">{{ formatDate(animal.birth_date) }}</p>
                   </div>
                   <div>
                     <Label class="text-sm text-muted-foreground">Age</Label>
-                    <p class="font-medium">{{ calculateAge(animal.birthDate) }}</p>
+                    <p class="font-medium">{{ calculateAge(animal.birth_date) }}</p>
                   </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                   <div>
                     <Label class="text-sm text-muted-foreground">Arrival date</Label>
-                    <p class="font-medium">{{ formatDate(animal.arrivalDate) }}</p>
+                    <p class="font-medium">{{ formatDate(animal.arrival_date) }}</p>
                   </div>
                   <div>
                     <Label class="text-sm text-muted-foreground">Supplier</Label>
@@ -140,7 +140,7 @@
                 </div>
                 <div>
                   <Label class="text-sm text-muted-foreground">Current weight</Label>
-                  <p class="font-medium">{{ animal.currentWeight }} g</p>
+                  <p class="font-medium">{{ animal.current_weight }} g</p>
                 </div>
               </CardContent>
             </Card>
@@ -160,8 +160,8 @@
                   </div>
                   <div>
                     <Label class="text-sm text-muted-foreground">Health status</Label>
-                    <Badge :class="getHealthStatusInfo(animal.healthStatus).color">
-                      {{ getHealthStatusInfo(animal.healthStatus).label }}
+                    <Badge :class="getHealthStatusInfo(animal.health_status).color">
+                      {{ getHealthStatusInfo(animal.health_status).label }}
                     </Badge>
                   </div>
                 </div>
@@ -173,19 +173,19 @@
                   <div>
                     <Label class="text-sm text-muted-foreground">Last examination</Label>
                     <p class="font-medium">
-                      {{ animal.lastExamDate ? formatDate(animal.lastExamDate) : 'None' }}
+                      {{ animal.last_exam_date ? formatDate(animal.last_exam_date) : 'None' }}
                     </p>
                   </div>
                   <div>
                     <Label class="text-sm text-muted-foreground">Next examination</Label>
                     <p class="font-medium">
-                      {{ animal.nextExamDate ? formatDate(animal.nextExamDate) : 'Not scheduled' }}
+                      {{ animal.next_exam_date ? formatDate(animal.next_exam_date) : 'Not scheduled' }}
                     </p>
                   </div>
                 </div>
                 <div>
                   <Label class="text-sm text-muted-foreground">Ethics approval</Label>
-                  <p class="font-medium">{{ animal.ethicsApproval }}</p>
+                  <p class="font-medium">{{ animal.ethics_approval }}</p>
                 </div>
               </CardContent>
             </Card>
@@ -218,13 +218,13 @@
                   <div>
                     <Label class="text-sm text-muted-foreground">Housing type</Label>
                     <p class="font-medium">
-                      {{ animal.housingType === 'individual' ? 'Individual' : 
-                         animal.housingType === 'pair' ? 'Pair' : 'Group' }}
+                      {{ animal.housing_type === 'individual' ? 'Individual' : 
+                         animal.housing_type === 'pair' ? 'Pair' : 'Group' }}
                     </p>
                   </div>
-                  <div v-if="animal.groupSize">
+                  <div v-if="animal.group_size">
                     <Label class="text-sm text-muted-foreground">Group size</Label>
-                    <p class="font-medium">{{ animal.groupSize }} animals</p>
+                    <p class="font-medium">{{ animal.group_size }} animals</p>
                   </div>
                 </div>
               </CardContent>
@@ -252,7 +252,7 @@
           </div>
           
           <div class="space-y-4">
-            <Card v-for="record in animal.medicalHistory" :key="record.id">
+            <Card v-for="record in animal.medical_history" :key="record.id">
               <CardContent class="p-4">
                 <div class="flex items-start justify-between">
                   <div class="space-y-2">
@@ -366,8 +366,8 @@
                 <div class="flex items-center justify-between">
                   <div>
                     <p class="font-medium">{{ protocol }}</p>
-                    <p v-if="animal.experimentalGroup" class="text-sm text-muted-foreground">
-                      Group: {{ animal.experimentalGroup }}
+                    <p v-if="animal.experimental_group" class="text-sm text-muted-foreground">
+                      Group: {{ animal.experimental_group }}
                     </p>
                   </div>
                   <Badge variant="secondary">Active</Badge>
@@ -396,10 +396,11 @@
     </div>
 
     <!-- Edit dialog -->
-    <EditAnimalDialog
+    <AnimalFormDialog
       v-if="animal"
       :animal="animal"
       v-model:open="editDialogOpen"
+      mode="edit"
       @save="handleSaveAnimal"
     />
 
@@ -419,7 +420,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { toast } from 'vue-sonner'
 import { 
@@ -444,9 +445,10 @@ import {
   Trash2
 } from 'lucide-vue-next'
 
-import type { Animal, Measurement, MedicalRecord, AnimalDocument } from '@/types/lab'
+import type { Animal } from '@/types/supabase'
+import type { Measurement, MedicalRecord, AnimalDocument } from '@/types/lab'
 import { speciesLabels } from '@/types/lab'
-import { mockAnimals } from '@/mocks/animals.mock'
+import { useAnimalsStore } from '@/stores/animals.store'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -454,7 +456,7 @@ import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
-import EditAnimalDialog from '@/components/labs/EditAnimalDialog.vue'
+import AnimalFormDialog from '@/components/labs/AnimalFormDialog.vue'
 import NewMeasurementDialog from '@/components/labs/NewMeasurementDialog.vue'
 import NewMedicalExamDialog from '@/components/labs/NewMedicalExamDialog.vue'
 import DocumentManager from '@/components/labs/DocumentManager.vue'
@@ -467,10 +469,18 @@ const editDialogOpen = ref(false)
 const newMeasurementDialogOpen = ref(false)
 const newMedicalExamDialogOpen = ref(false)
 
-const animalData = ref<Animal[]>([...mockAnimals])
+// Store
+const animalsStore = useAnimalsStore()
 
-// Find animal by ID
-const animal = computed(() => animalData.value.find(a => a.id === animalId))
+// Initialize and find animal by ID
+onMounted(async () => {
+  await animalsStore.fetchAnimals()
+  if (!animal.value) {
+    await animalsStore.getAnimalById(animalId)
+  }
+})
+
+const animal = computed(() => animalsStore.animals.find(a => a.id === animalId))
 
 const sortedMeasurements = computed(() => {
   if (!animal.value) return []
@@ -612,15 +622,16 @@ const getSeverityColor = (severity: string) => {
   }
 }
 
-const handleSaveAnimal = (updatedAnimal: Animal) => {
-  const index = animalData.value.findIndex(a => a.id === updatedAnimal.id)
-  if (index > -1) {
-    animalData.value[index] = updatedAnimal
-    toast.success('Animal successfully updated')
+const handleSaveAnimal = async (updatedAnimal: Animal | import('@/types/supabase').AnimalInsert) => {
+  if ('id' in updatedAnimal && updatedAnimal.id) {
+    const result = await animalsStore.updateAnimal(updatedAnimal.id, updatedAnimal as Animal)
+    if (result) {
+      toast.success('Animal successfully updated')
+    }
   }
 }
 
-const handleAddMeasurement = (newMeasurement: Omit<Measurement, 'id'>) => {
+const handleAddMeasurement = async (newMeasurement: Omit<Measurement, 'id'>) => {
   if (!animal.value) return
 
   const measurementWithId = {
@@ -628,14 +639,13 @@ const handleAddMeasurement = (newMeasurement: Omit<Measurement, 'id'>) => {
     id: `meas-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
   }
 
-  const index = animalData.value.findIndex(a => a.id === animalId)
-  if (index > -1 && animalData.value[index]) {
-    animalData.value[index].measurements.unshift(measurementWithId)
+  const result = await animalsStore.addMeasurement(animalId, measurementWithId)
+  if (result) {
     toast.success('Measurement successfully added')
   }
 }
 
-const handleAddMedicalRecord = (newRecord: Omit<MedicalRecord, 'id'>) => {
+const handleAddMedicalRecord = async (newRecord: Omit<MedicalRecord, 'id'>) => {
   if (!animal.value) return
 
   const recordWithId = {
@@ -643,26 +653,28 @@ const handleAddMedicalRecord = (newRecord: Omit<MedicalRecord, 'id'>) => {
     id: `med-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
   }
 
-  const index = animalData.value.findIndex(a => a.id === animalId)
-  if (index > -1 && animalData.value[index]) {
-    animalData.value[index].medicalHistory.unshift(recordWithId)
-    animalData.value[index].lastExamDate = newRecord.date
-    // Update health status based on severity
-    animalData.value[index].healthStatus = 
+  const result = await animalsStore.addMedicalRecord(animalId, recordWithId)
+  if (result) {
+    // Also update last exam date and health status
+    const healthStatusUpdate = 
       newRecord.severity === 'severe' ? 'critical' :
       newRecord.severity === 'moderate' ? 'concerning' :
       newRecord.severity === 'minor' ? 'good' : 'excellent'
-
+    
+    await animalsStore.updateAnimal(animalId, {
+      last_exam_date: newRecord.date,
+      health_status: healthStatusUpdate as any
+    })
+    
     toast.success('Medical record successfully added')
   }
 }
 
-const handleAddDocuments = (newDocuments: AnimalDocument[]) => {
+const handleAddDocuments = async (newDocuments: AnimalDocument[]) => {
   if (!animal.value) return
 
-  const index = animalData.value.findIndex(a => a.id === animalId)
-  if (index > -1 && animalData.value[index]) {
-    animalData.value[index].documents.push(...newDocuments)
+  for (const document of newDocuments) {
+    await animalsStore.addDocument(animalId, document)
   }
 }
 </script>

@@ -2,9 +2,9 @@
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
     <DialogContent class="max-w-4xl max-h-[90vh] overflow-y-auto">
       <DialogHeader>
-        <DialogTitle>Edit animal {{ animal.identifier }}</DialogTitle>
+        <DialogTitle>{{ isEditing ? `Edit animal ${animal?.identifier}` : 'Add New Animal' }}</DialogTitle>
         <DialogDescription>
-          Edit the animal information. Fields marked with an asterisk (*) are required.  
+          {{ isEditing ? 'Edit the animal information.' : 'Fill in the details for the new animal.' }} Fields marked with an asterisk (*) are required.
         </DialogDescription>
       </DialogHeader>
 
@@ -86,7 +86,7 @@
               <Input
                 id="birthDate"
                 type="date"
-                v-model="formData.birthDate"
+                v-model="formData.birth_date"
               />
             </div>
             <div class="space-y-2">
@@ -94,7 +94,7 @@
               <Input
                 id="arrivalDate"
                 type="date"
-                v-model="formData.arrivalDate"
+                v-model="formData.arrival_date"
               />
             </div>
             <div class="space-y-2">
@@ -103,7 +103,7 @@
                 id="currentWeight"
                 type="number"
                 step="0.1"
-                v-model.number="formData.currentWeight"
+                v-model.number="formData.current_weight"
                 placeholder="28.5"
               />
             </div>
@@ -133,7 +133,7 @@
             </div>
             <div class="space-y-2">
               <Label for="healthStatus">Health status *</Label>
-              <Select v-model="formData.healthStatus">
+              <Select v-model="formData.health_status">
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -218,7 +218,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="space-y-2">
               <Label for="housingType">Housing type *</Label>
-              <Select v-model="formData.housingType">
+              <Select v-model="formData.housing_type">
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -233,13 +233,13 @@
                 </SelectContent>
               </Select>
             </div>
-            <div v-if="formData.housingType === 'pair' || formData.housingType === 'group'" class="space-y-2">
+            <div v-if="formData.housing_type === 'pair' || formData.housing_type === 'group'" class="space-y-2">
               <Label for="groupSize">Group size</Label>
               <Input
                 id="groupSize"
                 type="number"
                 min="2"
-                v-model.number="formData.groupSize"
+                v-model.number="formData.group_size"
                 placeholder="4"
               />
             </div>
@@ -254,7 +254,7 @@
               <Label for="ethicsApproval">Ethics approval *</Label>
               <Input
                 id="ethicsApproval"
-                v-model="formData.ethicsApproval"
+                v-model="formData.ethics_approval"
                 placeholder="CE-2024-008"
               />
             </div>
@@ -262,15 +262,15 @@
               <Label for="experimentalGroup">Experimental group</Label>
               <Input
                 id="experimentalGroup"
-                v-model="formData.experimentalGroup"
+                v-model="formData.experimental_group"
                 placeholder="Control group"
               />
             </div>
           </div>
         </div>
 
-        <!-- Exam dates -->
-        <div class="space-y-4">
+        <!-- Medical follow-up (only for editing) -->
+        <div v-if="isEditing" class="space-y-4">
           <h3 class="text-lg font-medium">Medical follow-up</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="space-y-2">
@@ -278,7 +278,7 @@
               <Input
                 id="lastExamDate"
                 type="date"
-                v-model="formData.lastExamDate"
+                v-model="formData.last_exam_date"
               />
             </div>
             <div class="space-y-2">
@@ -286,7 +286,7 @@
               <Input
                 id="nextExamDate"
                 type="date"
-                v-model="formData.nextExamDate"
+                v-model="formData.next_exam_date"
               />
             </div>
           </div>
@@ -311,7 +311,7 @@
             Cancel
           </Button>
           <Button type="submit" :disabled="isSubmitting">
-            {{ isSubmitting ? 'Saving...' : 'Save changes' }}
+            {{ isSubmitting ? 'Saving...' : (isEditing ? 'Save changes' : 'Save Animal') }}
           </Button>
         </DialogFooter>
       </form>
@@ -320,9 +320,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 import { toast } from 'vue-sonner'
-import type { Animal } from '@/types/lab'
+import type { Animal, AnimalInsert } from '@/types/supabase'
 import {
   Dialog,
   DialogContent,
@@ -344,18 +344,23 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 
 interface Props {
-  animal: Animal
+  animal?: Animal | null
   open: boolean
+  mode: 'create' | 'edit'
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  animal: null,
+  mode: 'create'
+})
 
 const emit = defineEmits<{
   'update:open': [value: boolean]
-  'save': [animal: Animal]
+  'save': [animal: Animal | AnimalInsert]
 }>()
 
 const isSubmitting = ref(false)
+const isEditing = computed(() => props.mode === 'edit')
 
 const speciesOptions = [
   { value: 'Mus musculus', label: 'Mouse (Mus musculus)' },
@@ -398,35 +403,116 @@ const facilities = [
   'Quarantine',
 ]
 
-const formData = reactive({ ...props.animal })
+const getDefaultFormData = (): AnimalInsert => ({
+  identifier: `M${(Math.random() * 1000).toFixed(0).padStart(3, '0')}-${new Date().getFullYear()}`,
+  species: 'Mus musculus',
+  strain: '',
+  line: '',
+  sex: 'male',
+  age_weeks: 8,
+  birth_date: new Date(Date.now() - 8 * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+  arrival_date: new Date().toISOString().split('T')[0],
+  current_weight: 25.0,
+  supplier: 'Jackson Labs',
+  status: 'alive',
+  location: {
+    facility: 'Facility A',
+    room: 'Room 101',
+    rack: 'Rack A1',
+    cage: 'Cage 1'
+  },
+  housing_type: 'individual',
+  group_size: null,
+  protocols: [],
+  experimental_group: '',
+  ethics_approval: 'IACUC-2024-001',
+  veterinarian: 'Dr. Smith',
+  last_exam_date: null,
+  next_exam_date: null,
+  health_status: 'good',
+  documents: [],
+  medical_history: [],
+  measurements: [],
+  notes: '',
+  created_by: '',
+  updated_by: ''
+})
+
+const formData = reactive<AnimalInsert | Animal>(
+  props.animal ? { ...props.animal } : getDefaultFormData()
+)
 
 // Watch for prop changes to update form data
 watch(() => props.animal, (newAnimal) => {
-  Object.assign(formData, newAnimal)
+  if (newAnimal) {
+    Object.assign(formData, newAnimal)
+  } else if (props.mode === 'create') {
+    Object.assign(formData, getDefaultFormData())
+  }
 }, { deep: true })
+
+// Reset form when opening in create mode
+watch(() => props.open, (isOpen) => {
+  if (isOpen && props.mode === 'create') {
+    Object.assign(formData, getDefaultFormData())
+  }
+})
 
 const handleSubmit = async () => {
   isSubmitting.value = true
 
   try {
     // Basic validation
-    if (!formData.identifier.trim()) {
+    if (!formData.identifier?.trim()) {
       toast.error('Identifier is required')
       return
     }
-    if (!formData.currentWeight || formData.currentWeight <= 0) {
+    if (!formData.current_weight || formData.current_weight <= 0) {
       toast.error('Weight must be greater than 0')
       return
     }
+    if (!formData.species?.trim()) {
+      toast.error('Species is required')
+      return
+    }
+    if (!formData.strain?.trim()) {
+      toast.error('Strain is required')
+      return
+    }
+    if (!formData.supplier?.trim()) {
+      toast.error('Supplier is required')
+      return
+    }
+    if (!formData.ethics_approval?.trim()) {
+      toast.error('Ethics approval is required')
+      return
+    }
+    if (!formData.veterinarian?.trim()) {
+      toast.error('Veterinarian is required')
+      return
+    }
+    if (!formData.location?.facility?.trim()) {
+      toast.error('Facility is required')
+      return
+    }
+    if (!formData.location?.room?.trim()) {
+      toast.error('Room is required')
+      return
+    }
+    if (!formData.location?.rack?.trim()) {
+      toast.error('Rack is required')
+      return
+    }
+    if (!formData.location?.cage?.trim()) {
+      toast.error('Cage is required')
+      return
+    }
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
     emit('save', { ...formData })
     emit('update:open', false)
-    toast.success('Animal updated successfully')
+    toast.success(`Animal ${isEditing.value ? 'updated' : 'created'} successfully`)
   } catch (error) {
-    toast.error('Error updating animal')
+    toast.error(`Error ${isEditing.value ? 'updating' : 'creating'} animal`)
   } finally {
     isSubmitting.value = false
   }

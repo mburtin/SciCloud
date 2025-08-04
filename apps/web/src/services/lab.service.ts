@@ -5,7 +5,6 @@
 
 import { mockInstruments } from '@/mocks/instruments.mock'
 import { mockConsumables } from '@/mocks/consumables.mock'
-import { mockAnimals } from '@/mocks/animals.mock'
 
 export class LabService {
   /**
@@ -34,18 +33,6 @@ export class LabService {
     return mockConsumables
   }
 
-  /**
-   * Get all animals
-   */
-  async getAnimals() {
-    // TODO: Replace with Supabase call
-    // const { data, error } = await supabase
-    //   .from('animals')
-    //   .select('*')
-    //   .order('created_at', { ascending: false })
-    await new Promise(resolve => setTimeout(resolve, 150))
-    return mockAnimals
-  }
 
   /**
    * Update consumable stock

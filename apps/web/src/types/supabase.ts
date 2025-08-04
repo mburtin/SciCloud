@@ -3,6 +3,8 @@
  * Generated types that match the database schema
  */
 
+import type { AnimalDocument, MedicalRecord, Measurement } from './lab'
+
 export interface Database {
   public: {
     Tables: {
@@ -130,6 +132,115 @@ export interface Database {
           project_id?: string
         }
       }
+      animals: {
+        Row: {
+          id: string
+          identifier: string
+          species: string
+          strain: string
+          line: string | null
+          sex: 'male' | 'female'
+          age_weeks: number | null
+          birth_date: string
+          arrival_date: string
+          current_weight: number
+          supplier: string
+          status: 'alive' | 'deceased' | 'transferred' | 'experimental'
+          location: {
+            facility: string
+            room: string
+            rack: string
+            cage: string
+          }
+          housing_type: 'individual' | 'pair' | 'group'
+          group_size: number | null
+          protocols: string[]
+          experimental_group: string | null
+          ethics_approval: string
+          veterinarian: string
+          last_exam_date: string | null
+          next_exam_date: string | null
+          health_status: 'excellent' | 'good' | 'concerning' | 'critical'
+          documents: AnimalDocument[]
+          medical_history: MedicalRecord[]
+          measurements: Measurement[]
+          notes: string
+          created_by: string
+          created_at: string
+          updated_by: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          id?: string
+          identifier: string
+          species: string
+          strain: string
+          line?: string | null
+          sex: 'male' | 'female'
+          age_weeks?: number | null
+          birth_date: string
+          arrival_date: string
+          current_weight: number
+          supplier: string
+          status?: 'alive' | 'deceased' | 'transferred' | 'experimental'
+          location: {
+            facility: string
+            room: string
+            rack: string
+            cage: string
+          }
+          housing_type?: 'individual' | 'pair' | 'group'
+          group_size?: number | null
+          protocols?: string[]
+          experimental_group?: string | null
+          ethics_approval: string
+          veterinarian: string
+          last_exam_date?: string | null
+          next_exam_date?: string | null
+          health_status?: 'excellent' | 'good' | 'concerning' | 'critical'
+          documents?: AnimalDocument[]
+          medical_history?: MedicalRecord[]
+          measurements?: Measurement[]
+          notes?: string
+          created_by: string
+          updated_by: string
+        }
+        Update: {
+          id?: string
+          identifier?: string
+          species?: string
+          strain?: string
+          line?: string | null
+          sex?: 'male' | 'female'
+          age_weeks?: number | null
+          birth_date?: string
+          arrival_date?: string
+          current_weight?: number
+          supplier?: string
+          status?: 'alive' | 'deceased' | 'transferred' | 'experimental'
+          location?: {
+            facility: string
+            room: string
+            rack: string
+            cage: string
+          }
+          housing_type?: 'individual' | 'pair' | 'group'
+          group_size?: number | null
+          protocols?: string[]
+          experimental_group?: string | null
+          ethics_approval?: string
+          veterinarian?: string
+          last_exam_date?: string | null
+          next_exam_date?: string | null
+          health_status?: 'excellent' | 'good' | 'concerning' | 'critical'
+          documents?: AnimalDocument[]
+          medical_history?: MedicalRecord[]
+          measurements?: Measurement[]
+          notes?: string
+          updated_by?: string
+        }
+      }
     }
     Views: {
       user_profiles: {
@@ -190,3 +301,14 @@ export type UserFavoriteProjectUpdate = Database['public']['Tables']['user_favor
 export type ProjectStatus = 'active' | 'planning' | 'completed' | 'paused' | 'archived'
 export type ProjectMemberRole = 'owner' | 'admin' | 'member' | 'viewer'
 export type Priority = 'low' | 'medium' | 'high'
+
+// Animal types based on Database schema
+export type Animal = Database['public']['Tables']['animals']['Row']
+export type AnimalInsert = Database['public']['Tables']['animals']['Insert']
+export type AnimalUpdate = Database['public']['Tables']['animals']['Update']
+
+// Animal-specific enums (extracted from Database types)
+export type AnimalStatus = 'alive' | 'deceased' | 'transferred' | 'experimental'
+export type AnimalSex = 'male' | 'female'
+export type HousingType = 'individual' | 'pair' | 'group'
+export type HealthStatus = 'excellent' | 'good' | 'concerning' | 'critical'

@@ -206,7 +206,7 @@
                   </Badge>
                 </div>
               </TableCell>
-              <TableCell>{{ calculateAge(animal.birthDate) }}</TableCell>
+              <TableCell>{{ calculateAge(animal.birth_date) }}</TableCell>
               <TableCell>{{ animal.sex === 'male' ? 'M' : 'F' }}</TableCell>
               <TableCell>
                 <Badge :variant="getStatusVariant(animal.status)">
@@ -252,134 +252,24 @@
     </Card>
   </div>
 
-  <!-- New Animal Dialog -->
-  <Dialog v-model:open="isNewAnimalDialogOpen">
-    <DialogContent class="sm:max-w-[600px]">
-      <DialogHeader>
-        <DialogTitle>Add New Animal</DialogTitle>
-        <DialogDescription>
-          Fill in the details for the new animal.
-        </DialogDescription>
-      </DialogHeader>
-      <div class="grid gap-4 py-4">
-        <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="species" class="text-right">Species</Label>
-          <Input id="species" v-model="newAnimalForm.species" class="col-span-3" />
-        </div>
-        <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="strain" class="text-right">Strain</Label>
-          <Input id="strain" v-model="newAnimalForm.strain" class="col-span-3" />
-        </div>
-        <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="age" class="text-right">Age (weeks)</Label>
-          <Input
-            id="age"
-            v-model.number="newAnimalForm.age"
-            type="number"
-            class="col-span-3"
-          />
-        </div>
-        <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="sex" class="text-right">Sex</Label>
-          <Select v-model="newAnimalForm.sex">
-            <SelectTrigger class="col-span-3">
-              <SelectValue placeholder="Select sex" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="male">
-                Male
-              </SelectItem>
-              <SelectItem value="female">
-                Female
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="project" class="text-right">Project</Label>
-          <Input id="project" v-model="newAnimalForm.project" class="col-span-3" />
-        </div>
-      </div>
-      <DialogFooter>
-        <Button variant="outline" @click="isNewAnimalDialogOpen = false">
-          Cancel
-        </Button>
-        <Button @click="handleCreateAnimal">
-          Save Animal
-        </Button>
-      </DialogFooter>
-    </DialogContent>
-  </Dialog>
+  <!-- Animal Form Dialogs -->
+  <AnimalFormDialog
+    v-model:open="isNewAnimalDialogOpen"
+    mode="create"
+    @save="handleCreateAnimal"
+  />
 
-  <!-- Edit Animal Dialog -->
-  <Dialog v-model:open="isEditDialogOpen">
-    <DialogContent v-if="editingAnimal" class="sm:max-w-[600px]">
-      <DialogHeader>
-        <DialogTitle>Edit Animal</DialogTitle>
-        <DialogDescription>
-          Update the details for animal ID: {{ editingAnimal.id }}
-        </DialogDescription>
-      </DialogHeader>
-      <div class="grid gap-4 py-4">
-        <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="edit-species" class="text-right">Species</Label>
-          <Input id="edit-species" v-model="editingAnimal.species" class="col-span-3" />
-        </div>
-        <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="edit-strain" class="text-right">Strain</Label>
-          <Input id="edit-strain" v-model="editingAnimal.strain" class="col-span-3" />
-        </div>
-        <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="edit-age" class="text-right">Age (weeks)</Label>
-          <Input
-            id="edit-age"
-            v-model.number="editingAnimal.age"
-            type="number"
-            class="col-span-3"
-          />
-        </div>
-        <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="edit-project" class="text-right">Project</Label>
-          <Input id="edit-project" v-model="editingAnimal.project" class="col-span-3" />
-        </div>
-        <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="edit-status" class="text-right">Status</Label>
-          <Select v-model="editingAnimal.status">
-            <SelectTrigger class="col-span-3">
-              <SelectValue placeholder="Select status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="active">
-                Active
-              </SelectItem>
-              <SelectItem value="quarantine">
-                Quarantine
-              </SelectItem>
-              <SelectItem value="experiment">
-                In Experiment
-              </SelectItem>
-              <SelectItem value="archived">
-                Archived
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      <DialogFooter>
-        <Button variant="outline" @click="isEditDialogOpen = false">
-          Cancel
-        </Button>
-        <Button @click="handleUpdateAnimal">
-          Save Changes
-        </Button>
-      </DialogFooter>
-    </DialogContent>
-  </Dialog>
+  <AnimalFormDialog
+    v-model:open="isEditDialogOpen"
+    mode="edit"
+    :animal="editingAnimal"
+    @save="handleUpdateAnimal"
+  />
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -396,14 +286,6 @@ import {
   CalendarDays
 } from 'lucide-vue-next';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -411,9 +293,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Label } from '@/components/ui/label';
-import { mockAnimals } from '@/mocks/animals.mock';
-import type { Animal } from '@/types/lab';
+import { useAnimalsStore } from '@/stores/animals.store'
+import type { Animal, AnimalInsert } from '@/types/supabase'
+import AnimalFormDialog from '@/components/labs/AnimalFormDialog.vue'
 
 import {
   Select,
@@ -423,65 +305,47 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-// Reactive state
-const searchQuery = ref('')
-const filterSpecies = ref('all')
-const filterStatus = ref('all')
-const filterProject = ref('all');
-const router = useRouter();
+// Router and store
+const router = useRouter()
+const animalsStore = useAnimalsStore()
 
-// Animals data
-const animals = ref<Animal[]>(mockAnimals)
-  
-
-// Stats
-const totalAnimals = computed(() => animals.value.length)
-const aliveAnimals = computed(() => animals.value.filter(a => a.status === 'alive').length)
-const experimentAnimals = computed(() => animals.value.filter(a => a.status === 'experimental').length)
-const healthMonitoringAnimals = computed(() => animals.value.filter(a => a.healthStatus === 'concerning' || a.healthStatus === 'critical').length)
-const upcomingExamsAnimals = computed(() => animals.value.filter(a => a.nextExamDate && new Date(a.nextExamDate) <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)).length)
-
-// Filter animals
-const filteredAnimals = computed(() => {
-  let filtered = animals.value
-
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(animal => 
-      animal.identifier.toLowerCase().includes(query) ||
-      animal.species.toLowerCase().includes(query) ||
-      (animal.strain && animal.strain.toLowerCase().includes(query)) ||
-      (animal.veterinarian && animal.veterinarian.toLowerCase().includes(query))
-    )
-  }
-
-  if (filterSpecies.value !== 'all') {
-    const speciesMap: Record<string, string> = {
-      'mouse': 'Mus musculus',
-      'rat': 'Rattus norvegicus',
-      'rabbit': 'Oryctolagus cuniculus'
-    }
-    filtered = filtered.filter(animal => animal.species === speciesMap[filterSpecies.value])
-  }
-
-  if (filterStatus.value !== 'all') {
-    const statusMap: Record<string, string> = {
-      'active': 'alive',
-      'experiment': 'experimental'
-    }
-    const mappedStatus = statusMap[filterStatus.value] || filterStatus.value
-    filtered = filtered.filter(animal => animal.status === mappedStatus)
-  }
-
-  if (filterProject.value !== 'all') {
-    filtered = filtered.filter(animal => 
-      animal.protocols.includes(filterProject.value) ||
-      animal.experimentalGroup === filterProject.value
-    )
-  }
-
-  return filtered
+// Initialize animals data
+onMounted(() => {
+  animalsStore.fetchAnimals()
 })
+
+// Stats (using store computed values)
+const totalAnimals = computed(() => animalsStore.stats.total)
+const aliveAnimals = computed(() => animalsStore.stats.alive)
+const experimentAnimals = computed(() => animalsStore.stats.experimental)
+const healthMonitoringAnimals = computed(() => animalsStore.stats.concerning + animalsStore.stats.critical)
+const upcomingExamsAnimals = computed(() => 
+  animalsStore.animals.filter(a => 
+    a.next_exam_date && new Date(a.next_exam_date) <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+  ).length
+)
+
+// Filters (connected to store)
+const searchQuery = computed({
+  get: () => animalsStore.searchQuery,
+  set: (value: string) => animalsStore.setSearchQuery(value)
+})
+
+const filterSpecies = computed({
+  get: () => animalsStore.speciesFilter,
+  set: (value: string) => animalsStore.setSpeciesFilter(value)
+})
+
+const filterStatus = computed({
+  get: () => animalsStore.statusFilter,
+  set: (value: any) => animalsStore.setStatusFilter(value)
+})
+
+// For now, we'll create a basic project filter
+const filterProject = ref('all')
+
+// Use store filtered animals directly
+const filteredAnimals = computed(() => animalsStore.filteredAnimals)
 
 // Methods
 const getSpeciesLabel = (species: string) => {
@@ -540,31 +404,16 @@ const formatDate = (dateString: string) => {
 }
 
 const isNewAnimalDialogOpen = ref(false)
-const newAnimalForm = ref<any>({})
-
-const resetNewAnimalForm = () => {
-  newAnimalForm.value = {
-    id: `M${(Math.random() * 1000).toFixed(0).padStart(3, '0')}`,
-    species: 'Mouse',
-    strain: '',
-    age: 8,
-    sex: 'male',
-    status: 'alive',
-    project: '',
-    lastUpdated: new Date().toISOString(),
-    healthMonitoring: false,
-    upcomingExams: false,
-  }
-}
 
 const openNewAnimalDialog = () => {
-  resetNewAnimalForm()
   isNewAnimalDialogOpen.value = true
 }
 
-const handleCreateAnimal = () => {
-  animals.value.unshift(newAnimalForm.value as Animal)
-  isNewAnimalDialogOpen.value = false
+const handleCreateAnimal = async (animalData: AnimalInsert) => {
+  const result = await animalsStore.createAnimal(animalData)
+  if (result) {
+    isNewAnimalDialogOpen.value = false
+  }
 }
 
 const isEditDialogOpen = ref(false);
@@ -575,20 +424,20 @@ const openEditAnimalDialog = (animal: Animal) => {
   isEditDialogOpen.value = true;
 };
 
-const handleUpdateAnimal = () => {
-  if (!editingAnimal.value) return;
-  const index = animals.value.findIndex(a => a.id === editingAnimal.value!.id);
-  if (index !== -1) {
-    animals.value[index] = editingAnimal.value;
+const handleUpdateAnimal = async (animalData: Animal | AnimalInsert) => {
+  if ('id' in animalData && animalData.id) {
+    const result = await animalsStore.updateAnimal(animalData.id, animalData as Animal)
+    if (result) {
+      isEditDialogOpen.value = false
+    }
   }
-  isEditDialogOpen.value = false;
-};
+}
 
-const handleDeleteAnimal = (animalId: string) => {
+const handleDeleteAnimal = async (animalId: string) => {
   if (confirm('Are you sure you want to delete this animal?')) {
-    animals.value = animals.value.filter(a => a.id !== animalId);
+    await animalsStore.deleteAnimal(animalId)
   }
-};
+}
 
 const navigateToAnimalDetail = (animalId: string) => {
   router.push({ name: 'lab-animal-detail', params: { id: animalId } });
