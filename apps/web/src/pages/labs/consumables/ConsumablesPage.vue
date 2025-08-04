@@ -160,9 +160,7 @@
           <TableBody>
             <TableRow
               v-for="consumable in filteredConsumables" 
-              :key="consumable.id" 
-              class="cursor-pointer" 
-              @click="navigateToConsumableDetail(consumable.id)"
+              :key="consumable.id"
             >
               <TableCell>{{ consumable.reference }}</TableCell>
               <TableCell>
@@ -178,17 +176,17 @@
                 <div class="flex items-center gap-2">
                   <div 
                     class="w-2 h-2 rounded-full" 
-                    :class="getStockIndicatorClass(consumable.stockLevel)"
+                    :class="getStockIndicatorClass(consumable.stock_level)"
                   />
-                  <span>{{ consumable.quantity }} {{ consumable.unit }}</span>
+                  <span>{{ consumable.stock }} {{ consumable.unit }}</span>
                   <Badge 
-                    v-if="consumable.stockLevel === 'outofstock'" 
+                    v-if="consumable.stock_level === 'outofstock'" 
                     variant="destructive"
                   >
                     Out of Stock
                   </Badge>
                   <Badge 
-                    v-else-if="consumable.stockLevel === 'low'" 
+                    v-else-if="consumable.stock_level === 'low'" 
                     variant="secondary"
                   >
                     Low Stock
@@ -197,8 +195,8 @@
               </TableCell>
               <TableCell>{{ consumable.location }}</TableCell>
               <TableCell>
-                <div v-if="consumable.lastOrder">
-                  {{ formatDate(consumable.lastOrder) }}
+                <div v-if="consumable.last_order">
+                  {{ formatDate(consumable.last_order) }}
                 </div>
                 <div v-else class="text-sm text-muted-foreground">
                   Never ordered
@@ -214,13 +212,10 @@
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuItem @click="navigateToConsumableDetail(consumable.id)">
-                      View Details
-                    </DropdownMenuItem>
                     <DropdownMenuItem @click="openEditConsumableDialog(consumable)">
                       Edit
                     </DropdownMenuItem>
-                    <DropdownMenuItem :disabled="consumable.stockLevel === 'outofstock'" @click="updateStock(consumable.id)">
+                    <DropdownMenuItem :disabled="consumable.stock_level === 'outofstock'" @click="updateStock(consumable.id)">
                       Use Stock
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
@@ -285,7 +280,16 @@
           </Select>
         </div>
         <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="quantity" class="text-right">Quantity</Label>
+          <Label for="stock" class="text-right">Current Stock</Label>
+          <Input
+            id="stock"
+            v-model.number="newConsumableForm.stock"
+            type="number"
+            class="col-span-3"
+          />
+        </div>
+        <div class="grid grid-cols-4 items-center gap-4">
+          <Label for="quantity" class="text-right">Package Size</Label>
           <Input
             id="quantity"
             v-model.number="newConsumableForm.quantity"
@@ -336,7 +340,16 @@
           <Input id="edit-supplier" v-model="editingConsumable.supplier" class="col-span-3" />
         </div>
         <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="edit-quantity" class="text-right">Quantity</Label>
+          <Label for="edit-stock" class="text-right">Current Stock</Label>
+          <Input
+            id="edit-stock"
+            v-model.number="editingConsumable.stock"
+            type="number"
+            class="col-span-3"
+          />
+        </div>
+        <div class="grid grid-cols-4 items-center gap-4">
+          <Label for="edit-quantity" class="text-right">Package Size</Label>
           <Input
             id="edit-quantity"
             v-model.number="editingConsumable.quantity"
@@ -377,9 +390,9 @@
         <div v-if="lowStockItems.length > 0" class="space-y-4 max-h-[60vh] overflow-y-auto">
           <div v-for="item in lowStockItems" :key="item.id" class="grid grid-cols-5 items-center gap-4">
             <span class="col-span-2">{{ item.name }}</span>
-            <span class="text-sm text-muted-foreground">Current: {{ item.quantity }} {{ item.unit }}</span>
-            <Badge :variant="item.stockLevel === 'outofstock' ? 'destructive' : 'secondary'">
-              {{ item.stockLevel }}
+            <span class="text-sm text-muted-foreground">Current: {{ item.stock }} {{ item.unit }}</span>
+            <Badge :variant="item.stock_level === 'outofstock' ? 'destructive' : 'secondary'">
+              {{ item.stock_level }}
             </Badge>
             <Input
               v-model.number="orderQuantities[item.id]"
@@ -406,8 +419,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, computed, onMounted } from 'vue';
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -446,52 +458,46 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { mockConsumables} from '@/mocks/consumables.mock';
-import type { Consumable, StockLevel } from '@/types/lab';
+import { useConsumablesStore } from '@/stores/consumables.store';
+import type { StockLevel } from '@/types/supabase';
+import { useAuthStore } from '@/stores/auth.store';
 
-// Reactive state
-const searchQuery = ref('')
-const filterCategory = ref('all')
-const filterStock = ref('all')
+// Stores
+const consumablesStore = useConsumablesStore()
+const authStore = useAuthStore()
 
-// Consumables data
-const consumables = ref<Consumable[]>(mockConsumables)
+// Initialize data
+onMounted(() => {
+  consumablesStore.fetchConsumables()
+})
 
-// Computed property for filtering consumables
-const filteredConsumables = computed(() => {
-  let filtered = consumables.value
+// Reactive state from store
+const { 
+  filteredConsumables
+} = consumablesStore
 
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(consumable => 
-      consumable.reference.toLowerCase().includes(query) ||
-      consumable.name.toLowerCase().includes(query) ||
-      consumable.supplier.toLowerCase().includes(query) ||
-      consumable.category.toLowerCase().includes(query) ||
-      consumable.location.toLowerCase().includes(query)
-    )
-  }
+// Local filters - sync with store
+const searchQuery = computed({
+  get: () => consumablesStore.searchQuery,
+  set: (value: string) => consumablesStore.setSearchQuery(value)
+})
 
-  if (filterCategory.value !== 'all') {
-    const categoryMap: Record<string, string> = {
-      'reagent': 'Reagents',
-      'glassware': 'Glassware',
-      'plastic': 'Plasticware',
-      'media': 'Culture Media',
-      'other': 'Other'
-    }
-    filtered = filtered.filter(consumable => consumable.category === categoryMap[filterCategory.value])
-  }
+const filterCategory = computed({
+  get: () => consumablesStore.categoryFilter,
+  set: (value: string) => consumablesStore.setCategoryFilter(value)
+})
 
-  if (filterStock.value !== 'all') {
-    if (filterStock.value === 'expired') {
-        filtered = filtered.filter(consumable => consumable.expiryDate && new Date(consumable.expiryDate) < new Date())
+const filterStock = computed({
+  get: () => consumablesStore.stockLevelFilter === 'all' ? 'all' : consumablesStore.stockLevelFilter,
+  set: (value: string) => {
+    if (value === 'expired') {
+      // Handle expired separately since it's not a stock level
+      consumablesStore.setStockLevelFilter('all')
+      // TODO: Add expired filter to store
     } else {
-        filtered = filtered.filter(consumable => consumable.stockLevel === filterStock.value)
+      consumablesStore.setStockLevelFilter(value as StockLevel | 'all')
     }
   }
-
-  return filtered
 })
 
 // Methods
@@ -514,130 +520,129 @@ const formatDate = (dateString: string | null) => {
   })
 }
 
-const isNewConsumableDialogOpen = ref(false);
-const newConsumableForm = ref<Partial<Consumable>>({});
+const isNewConsumableDialogOpen = ref(false)
+const newConsumableForm = ref({
+  reference: '',
+  name: '',
+  supplier: '',
+  category: 'Reagents',
+  quantity: 0,
+  unit: '',
+  stock: 0,
+  min_stock: 5,
+  location: '',
+  last_order: null,
+  expiry_date: '9999-12-31'
+})
 
 const resetNewConsumableForm = () => {
   newConsumableForm.value = {
-    id: `C${(Math.random() * 1000).toFixed(0).padStart(3, '0')}`,
     reference: '',
     name: '',
     supplier: '',
     category: 'Reagents',
     quantity: 0,
     unit: '',
-    stockLevel: 'normal',
+    stock: 0,
+    min_stock: 5,
     location: '',
-    lastOrder: null,
-    expiryDate: undefined
-  };
-};
+    last_order: null,
+    expiry_date: '9999-12-31'
+  }
+}
 
 const openNewConsumableDialog = () => {
-  resetNewConsumableForm();
-  isNewConsumableDialogOpen.value = true;
-};
+  resetNewConsumableForm()
+  isNewConsumableDialogOpen.value = true
+}
 
-const handleCreateConsumable = () => {
-  // A real implementation would have more robust validation
-  const stockLevel = newConsumableForm.value.quantity === 0 ? 'outofstock' : newConsumableForm.value.quantity! < 5 ? 'low' : 'normal';
-  newConsumableForm.value.stockLevel = stockLevel;
-  consumables.value.unshift(newConsumableForm.value as Consumable);
-  isNewConsumableDialogOpen.value = false;
-};
-
-const isEditDialogOpen = ref(false);
-const editingConsumable = ref<Consumable | null>(null);
-
-const openEditConsumableDialog = (consumable: Consumable) => {
-  editingConsumable.value = JSON.parse(JSON.stringify(consumable));
-  isEditDialogOpen.value = true;
-};
-
-const handleUpdateConsumable = () => {
-  if (!editingConsumable.value) return;
-  const index = consumables.value.findIndex(c => c.id === editingConsumable.value!.id);
-  if (index !== -1) {
-    consumables.value[index] = editingConsumable.value;
+const handleCreateConsumable = async () => {
+  const consumableData = {
+    ...newConsumableForm.value,
+    created_by: authStore.user?.id || '',
+    updated_by: authStore.user?.id || ''
   }
-  isEditDialogOpen.value = false;
-};
+  
+  const success = await consumablesStore.createConsumable(consumableData)
+  if (success) {
+    isNewConsumableDialogOpen.value = false
+    resetNewConsumableForm()
+  }
+}
 
-const handleDeleteConsumable = (consumableId: string) => {
+const isEditDialogOpen = ref(false)
+const editingConsumable = ref<any>(null)
+
+const openEditConsumableDialog = (consumable: any) => {
+  editingConsumable.value = JSON.parse(JSON.stringify(consumable))
+  isEditDialogOpen.value = true
+}
+
+const handleUpdateConsumable = async () => {
+  if (!editingConsumable.value) return
+  
+  const updates = {
+    ...editingConsumable.value,
+    updated_by: authStore.user?.id || ''
+  }
+  
+  const success = await consumablesStore.updateConsumable(editingConsumable.value.id, updates)
+  if (success) {
+    isEditDialogOpen.value = false
+  }
+}
+
+const handleDeleteConsumable = async (consumableId: string) => {
   if (confirm('Are you sure you want to delete this consumable?')) {
-    consumables.value = consumables.value.filter(c => c.id !== consumableId);
+    await consumablesStore.deleteConsumable(consumableId)
   }
-};
+}
 
-const isOrderDialogOpen = ref(false);
-const orderQuantities = ref<Record<string, number>>({});
+const isOrderDialogOpen = ref(false)
+const orderQuantities = ref<Record<string, number>>({})
 
 const lowStockItems = computed(() => {
-  return consumables.value.filter(c => c.stockLevel === 'low' || c.stockLevel === 'outofstock');
-});
+  return [...consumablesStore.lowStockConsumables, ...consumablesStore.outOfStockConsumables]
+})
 
 const lowStockConsumables = computed(() => {
-  return consumables.value.filter(c => c.stockLevel === 'low').length;
-});
+  return consumablesStore.stats.low
+})
 
 const expiredConsumables = computed(() => {
-  const today = new Date();
-  return consumables.value.filter(c => {
-    if (!c.expiryDate) return false;
-    const expiryDate = new Date(c.expiryDate);
-    return expiryDate < today;
-  }).length;
-});
+  return consumablesStore.stats.expired
+})
 
 const outOfStockConsumables = computed(() => {
-  return consumables.value.filter(c => c.stockLevel === 'outofstock').length;
-});
+  return consumablesStore.stats.outofstock
+})
 
 const expiringSoonConsumables = computed(() => {
-  const today = new Date();
-  const nextWeek = new Date(today.getTime() + (7 * 24 * 60 * 60 * 1000));
-  return consumables.value.filter(c => {
-    if (!c.expiryDate) return false;
-    const expiryDate = new Date(c.expiryDate);
-    return expiryDate >= today && expiryDate <= nextWeek;
-  }).length;
-});
+  return consumablesStore.stats.expiringSoon
+})
 
-const handlePlaceOrder = () => {
-  console.log('Placing order:', orderQuantities.value);
-  // In a real app, you'd send this to a backend.
-  // For now, we can update the 'lastOrder' date for the items ordered.
-  const today = new Date().toISOString().split('T')[0];
-  Object.keys(orderQuantities.value).forEach(id => {
-    const quantity = orderQuantities.value[id];
+const handlePlaceOrder = async () => {
+  console.log('Placing order:', orderQuantities.value)
+  const today = new Date().toISOString().split('T')[0]
+  
+  for (const id of Object.keys(orderQuantities.value)) {
+    const quantity = orderQuantities.value[id]
     if (quantity && quantity > 0) {
-      const consumable = consumables.value.find(c => c.id === id);
-      if (consumable) {
-        consumable.lastOrder = today as string;
-      }
-    }
-  });
-  isOrderDialogOpen.value = false;
-};
-
-const updateStock = (consumableId: string) => {
-  const consumable = consumables.value.find(c => c.id === consumableId);
-  if (consumable && consumable.quantity > 0) {
-    consumable.quantity--;
-    if (consumable.quantity === 0) {
-      consumable.stockLevel = 'outofstock';
-    } else if (consumable.quantity < 5) { // Assuming 5 is the low stock threshold
-      consumable.stockLevel = 'low';
-    } else {
-      // It might remain 'normal' or 'high', this logic can be expanded
-      consumable.stockLevel = 'normal'; 
+      await consumablesStore.updateConsumable(id, {
+        last_order: today,
+        updated_by: authStore.user?.id || ''
+      })
     }
   }
-};
+  
+  isOrderDialogOpen.value = false
+}
 
-const router = useRouter();
+const updateStock = async (consumableId: string) => {
+  const consumable = consumablesStore.consumables.find(c => c.id === consumableId)
+  if (consumable && consumable.stock > 0) {
+    await consumablesStore.updateConsumableStock(consumableId, consumable.stock - 1)
+  }
+}
 
-const navigateToConsumableDetail = (consumableId: string) => {
-  router.push({ name: 'lab-consumable-detail', params: { id: consumableId } });
-};
 </script>

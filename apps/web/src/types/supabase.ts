@@ -284,6 +284,61 @@ export interface Database {
           updated_by?: string
         }
       }
+      consumables: {
+        Row: {
+          id: string
+          reference: string
+          name: string
+          supplier: string
+          category: string
+          quantity: number
+          unit: string
+          stock: number
+          min_stock: number
+          stock_level: 'high' | 'normal' | 'low' | 'outofstock'
+          location: string
+          last_order: string | null
+          expiry_date: string
+          created_by: string
+          created_at: string
+          updated_by: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          id?: string
+          reference: string
+          name: string
+          supplier: string
+          category: string
+          quantity: number
+          unit: string
+          stock: number
+          min_stock: number
+          stock_level?: 'high' | 'normal' | 'low' | 'outofstock'
+          location: string
+          last_order?: string | null
+          expiry_date: string
+          created_by: string
+          updated_by: string
+        }
+        Update: {
+          id?: string
+          reference?: string
+          name?: string
+          supplier?: string
+          category?: string
+          quantity?: number
+          unit?: string
+          stock?: number
+          min_stock?: number
+          stock_level?: 'high' | 'normal' | 'low' | 'outofstock'
+          location?: string
+          last_order?: string | null
+          expiry_date?: string
+          updated_by?: string
+        }
+      }
     }
     Views: {
       user_profiles: {
@@ -363,3 +418,11 @@ export type InstrumentUpdate = Database['public']['Tables']['instruments']['Upda
 
 // Instrument-specific enums (extracted from Database types)
 export type InstrumentStatus = 'available' | 'in-use' | 'maintenance' | 'broken'
+
+// Consumable types based on Database schema
+export type Consumable = Database['public']['Tables']['consumables']['Row']
+export type ConsumableInsert = Database['public']['Tables']['consumables']['Insert']
+export type ConsumableUpdate = Database['public']['Tables']['consumables']['Update']
+
+// Consumable-specific enums (extracted from Database types)
+export type StockLevel = 'high' | 'normal' | 'low' | 'outofstock'

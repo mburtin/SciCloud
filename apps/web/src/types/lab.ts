@@ -2,7 +2,8 @@
  * Laboratory management types
  */
 
-import type { Timestamp, AuditableRecord, UUID } from './base'
+// Import types only when needed
+// import type { Timestamp, AuditableRecord, UUID } from './base'
 
 export type StockLevel = 'high' | 'normal' | 'low' | 'outofstock'
 
@@ -72,19 +73,3 @@ export const documentTypeLabels = {
   'authorization': 'Authorization',
   'other': 'Other'
 } as const
-
-export interface Consumable extends AuditableRecord {
-  id: UUID
-  reference: string
-  name: string
-  supplier: string
-  category: string
-  quantity: number
-  unit: string
-  stock: number
-  minStock: number
-  stockLevel: StockLevel
-  location: string
-  lastOrder: string | null
-  expiryDate: Timestamp
-}

@@ -5,7 +5,6 @@ const AnimalsPage = () => import('@/pages/labs/animals/AnimalsPage.vue');
 const AnimalDetailPage = () => import('@/pages/labs/animals/AnimalDetailPage.vue');
 const InstrumentsPage = () => import('@/pages/labs/instruments/InstrumentsPage.vue');
 const ConsumablesPage = () => import('@/pages/labs/consumables/ConsumablesPage.vue');
-const ConsumableDetailPage = () => import('@/pages/labs/consumables/ConsumableDetailPage.vue');
 
 export const labRoutes: RouteRecordRaw[] = [
   {
@@ -31,11 +30,5 @@ export const labRoutes: RouteRecordRaw[] = [
     name: 'lab-consumables',
     component: ConsumablesPage,
     meta: { title: 'Consumables' }
-  },
-  {
-    path: '/lab/consumables/:id',
-    name: 'lab-consumable-detail',
-    component: ConsumableDetailPage,
-    meta: { title: 'Consumable Details' }
   }
 ]
