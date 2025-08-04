@@ -73,18 +73,6 @@ export const documentTypeLabels = {
   'other': 'Other'
 } as const
 
-export interface Instrument extends AuditableRecord {
-  id: UUID
-  name: string
-  model: string
-  category: string
-  manufacturer: string
-  serial_number?: string
-  status: 'available' | 'in-use' | 'maintenance' | 'broken'
-  location?: string
-  maintenanceDue: boolean
-}
-
 export interface Consumable extends AuditableRecord {
   id: UUID
   reference: string

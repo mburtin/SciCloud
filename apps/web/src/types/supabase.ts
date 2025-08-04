@@ -241,6 +241,49 @@ export interface Database {
           updated_by?: string
         }
       }
+      instruments: {
+        Row: {
+          id: string
+          name: string
+          model: string
+          category: string
+          manufacturer: string
+          serial_number: string | null
+          status: 'available' | 'in-use' | 'maintenance' | 'broken'
+          location: string | null
+          maintenance_due: boolean
+          created_by: string
+          created_at: string
+          updated_by: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          id?: string
+          name: string
+          model: string
+          category: string
+          manufacturer: string
+          serial_number?: string | null
+          status?: 'available' | 'in-use' | 'maintenance' | 'broken'
+          location?: string | null
+          maintenance_due?: boolean
+          created_by: string
+          updated_by: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          model?: string
+          category?: string
+          manufacturer?: string
+          serial_number?: string | null
+          status?: 'available' | 'in-use' | 'maintenance' | 'broken'
+          location?: string | null
+          maintenance_due?: boolean
+          updated_by?: string
+        }
+      }
     }
     Views: {
       user_profiles: {
@@ -312,3 +355,11 @@ export type AnimalStatus = 'alive' | 'deceased' | 'transferred' | 'experimental'
 export type AnimalSex = 'male' | 'female'
 export type HousingType = 'individual' | 'pair' | 'group'
 export type HealthStatus = 'excellent' | 'good' | 'concerning' | 'critical'
+
+// Instrument types based on Database schema
+export type Instrument = Database['public']['Tables']['instruments']['Row']
+export type InstrumentInsert = Database['public']['Tables']['instruments']['Insert']
+export type InstrumentUpdate = Database['public']['Tables']['instruments']['Update']
+
+// Instrument-specific enums (extracted from Database types)
+export type InstrumentStatus = 'available' | 'in-use' | 'maintenance' | 'broken'

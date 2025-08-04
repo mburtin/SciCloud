@@ -124,20 +124,12 @@
           <SelectItem value="all">
             All Categories
           </SelectItem>
-          <SelectItem value="Microscopes">
-            Microscopes
-          </SelectItem>
-          <SelectItem value="Centrifuges">
-            Centrifuges
-          </SelectItem>
-          <SelectItem value="Spectrophotometers">
-            Spectrophotometers
-          </SelectItem>
-          <SelectItem value="PCR">
-            PCR
-          </SelectItem>
-          <SelectItem value="Other">
-            Other
+          <SelectItem
+            v-for="category in categories"
+            :key="category"
+            :value="category"
+          >
+            {{ category }}
           </SelectItem>
         </SelectContent>
       </Select>
@@ -164,7 +156,7 @@
               class="cursor-pointer hover:bg-muted/50"
               @click="navigateToInstrumentDetail(instrument.id)"
             >
-              <TableCell>{{ instrument.serial_number }}</TableCell>
+              <TableCell>{{ instrument.serial_number || 'N/A' }}</TableCell>
               <TableCell>
                 <div class="font-medium">
                   {{ instrument.name }}
@@ -174,35 +166,60 @@
                 </div>
               </TableCell>
               <TableCell>{{ instrument.category }}</TableCell>
-              <TableCell>{{ instrument.location }}</TableCell>
+              <TableCell>{{ instrument.location || 'N/A' }}</TableCell>
               <TableCell>
                 <Badge :variant="getStatusVariant(instrument.status)">
                   {{ getStatusLabel(instrument.status) }}
                 </Badge>
               </TableCell>
               <TableCell>
-                <div class="flex items-center gap-2">
-                  <Button variant="ghost" size="sm" @click.stop="openEditInstrumentDialog(instrument.id)">
-                    <Edit class="h-4 w-4" />
-                  </Button>
-                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger as-child>
+                    <Button variant="ghost" size="sm" @click.stop>
+                      <MoreHorizontal class="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem @click="openEditInstrumentDialog(instrument.id)">
+                      <Edit class="h-4 w-4 mr-2" />
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      @click="handleDeleteInstrument(instrument.id)"
+                      class="text-red-600 focus:text-red-600"
+                    >
+                      <Trash2 class="h-4 w-4 mr-2" />
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </TableCell>
             </TableRow>
           </TableBody>
         </Table>
       </CardContent>
     </Card>
+
+    <!-- Instrument Dialog -->
+    <InstrumentDialog
+      :open="showInstrumentDialog"
+      :mode="dialogMode"
+      :instrument="selectedInstrument"
+      @update:open="showInstrumentDialog = $event"
+      @save="handleSaveInstrument"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Plus, Search, Edit, Box, CheckCircle2, Wrench, AlertTriangle } from 'lucide-vue-next'
+import { Plus, Search, Edit, Box, CheckCircle2, Wrench, AlertTriangle, MoreHorizontal, Trash2 } from 'lucide-vue-next'
 import {
   Select,
   SelectContent,
@@ -210,47 +227,57 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { mockInstruments } from '@/mocks/instruments.mock'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { useInstrumentsStore } from '@/stores/instruments.store'
+import InstrumentDialog from '@/components/labs/InstrumentDialog.vue'
+import type { InstrumentStatus, Instrument, InstrumentInsert } from '@/types/supabase'
 
-// Reactive state
-const searchQuery = ref('')
-const filterCategory = ref('all')
-const filterStatus = ref('all')
+// Store
+const instrumentsStore = useInstrumentsStore()
 
-// Instruments data
-const instruments = ref(mockInstruments)
+// Computed properties from store
+const filteredInstruments = computed(() => instrumentsStore.filteredInstruments)
+const stats = computed(() => instrumentsStore.stats)
+const categories = computed(() => instrumentsStore.categories)
+const loading = computed(() => instrumentsStore.loading)
+const error = computed(() => instrumentsStore.error)
 
-// Stats
-const totalInstruments = computed(() => instruments.value.length)
-const operationalInstruments = computed(() => instruments.value.filter(i => i.status === 'available' || i.status === 'in-use').length)
-const maintenanceInstruments = computed(() => instruments.value.filter(i => i.status === 'maintenance').length)
-const maintenanceDueInstruments = computed(() => instruments.value.filter(i => i.maintenanceDue).length)
+// Filters
+const searchQuery = computed({
+  get: () => instrumentsStore.searchQuery,
+  set: (value: string) => instrumentsStore.setSearchQuery(value)
+})
 
+const filterCategory = computed({
+  get: () => instrumentsStore.categoryFilter,
+  set: (value: string | 'all') => instrumentsStore.setCategoryFilter(value)
+})
 
-// Instrument filtering
-const filteredInstruments = computed(() => {
-  let filtered = instruments.value
+const filterStatus = computed({
+  get: () => instrumentsStore.statusFilter,
+  set: (value: InstrumentStatus | 'all') => instrumentsStore.setStatusFilter(value)
+})
 
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(instrument => 
-      instrument.serial_number?.toLowerCase().includes(query) ||
-      instrument.name.toLowerCase().includes(query) ||
-      instrument.manufacturer.toLowerCase().includes(query) ||
-      instrument.model.toLowerCase().includes(query) ||
-      instrument.location?.toLowerCase().includes(query)
-    )
-  }
+// Stats (using store)
+const totalInstruments = computed(() => stats.value.total)
+const operationalInstruments = computed(() => stats.value.operational)
+const maintenanceInstruments = computed(() => stats.value.maintenance)
+const maintenanceDueInstruments = computed(() => stats.value.maintenanceDue)
 
-  if (filterCategory.value !== 'all') {
-    filtered = filtered.filter(instrument => instrument.category === filterCategory.value)
-  }
+// Dialog state
+const showInstrumentDialog = ref(false)
+const dialogMode = ref<'create' | 'edit'>('create')
+const selectedInstrument = ref<Instrument | null>(null)
 
-  if (filterStatus.value !== 'all') {
-    filtered = filtered.filter(instrument => instrument.status === filterStatus.value)
-  }
-
-  return filtered
+// Initialize data
+onMounted(() => {
+  instrumentsStore.fetchInstruments()
 })
 
 // Methods
@@ -275,17 +302,51 @@ const getStatusVariant = (status: string): 'default' | 'destructive' | 'outline'
 }
 
 const openNewInstrumentDialog = () => {
-  // TODO: Implement opening the dialog to add a new instrument
-  console.log('Open dialog to add new instrument')
+  dialogMode.value = 'create'
+  selectedInstrument.value = null
+  showInstrumentDialog.value = true
 }
 
 const openEditInstrumentDialog = (instrumentId: string) => {
-  // TODO: Implement opening the dialog to edit an instrument
-  console.log('Open dialog to edit instrument:', instrumentId)
+  const instrument = filteredInstruments.value.find(i => i.id === instrumentId)
+  if (instrument) {
+    dialogMode.value = 'edit'
+    selectedInstrument.value = instrument
+    showInstrumentDialog.value = true
+  }
 }
 
 const navigateToInstrumentDetail = (instrumentId: string) => {
   // TODO: Implement navigation to the instrument detail page
   console.log('Navigate to instrument detail page:', instrumentId)
+}
+
+const handleSaveInstrument = async (instrumentData: Instrument | InstrumentInsert) => {
+  try {
+    if (dialogMode.value === 'create') {
+      await instrumentsStore.createInstrument(instrumentData as InstrumentInsert)
+    } else {
+      await instrumentsStore.updateInstrument(selectedInstrument.value!.id, instrumentData as any)
+    }
+  } catch (error) {
+    console.error('Error saving instrument:', error)
+  }
+}
+
+const handleDeleteInstrument = async (instrumentId: string) => {
+  const instrument = filteredInstruments.value.find(i => i.id === instrumentId)
+  if (!instrument) return
+
+  const confirmDelete = confirm(`Are you sure you want to delete "${instrument.name}"? This action cannot be undone.`)
+  if (!confirmDelete) return
+
+  try {
+    const success = await instrumentsStore.deleteInstrument(instrumentId)
+    if (success) {
+      console.log('Instrument deleted successfully')
+    }
+  } catch (error) {
+    console.error('Error deleting instrument:', error)
+  }
 }
 </script>
