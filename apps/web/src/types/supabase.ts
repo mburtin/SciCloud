@@ -8,7 +8,7 @@ import type { AnimalDocument, MedicalRecord, Measurement } from './lab'
 export interface Database {
   public: {
     Tables: {
-      profiles: {
+      user_profiles: {
         Row: {
           id: string
           first_name: string
@@ -341,7 +341,7 @@ export interface Database {
       }
     }
     Views: {
-      user_profiles: {
+      user_view: {
         Row: {
           id: string
           email: string | null
@@ -364,13 +364,13 @@ export interface Database {
   }
 }
 
-// Unified User type based on user_profiles view (combines auth.users + profiles)
-export type User = Database['public']['Views']['user_profiles']['Row']
+// Unified User type based on user_view (combines auth.users + user_profiles)
+export type User = Database['public']['Views']['user_view']['Row']
 
-// Profile-specific types (for direct profile table operations)
-export type Profile = Database['public']['Tables']['profiles']['Row']
-export type ProfileInsert = Database['public']['Tables']['profiles']['Insert']
-export type ProfileUpdate = Database['public']['Tables']['profiles']['Update']
+// Profile-specific types (for direct user_profiles table operations)
+export type Profile = Database['public']['Tables']['user_profiles']['Row']
+export type ProfileInsert = Database['public']['Tables']['user_profiles']['Insert']
+export type ProfileUpdate = Database['public']['Tables']['user_profiles']['Update']
 
 // User role type
 export type UserRole = 'admin' | 'user'

@@ -5,36 +5,36 @@
 
 -- 1. Migrate existing data
 -- Convert all 'viewer' to 'user'
-UPDATE public.profiles SET role = 'user' WHERE role = 'viewer';
+UPDATE public.user_profiles SET role = 'user' WHERE role = 'viewer';
 
 -- 2. Update role constraint
-ALTER TABLE public.profiles DROP CONSTRAINT IF EXISTS profiles_role_check;
-ALTER TABLE public.profiles ADD CONSTRAINT profiles_role_check 
+ALTER TABLE public.user_profiles DROP CONSTRAINT IF EXISTS user_profiles_role_check;
+ALTER TABLE public.user_profiles ADD CONSTRAINT user_profiles_role_check 
   CHECK (role IN ('admin', 'user'));
 
 -- 3. Drop old RLS policies
-DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
-DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
-DROP POLICY IF EXISTS "Users can insert own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can view own profile" ON public.user_profiles;
+DROP POLICY IF EXISTS "Users can update own profile" ON public.user_profiles;
+DROP POLICY IF EXISTS "Users can insert own profile" ON public.user_profiles;
 
 -- 4. Simple RLS policies (without recursion)
 
 -- Policy 1: Users can view their own profile
-CREATE POLICY "Users can view own profile" ON public.profiles
+CREATE POLICY "Users can view own profile" ON public.user_profiles
   FOR SELECT TO authenticated
   USING (id = (select auth.uid()));
 
 -- Policy 2: Users can update their own profile (but not their role)
-CREATE POLICY "Users can update own profile" ON public.profiles
+CREATE POLICY "Users can update own profile" ON public.user_profiles
   FOR UPDATE TO authenticated
   USING (id = (select auth.uid()))
   WITH CHECK (
     id = (select auth.uid()) 
-    AND role = (SELECT role FROM public.profiles WHERE id = (select auth.uid()))
+    AND role = (SELECT role FROM public.user_profiles WHERE id = (select auth.uid()))
   );
 
 -- Policy 3: Users can create their own profile
-CREATE POLICY "Users can insert own profile" ON public.profiles
+CREATE POLICY "Users can insert own profile" ON public.user_profiles
   FOR INSERT TO authenticated
   WITH CHECK (id = (select auth.uid()));
 
@@ -49,7 +49,7 @@ STABLE
 SET search_path = ''
 AS $$
   SELECT EXISTS (
-    SELECT 1 FROM public.profiles 
+    SELECT 1 FROM public.user_profiles 
     WHERE id = check_user_id AND role = 'admin'
   );
 $$;
@@ -88,7 +88,7 @@ AS $$
     u.phone,
     u.created_at,
     u.updated_at
-  FROM public.profiles p
+  FROM public.user_profiles p
   JOIN auth.users u ON p.id = u.id
   WHERE public.is_admin_user(auth.uid()) = true
   ORDER BY p.first_name;
@@ -113,7 +113,7 @@ BEGIN
   END IF;
   
   -- Update the role
-  UPDATE public.profiles 
+  UPDATE public.user_profiles 
   SET role = new_role 
   WHERE id = target_user_id;
   
@@ -135,7 +135,7 @@ BEGIN
   END IF;
   
   -- First delete the profile
-  DELETE FROM public.profiles WHERE id = target_user_id;
+  DELETE FROM public.user_profiles WHERE id = target_user_id;
   
   -- Then delete from auth.users (this removes the user from authentication)
   DELETE FROM auth.users WHERE id = target_user_id;
@@ -149,21 +149,21 @@ END;
 $$;
 
 -- 6. Index to optimize performance
-CREATE INDEX IF NOT EXISTS idx_profiles_role ON public.profiles(role);
+CREATE INDEX IF NOT EXISTS idx_user_profiles_role ON public.user_profiles(role);
 
 -- 7. Appropriate grants
-GRANT SELECT, INSERT, UPDATE ON public.profiles TO authenticated;
-GRANT SELECT ON public.user_profiles TO authenticated;
+GRANT SELECT, INSERT, UPDATE ON public.user_profiles TO authenticated;
+GRANT SELECT ON public.user_view TO authenticated;
 GRANT EXECUTE ON FUNCTION public.is_admin_user(uuid) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.get_all_user_profiles() TO authenticated;
 GRANT EXECUTE ON FUNCTION public.admin_update_user_role(uuid, text) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.admin_delete_user(uuid) TO authenticated;
 
 -- 8. Comments for documentation
-COMMENT ON POLICY "Users can view own profile" ON public.profiles IS 
+COMMENT ON POLICY "Users can view own profile" ON public.user_profiles IS 
   'Users can only view their own profile';
 
-COMMENT ON POLICY "Users can update own profile" ON public.profiles IS 
+COMMENT ON POLICY "Users can update own profile" ON public.user_profiles IS 
   'Users can update their profile (but not their role)';
 
 COMMENT ON FUNCTION public.get_all_user_profiles() IS 
@@ -212,7 +212,7 @@ BEGIN
 
     -- Get requesting user's role
     SELECT p.role INTO requesting_user_role 
-    FROM public.profiles p 
+    FROM public.user_profiles p 
     WHERE p.id = requesting_user_id;
 
     -- Check permissions:
@@ -237,7 +237,7 @@ BEGIN
             p.avatar_url,
             p.role
         FROM auth.users u
-        JOIN public.profiles p ON u.id = p.id
+        JOIN public.user_profiles p ON u.id = p.id
         WHERE u.id = user_id;
     ELSE
         -- Limited access: return profile data without sensitive auth fields
@@ -255,7 +255,7 @@ BEGIN
             p.full_address,
             p.avatar_url,
             p.role
-        FROM public.profiles p
+        FROM public.user_profiles p
         WHERE p.id = user_id;
     END IF;
 END;

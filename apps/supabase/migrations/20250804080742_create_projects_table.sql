@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS public.projects (
   status TEXT NOT NULL DEFAULT 'planning' CHECK (status IN ('active', 'planning', 'completed', 'paused', 'archived')),
   priority TEXT NOT NULL DEFAULT 'medium' CHECK (priority IN ('low', 'medium', 'high')),
   progress INTEGER NOT NULL DEFAULT 0 CHECK (progress >= 0 AND progress <= 100),
-  responsible UUID NOT NULL REFERENCES public.profiles(id) ON DELETE RESTRICT,
+  responsible UUID NOT NULL REFERENCES public.user_profiles(id) ON DELETE RESTRICT,
   tags JSONB DEFAULT '[]'::jsonb,
   budget NUMERIC(10,2) NOT NULL DEFAULT 0,
   
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS public.projects (
 CREATE TABLE IF NOT EXISTS public.project_members (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   project_id UUID NOT NULL REFERENCES public.projects(id) ON DELETE CASCADE,
-  user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES public.user_profiles(id) ON DELETE CASCADE,
   role TEXT NOT NULL DEFAULT 'member' CHECK (role IN ('owner', 'admin', 'member', 'viewer')),
   
   -- Audit fields
@@ -104,7 +104,7 @@ CREATE POLICY "Users can view project members"
     )
     -- OR user is admin
     OR EXISTS (
-      SELECT 1 FROM public.profiles 
+      SELECT 1 FROM public.user_profiles 
       WHERE id = (select auth.uid()) AND role = 'admin'
     )
   );
@@ -129,7 +129,7 @@ CREATE POLICY "Project owners can add members"
     )
     -- OR user is system admin
     OR EXISTS (
-      SELECT 1 FROM public.profiles 
+      SELECT 1 FROM public.user_profiles 
       WHERE id = (select auth.uid()) AND role = 'admin'
     )
   );
@@ -154,7 +154,7 @@ CREATE POLICY "Project owners can update members"
     )
     -- OR user is system admin
     OR EXISTS (
-      SELECT 1 FROM public.profiles 
+      SELECT 1 FROM public.user_profiles 
       WHERE id = (select auth.uid()) AND role = 'admin'
     )
   );
@@ -181,7 +181,7 @@ CREATE POLICY "Project owners can remove members"
     )
     -- OR user is system admin
     OR EXISTS (
-      SELECT 1 FROM public.profiles 
+      SELECT 1 FROM public.user_profiles 
       WHERE id = (select auth.uid()) AND role = 'admin'
     )
   );

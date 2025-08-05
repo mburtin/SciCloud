@@ -79,7 +79,7 @@ CREATE POLICY "Animals are updatable by creator or admin" ON public.animals
   FOR UPDATE USING (
     (select auth.uid()) = created_by OR 
     EXISTS (
-      SELECT 1 FROM public.profiles 
+      SELECT 1 FROM public.user_profiles 
       WHERE id = (select auth.uid()) AND role = 'admin'
     )
   )
@@ -87,7 +87,7 @@ CREATE POLICY "Animals are updatable by creator or admin" ON public.animals
     (select auth.uid()) = updated_by AND (
       (select auth.uid()) = created_by OR 
       EXISTS (
-        SELECT 1 FROM public.profiles 
+        SELECT 1 FROM public.user_profiles 
         WHERE id = (select auth.uid()) AND role = 'admin'
       )
     )
@@ -98,7 +98,7 @@ CREATE POLICY "Animals are deletable by creator or admin" ON public.animals
   FOR DELETE USING (
     (select auth.uid()) = created_by OR 
     EXISTS (
-      SELECT 1 FROM public.profiles 
+      SELECT 1 FROM public.user_profiles 
       WHERE id = (select auth.uid()) AND role = 'admin'
     )
   );

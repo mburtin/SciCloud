@@ -49,7 +49,7 @@ CREATE POLICY "Instruments are updatable by creator or admin" ON public.instrume
   FOR UPDATE USING (
     (select auth.uid()) = created_by OR 
     EXISTS (
-      SELECT 1 FROM public.profiles 
+      SELECT 1 FROM public.user_profiles 
       WHERE id = (select auth.uid()) AND role = 'admin'
     )
   )
@@ -57,7 +57,7 @@ CREATE POLICY "Instruments are updatable by creator or admin" ON public.instrume
     (select auth.uid()) = updated_by AND (
       (select auth.uid()) = created_by OR 
       EXISTS (
-        SELECT 1 FROM public.profiles 
+        SELECT 1 FROM public.user_profiles 
         WHERE id = (select auth.uid()) AND role = 'admin'
       )
     )
@@ -68,7 +68,7 @@ CREATE POLICY "Instruments are deletable by creator or admin" ON public.instrume
   FOR DELETE USING (
     (select auth.uid()) = created_by OR 
     EXISTS (
-      SELECT 1 FROM public.profiles 
+      SELECT 1 FROM public.user_profiles 
       WHERE id = (select auth.uid()) AND role = 'admin'
     )
   );

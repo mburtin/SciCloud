@@ -109,7 +109,7 @@ export class ProjectsService {
         .insert(dbProjectData)
         .select(`
           *,
-          responsible_profile:profiles!responsible(
+          responsible_profile:user_profiles!responsible(
             id,
             first_name,
             last_name,
@@ -225,7 +225,7 @@ export class ProjectsService {
         .eq('id', id)
         .select(`
           *,
-          responsible_profile:profiles!responsible(
+          responsible_profile:user_profiles!responsible(
             id,
             first_name,
             last_name,
@@ -234,7 +234,7 @@ export class ProjectsService {
           project_members(
             user_id,
             role,
-            user:profiles(
+            user:user_profiles(
               id,
               first_name,
               last_name,

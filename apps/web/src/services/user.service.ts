@@ -148,7 +148,7 @@ export class UserService {
                 // Update remaining profile fields if any
                 if (Object.keys(profileDataWithoutRole).length > 0) {
                     const { error } = await supabase
-                        .from('profiles')
+                        .from('user_profiles')
                         .update(profileDataWithoutRole)
                         .eq('id', userId)
 
@@ -159,7 +159,7 @@ export class UserService {
             } else {
                 // No role update, just update profile fields
                 const { error } = await supabase
-                    .from('profiles')
+                    .from('user_profiles')
                     .update(cleanProfileData)
                     .eq('id', userId)
 
@@ -258,7 +258,7 @@ export class UserService {
             const searchTerm = query.trim().toLowerCase()
 
             const { data, error } = await supabase
-                .from('profiles')
+                .from('user_profiles')
                 .select('id')
                 .or(`first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%`)
                 .limit(1)
