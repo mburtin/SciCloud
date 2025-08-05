@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS public.animals (
   arrival_date DATE NOT NULL,
   
   -- Physical data
+  age_weeks INTEGER, -- Age in weeks calculated from birth_date or manually entered
   current_weight DECIMAL(8,2) NOT NULL, -- Weight in grams
   supplier TEXT NOT NULL,
   
@@ -56,6 +57,7 @@ CREATE INDEX IF NOT EXISTS idx_animals_strain ON public.animals(strain);
 CREATE INDEX IF NOT EXISTS idx_animals_status ON public.animals(status);
 CREATE INDEX IF NOT EXISTS idx_animals_health_status ON public.animals(health_status);
 CREATE INDEX IF NOT EXISTS idx_animals_veterinarian ON public.animals(veterinarian);
+CREATE INDEX IF NOT EXISTS idx_animals_age_weeks ON public.animals(age_weeks);
 CREATE INDEX IF NOT EXISTS idx_animals_created_by ON public.animals(created_by);
 CREATE INDEX IF NOT EXISTS idx_animals_updated_at ON public.animals(updated_at);
 CREATE INDEX IF NOT EXISTS idx_animals_protocols ON public.animals USING GIN(protocols);
@@ -119,6 +121,7 @@ CREATE TRIGGER update_animals_updated_at
 -- Add some helpful comments
 COMMENT ON TABLE public.animals IS 'Laboratory animals management table';
 COMMENT ON COLUMN public.animals.identifier IS 'Unique animal identifier (e.g., M001-2024)';
+COMMENT ON COLUMN public.animals.age_weeks IS 'Age in weeks calculated from birth_date or manually entered';
 COMMENT ON COLUMN public.animals.location IS 'JSON object containing facility, room, rack, cage information';
 COMMENT ON COLUMN public.animals.documents IS 'Array of document objects (health certificates, photos, etc.)';
 COMMENT ON COLUMN public.animals.medical_history IS 'Array of medical record objects';
