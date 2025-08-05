@@ -304,6 +304,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { formatDate } from '@/utils/format.utils'
 
 // Router and store
 const router = useRouter()
@@ -395,13 +396,6 @@ const calculateAge = (birthDate: string) => {
   }
 }
 
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  })
-}
 
 const isNewAnimalDialogOpen = ref(false)
 

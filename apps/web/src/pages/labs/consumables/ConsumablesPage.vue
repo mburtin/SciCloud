@@ -461,6 +461,7 @@ import {
 import { useConsumablesStore } from '@/stores/consumables.store';
 import type { StockLevel } from '@/types/supabase';
 import { useAuthStore } from '@/stores/auth.store';
+import { formatDate } from '@/utils/format.utils';
 
 // Stores
 const consumablesStore = useConsumablesStore()
@@ -511,14 +512,6 @@ const getStockIndicatorClass = (stockLevel: StockLevel) => {
   return classes[stockLevel]
 }
 
-const formatDate = (dateString: string | null) => {
-  if (!dateString) return ''
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  })
-}
 
 const isNewConsumableDialogOpen = ref(false)
 const newConsumableForm = ref({

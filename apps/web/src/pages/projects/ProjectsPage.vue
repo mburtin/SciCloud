@@ -380,6 +380,7 @@ import {
 import { useProjectsStore } from '@/stores/projects.store'
 import { storeToRefs } from 'pinia'
 import { supabase } from '@/lib/supabase'
+import { formatDate } from '@/utils/format.utils'
 
 // Reactive state
 const router = useRouter();
@@ -496,13 +497,6 @@ const projectStats = computed(() => {
 })
 
 // Methods
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-}
 
 // New project dialog state
 const showNewProjectDialog = ref(false)

@@ -50,11 +50,6 @@ export function useDashboard() {
     }
   }
 
-  const refreshStats = async () => {
-    const statsData = await dashboardService.getStatCards()
-    statCards.value = statsData
-  }
-
   return {
     // State
     statCards,
@@ -68,7 +63,6 @@ export function useDashboard() {
     activeProjectsCount,
 
     // Methods
-    fetchDashboardData,
-    refreshStats
+    fetchDashboardData
   }
 }

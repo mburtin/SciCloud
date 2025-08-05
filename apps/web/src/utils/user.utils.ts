@@ -4,6 +4,7 @@
  */
 
 import type { User, UserRole } from '@/types/supabase'
+import { formatDate } from './format.utils'
 
 /**
  * Determine user status based on activity
@@ -41,16 +42,8 @@ export const calculateUserStats = (users: User[]) => {
   }
 }
 
-/**
- * Format date for display
- */
-export const formatDate = (dateString: string): string => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  })
-}
+// Re-export formatDate from format.utils for backward compatibility
+export { formatDate }
 
 /**
  * Get human-readable role label

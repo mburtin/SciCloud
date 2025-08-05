@@ -156,7 +156,7 @@
               />
               <span class="font-medium">{{ selectedExamType?.label }}</span>
               <span class="text-muted-foreground">
-                • {{ formatDate(formData.date) }}
+                • {{ formatDateSimple(formData.date) }}
               </span>
             </div>
             
@@ -239,6 +239,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { formatDateSimple } from '@/utils/format.utils'
 
 interface Props {
   open: boolean
@@ -353,11 +354,6 @@ const selectedSeverity = computed(() =>
   severityLevels.find(s => s.value === formData.severity)
 )
 
-const formatDate = (dateString: string) => {
-  if (!dateString) return ''
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-US')
-}
 
 const handleSubmit = async () => {
   isSubmitting.value = true

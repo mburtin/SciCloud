@@ -190,6 +190,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { formatDate, formatFileSize } from '@/utils/format.utils'
 
 interface Props {
   entityType: string
@@ -242,19 +243,6 @@ const topTypes = computed(() =>
     .slice(0, 2)
 )
 
-const formatFileSize = (bytes: number): string => {
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-}
-
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', { 
-    day: 'numeric', 
-    month: 'short', 
-    year: 'numeric' 
-  })
-}
 
 const downloadDocument = (document: AnimalDocument) => {
   toast.info(`Downloading ${document.name}...`)

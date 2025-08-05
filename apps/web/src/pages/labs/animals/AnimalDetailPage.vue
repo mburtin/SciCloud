@@ -460,6 +460,7 @@ import AnimalFormDialog from '@/components/labs/AnimalFormDialog.vue'
 import NewMeasurementDialog from '@/components/labs/NewMeasurementDialog.vue'
 import NewMedicalExamDialog from '@/components/labs/NewMedicalExamDialog.vue'
 import DocumentManager from '@/components/labs/DocumentManager.vue'
+import { formatDate } from '@/utils/format.utils'
 
 const route = useRoute()
 const animalId = route.params.id as string
@@ -519,14 +520,6 @@ const getHealthStatusInfo = (healthStatus: string) => {
   }
 }
 
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', { 
-    day: 'numeric', 
-    month: 'short', 
-    year: 'numeric' 
-  })
-}
 
 const calculateAge = (birthDate: string) => {
   const birth = new Date(birthDate)

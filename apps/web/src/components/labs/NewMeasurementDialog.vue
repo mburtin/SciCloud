@@ -129,7 +129,7 @@
             <span class="font-medium">{{ selectedTypeInfo?.label }}:</span>
             <span class="text-lg font-bold">{{ formData.value }} {{ formData.unit === 'none' ? '' : formData.unit }}</span>
             <span class="text-muted-foreground">
-              • {{ formatDate(formData.date) }}
+              • {{ formatDateSimple(formData.date) }}
             </span>
             <span v-if="formData.measuredBy" class="text-muted-foreground">
               • {{ formData.measuredBy }}
@@ -184,6 +184,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { formatDateSimple } from '@/utils/format.utils'
 
 interface Props {
   open: boolean
@@ -281,11 +282,6 @@ const handleTypeChange = (type: unknown) => {
   formData.value = ''
 }
 
-const formatDate = (dateString: string | undefined) => {
-  if (!dateString) return '' // Handle undefined case
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-US')
-}
 
 const handleSubmit = async () => {
   isSubmitting.value = true
