@@ -38,27 +38,27 @@ ALTER TABLE public.instruments ENABLE ROW LEVEL SECURITY;
 -- RLS Policies for instruments table
 -- Allow authenticated users to read all instruments
 CREATE POLICY "Instruments are readable by authenticated users" ON public.instruments
-  FOR SELECT USING (auth.role() = 'authenticated');
+  FOR SELECT USING ((select auth.role()) = 'authenticated');
 
 -- Allow authenticated users to insert instruments
 CREATE POLICY "Instruments are insertable by authenticated users" ON public.instruments
-  FOR INSERT WITH CHECK (auth.role() = 'authenticated' AND auth.uid() = created_by);
+  FOR INSERT WITH CHECK ((select auth.role()) = 'authenticated' AND (select auth.uid()) = created_by);
 
 -- Allow users to update instruments they created or if they're admin
 CREATE POLICY "Instruments are updatable by creator or admin" ON public.instruments
   FOR UPDATE USING (
-    auth.uid() = created_by OR 
+    (select auth.uid()) = created_by OR 
     EXISTS (
       SELECT 1 FROM public.profiles 
-      WHERE id = auth.uid() AND role = 'admin'
+      WHERE id = (select auth.uid()) AND role = 'admin'
     )
   )
   WITH CHECK (
-    auth.uid() = updated_by AND (
-      auth.uid() = created_by OR 
+    (select auth.uid()) = updated_by AND (
+      (select auth.uid()) = created_by OR 
       EXISTS (
         SELECT 1 FROM public.profiles 
-        WHERE id = auth.uid() AND role = 'admin'
+        WHERE id = (select auth.uid()) AND role = 'admin'
       )
     )
   );
@@ -66,10 +66,10 @@ CREATE POLICY "Instruments are updatable by creator or admin" ON public.instrume
 -- Allow users to delete instruments they created or if they're admin
 CREATE POLICY "Instruments are deletable by creator or admin" ON public.instruments
   FOR DELETE USING (
-    auth.uid() = created_by OR 
+    (select auth.uid()) = created_by OR 
     EXISTS (
       SELECT 1 FROM public.profiles 
-      WHERE id = auth.uid() AND role = 'admin'
+      WHERE id = (select auth.uid()) AND role = 'admin'
     )
   );
 

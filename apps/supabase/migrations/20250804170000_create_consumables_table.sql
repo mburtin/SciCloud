@@ -45,13 +45,16 @@ CREATE POLICY "Users can delete consumables" ON public.consumables
 
 -- Create trigger for updated_at
 CREATE OR REPLACE FUNCTION public.update_updated_at_column()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER 
+LANGUAGE plpgsql
+SET search_path = ''
+AS $$
 BEGIN
     NEW.updated_at = NOW();
     NEW.version = OLD.version + 1;
     RETURN NEW;
 END;
-$$ language 'plpgsql';
+$$;
 
 CREATE TRIGGER update_consumables_updated_at 
     BEFORE UPDATE ON public.consumables 
@@ -60,7 +63,10 @@ CREATE TRIGGER update_consumables_updated_at
 
 -- Create trigger to automatically update stock_level based on stock and min_stock
 CREATE OR REPLACE FUNCTION public.update_consumable_stock_level()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER 
+LANGUAGE plpgsql
+SET search_path = ''
+AS $$
 BEGIN
     IF NEW.stock = 0 THEN
         NEW.stock_level = 'outofstock';
@@ -73,7 +79,7 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
-$$ language 'plpgsql';
+$$;
 
 CREATE TRIGGER update_consumable_stock_level_trigger
     BEFORE INSERT OR UPDATE ON public.consumables

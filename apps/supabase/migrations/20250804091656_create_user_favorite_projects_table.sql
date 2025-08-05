@@ -21,14 +21,14 @@ ALTER TABLE public.user_favorite_projects ENABLE ROW LEVEL SECURITY;
 
 -- Users can view their own favorites
 CREATE POLICY "Users can view their own favorite projects" ON public.user_favorite_projects
-  FOR SELECT USING (auth.uid() = user_id);
+  FOR SELECT USING ((select auth.uid()) = user_id);
 
 -- Users can add projects to their own favorites
 CREATE POLICY "Users can add to their own favorites" ON public.user_favorite_projects
-  FOR INSERT WITH CHECK (auth.uid() = user_id);
+  FOR INSERT WITH CHECK ((select auth.uid()) = user_id);
 
 -- Users can remove projects from their own favorites
 CREATE POLICY "Users can remove from their own favorites" ON public.user_favorite_projects
-  FOR DELETE USING (auth.uid() = user_id);
+  FOR DELETE USING ((select auth.uid()) = user_id);
 
 -- No update needed as there are no mutable fields besides the primary keys

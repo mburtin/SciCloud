@@ -68,27 +68,27 @@ ALTER TABLE public.animals ENABLE ROW LEVEL SECURITY;
 -- RLS Policies for animals table
 -- Allow authenticated users to read all animals
 CREATE POLICY "Animals are readable by authenticated users" ON public.animals
-  FOR SELECT USING (auth.role() = 'authenticated');
+  FOR SELECT USING ((select auth.role()) = 'authenticated');
 
 -- Allow authenticated users to insert animals
 CREATE POLICY "Animals are insertable by authenticated users" ON public.animals
-  FOR INSERT WITH CHECK (auth.role() = 'authenticated' AND auth.uid() = created_by);
+  FOR INSERT WITH CHECK ((select auth.role()) = 'authenticated' AND (select auth.uid()) = created_by);
 
 -- Allow users to update animals they created or if they're admin
 CREATE POLICY "Animals are updatable by creator or admin" ON public.animals
   FOR UPDATE USING (
-    auth.uid() = created_by OR 
+    (select auth.uid()) = created_by OR 
     EXISTS (
       SELECT 1 FROM public.profiles 
-      WHERE id = auth.uid() AND role = 'admin'
+      WHERE id = (select auth.uid()) AND role = 'admin'
     )
   )
   WITH CHECK (
-    auth.uid() = updated_by AND (
-      auth.uid() = created_by OR 
+    (select auth.uid()) = updated_by AND (
+      (select auth.uid()) = created_by OR 
       EXISTS (
         SELECT 1 FROM public.profiles 
-        WHERE id = auth.uid() AND role = 'admin'
+        WHERE id = (select auth.uid()) AND role = 'admin'
       )
     )
   );
@@ -96,22 +96,25 @@ CREATE POLICY "Animals are updatable by creator or admin" ON public.animals
 -- Allow users to delete animals they created or if they're admin
 CREATE POLICY "Animals are deletable by creator or admin" ON public.animals
   FOR DELETE USING (
-    auth.uid() = created_by OR 
+    (select auth.uid()) = created_by OR 
     EXISTS (
       SELECT 1 FROM public.profiles 
-      WHERE id = auth.uid() AND role = 'admin'
+      WHERE id = (select auth.uid()) AND role = 'admin'
     )
   );
 
 -- Create trigger to update updated_at timestamp
 CREATE OR REPLACE FUNCTION public.update_updated_at_column()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER 
+LANGUAGE plpgsql
+SET search_path = ''
+AS $$
 BEGIN
   NEW.updated_at = NOW();
   NEW.version = OLD.version + 1;
   RETURN NEW;
 END;
-$$ language 'plpgsql';
+$$;
 
 CREATE TRIGGER update_animals_updated_at
   BEFORE UPDATE ON public.animals

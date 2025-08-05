@@ -22,21 +22,21 @@ DROP POLICY IF EXISTS "Users can insert own profile" ON public.profiles;
 -- Policy 1: Users can view their own profile
 CREATE POLICY "Users can view own profile" ON public.profiles
   FOR SELECT TO authenticated
-  USING (id = auth.uid());
+  USING (id = (select auth.uid()));
 
 -- Policy 2: Users can update their own profile (but not their role)
 CREATE POLICY "Users can update own profile" ON public.profiles
   FOR UPDATE TO authenticated
-  USING (id = auth.uid())
+  USING (id = (select auth.uid()))
   WITH CHECK (
-    id = auth.uid() 
-    AND role = (SELECT role FROM public.profiles WHERE id = auth.uid())
+    id = (select auth.uid()) 
+    AND role = (SELECT role FROM public.profiles WHERE id = (select auth.uid()))
   );
 
 -- Policy 3: Users can create their own profile
 CREATE POLICY "Users can insert own profile" ON public.profiles
   FOR INSERT TO authenticated
-  WITH CHECK (id = auth.uid());
+  WITH CHECK (id = (select auth.uid()));
 
 -- 5. Functions for admin operations (bypass RLS with SECURITY DEFINER)
 
@@ -46,6 +46,7 @@ RETURNS boolean
 LANGUAGE sql
 SECURITY DEFINER
 STABLE
+SET search_path = ''
 AS $$
   SELECT EXISTS (
     SELECT 1 FROM public.profiles 
@@ -72,6 +73,7 @@ RETURNS TABLE (
 LANGUAGE sql
 SECURITY DEFINER
 STABLE
+SET search_path = ''
 AS $$
   SELECT 
     p.id,
@@ -97,6 +99,7 @@ CREATE OR REPLACE FUNCTION public.admin_update_user_role(target_user_id uuid, ne
 RETURNS boolean
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = ''
 AS $$
 BEGIN
   -- Check that current user is admin
@@ -123,6 +126,7 @@ CREATE OR REPLACE FUNCTION public.admin_delete_user(target_user_id uuid)
 RETURNS boolean
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = ''
 AS $$
 BEGIN
   -- Check that current user is admin
@@ -191,7 +195,7 @@ RETURNS TABLE (
     role text
 ) 
 SECURITY DEFINER
-SET search_path = public
+SET search_path = ''
 LANGUAGE plpgsql
 AS $$
 DECLARE
@@ -208,7 +212,7 @@ BEGIN
 
     -- Get requesting user's role
     SELECT p.role INTO requesting_user_role 
-    FROM profiles p 
+    FROM public.profiles p 
     WHERE p.id = requesting_user_id;
 
     -- Check permissions:
@@ -233,7 +237,7 @@ BEGIN
             p.avatar_url,
             p.role
         FROM auth.users u
-        JOIN profiles p ON u.id = p.id
+        JOIN public.profiles p ON u.id = p.id
         WHERE u.id = user_id;
     ELSE
         -- Limited access: return profile data without sensitive auth fields
@@ -251,7 +255,7 @@ BEGIN
             p.full_address,
             p.avatar_url,
             p.role
-        FROM profiles p
+        FROM public.profiles p
         WHERE p.id = user_id;
     END IF;
 END;

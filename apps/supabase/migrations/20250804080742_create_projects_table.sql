@@ -57,12 +57,12 @@ CREATE POLICY "Project members can update"
       FROM public.project_members pm
       WHERE
         pm.project_id = public.projects.id
-        AND pm.user_id = auth.uid()
+        AND pm.user_id = (select auth.uid())
     )
     -- OR user is the creator
-    OR created_by = auth.uid()
+    OR created_by = (select auth.uid())
     -- OR user is responsible for the project
-    OR responsible = auth.uid()
+    OR responsible = (select auth.uid())
   );
 
 -- Allow project members, creators, and responsible users to delete projects
@@ -76,16 +76,112 @@ CREATE POLICY "Project members can delete"
       FROM public.project_members pm
       WHERE
         pm.project_id = public.projects.id
-        AND pm.user_id = auth.uid()
+        AND pm.user_id = (select auth.uid())
     )
     -- OR user is the creator
-    OR created_by = auth.uid()
+    OR created_by = (select auth.uid())
     -- OR user is responsible for the project
-    OR responsible = auth.uid()
+    OR responsible = (select auth.uid())
   );
 
-  -- Allow authenticated users to create projects
+-- Allow authenticated users to create projects
 CREATE POLICY "Authenticated users can create projects"
   ON public.projects
   FOR INSERT
-  WITH CHECK (auth.role() = 'authenticated');
+  WITH CHECK ((select auth.role()) = 'authenticated');
+
+-- RLS Policies for project_members table
+-- Allow users to view project members if they are members themselves or admins
+CREATE POLICY "Users can view project members"
+  ON public.project_members
+  FOR SELECT
+  USING (
+    -- User is a member of the project
+    EXISTS (
+      SELECT 1 FROM public.project_members pm2
+      WHERE pm2.project_id = public.project_members.project_id
+      AND pm2.user_id = (select auth.uid())
+    )
+    -- OR user is admin
+    OR EXISTS (
+      SELECT 1 FROM public.profiles 
+      WHERE id = (select auth.uid()) AND role = 'admin'
+    )
+  );
+
+-- Allow users to add project members if they are project owners/admins or system admins
+CREATE POLICY "Project owners can add members"
+  ON public.project_members
+  FOR INSERT
+  WITH CHECK (
+    -- User is owner/admin of the project
+    EXISTS (
+      SELECT 1 FROM public.project_members pm
+      WHERE pm.project_id = public.project_members.project_id
+      AND pm.user_id = (select auth.uid())
+      AND pm.role IN ('owner', 'admin')
+    )
+    -- OR user is the project creator
+    OR EXISTS (
+      SELECT 1 FROM public.projects p
+      WHERE p.id = public.project_members.project_id
+      AND p.created_by = (select auth.uid())
+    )
+    -- OR user is system admin
+    OR EXISTS (
+      SELECT 1 FROM public.profiles 
+      WHERE id = (select auth.uid()) AND role = 'admin'
+    )
+  );
+
+-- Allow users to update project members if they are project owners/admins or system admins
+CREATE POLICY "Project owners can update members"
+  ON public.project_members
+  FOR UPDATE
+  USING (
+    -- User is owner/admin of the project
+    EXISTS (
+      SELECT 1 FROM public.project_members pm
+      WHERE pm.project_id = public.project_members.project_id
+      AND pm.user_id = (select auth.uid())
+      AND pm.role IN ('owner', 'admin')
+    )
+    -- OR user is the project creator
+    OR EXISTS (
+      SELECT 1 FROM public.projects p
+      WHERE p.id = public.project_members.project_id
+      AND p.created_by = (select auth.uid())
+    )
+    -- OR user is system admin
+    OR EXISTS (
+      SELECT 1 FROM public.profiles 
+      WHERE id = (select auth.uid()) AND role = 'admin'
+    )
+  );
+
+-- Allow users to remove project members if they are project owners/admins, system admins, or removing themselves
+CREATE POLICY "Project owners can remove members"
+  ON public.project_members
+  FOR DELETE
+  USING (
+    -- User is removing themselves
+    user_id = (select auth.uid())
+    -- OR user is owner/admin of the project
+    OR EXISTS (
+      SELECT 1 FROM public.project_members pm
+      WHERE pm.project_id = public.project_members.project_id
+      AND pm.user_id = (select auth.uid())
+      AND pm.role IN ('owner', 'admin')
+    )
+    -- OR user is the project creator
+    OR EXISTS (
+      SELECT 1 FROM public.projects p
+      WHERE p.id = public.project_members.project_id
+      AND p.created_by = (select auth.uid())
+    )
+    -- OR user is system admin
+    OR EXISTS (
+      SELECT 1 FROM public.profiles 
+      WHERE id = (select auth.uid()) AND role = 'admin'
+    )
+  );
