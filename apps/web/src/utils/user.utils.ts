@@ -3,7 +3,7 @@
  * Business logic for user data manipulation
  */
 
-import type { User, UserStats, UserRole } from '@/types/supabase'
+import type { User, UserRole } from '@/types/supabase'
 
 /**
  * Determine user status based on activity
@@ -25,7 +25,7 @@ export const getUserStatus = (user: User): 'active' | 'inactive' => {
 /**
  * Calculate user statistics from user list
  */
-export const calculateUserStats = (users: User[]): UserStats => {
+export const calculateUserStats = (users: User[]) => {
   const total = users.length
   const active = users.filter(u => getUserStatus(u) === 'active').length
   const inactive = users.filter(u => getUserStatus(u) === 'inactive').length

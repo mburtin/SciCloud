@@ -3,6 +3,5 @@
  */
 
 export { useDashboard } from './useDashboard'
-export { useProjects } from './useProjects'
 export { useNavigation } from './useNavigation'
-export { useLab } from './useLab'
+export { useNotification } from './useNotification'

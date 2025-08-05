@@ -26,7 +26,7 @@
     <div v-else-if="error" class="text-center py-8">
       <p class="text-destructive">{{ error }}</p>
       <button 
-        @click="fetchProjects"
+        @click="projectsStore.fetchProjects"
         class="mt-2 text-sm text-primary hover:underline"
       >
         Try again
@@ -367,7 +367,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'

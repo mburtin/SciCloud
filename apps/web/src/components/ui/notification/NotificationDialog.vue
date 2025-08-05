@@ -41,7 +41,7 @@ const props = withDefaults(defineProps<Props>(), {
   variant: 'info'
 })
 
-const emit = defineEmits<{
+defineEmits<{
   close: []
 }>()
 
