@@ -14,6 +14,7 @@ const NotesPage = () => import('@/pages/NotesPage.vue')
 
 
 const LoginPage = () => import('@/pages/LoginPage.vue')
+const WelcomePage = () => import('@/pages/WelcomePage.vue')
 const ErrorPage = () => import('@/pages/ErrorPage.vue')
 
 // Authentication is now handled by the Pinia auth store.
@@ -39,6 +40,12 @@ declare module 'vue-router' {
 
 // Application routes
 const routes = [
+  {
+    path: '/welcome',
+    name: 'welcome',
+    component: WelcomePage,
+    meta: { requiresAuth: false }
+  },
   {
     path: '/login',
     name: 'login',
@@ -156,6 +163,47 @@ router.beforeEach(async (to, _from, next) => {
   const requiresAuth = to.matched.some(record => record.meta?.requiresAuth !== false)
   const requiresAdmin = to.matched.some(record => record.meta?.requiresAdmin === true)
 
+  // Special handling for root path - check if users exist
+  if (to.path === '/') {
+    try {
+      const usersExist = await userStore.checkUsersExist()
+      if (!usersExist) {
+        next('/welcome')
+        return
+      }
+      // If users exist and user is not authenticated, redirect to login
+      if (!authStore.isInitialized) {
+        await authStore.initialize()
+      }
+      if (!authStore.isAuthenticated) {
+        next('/login')
+        return
+      }
+      // User is authenticated and users exist, proceed to dashboard
+      next('/dashboard')
+      return
+    } catch (error) {
+      console.error('Error checking users for root path:', error)
+      next('/welcome')
+      return
+    }
+  }
+
+  // Check if accessing login page - redirect to welcome if no users exist
+  if (to.path === '/login') {
+    try {
+      const usersExist = await userStore.checkUsersExist()
+      if (!usersExist) {
+        next('/welcome')
+        return
+      }
+    } catch (error) {
+      console.error('Error checking users for login path:', error)
+      next('/welcome')
+      return
+    }
+  }
+
   if (requiresAuth) {
     // Initialize auth if not already done
     if (!authStore.isInitialized) {
@@ -164,6 +212,16 @@ router.beforeEach(async (to, _from, next) => {
     
     // Simple authentication check - trust the store state
     if (!authStore.isAuthenticated) {
+      // Check if users exist before redirecting to login
+      try {
+        const usersExist = await userStore.checkUsersExist()
+        if (!usersExist) {
+          next('/welcome')
+          return
+        }
+      } catch (error) {
+        console.error('Error checking users:', error)
+      }
       next('/login')
       return
     }

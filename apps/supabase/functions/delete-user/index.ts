@@ -107,7 +107,7 @@ Deno.serve(async (req) => {
     // Check if user is admin by querying their profile
     console.log('[DEBUG] Checking admin role...')
     const { data: profile, error: profileError } = await userSupabase
-      .from('profiles')
+      .from('user_profiles')
       .select('role')
       .eq('id', user.id)
       .single()

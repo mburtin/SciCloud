@@ -62,61 +62,77 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
-    // Create Supabase client with user's auth context for validation
-    const authHeader = req.headers.get('Authorization')
-    if (!authHeader) {
-      return new Response(
-        JSON.stringify({ success: false, error: 'Authorization header required' }),
-        { 
-          status: 401,
-          headers: { 
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-          }
-        }
-      )
-    }
+    // Create admin Supabase client to check if any users exist
+    const adminSupabase = createClient(supabaseUrl, supabaseServiceKey)
+    
+    // Check if this is the first user (bootstrap case)
+    const { data: existingUsers, error: usersError } = await adminSupabase
+      .from('user_profiles')
+      .select('id')
+      .limit(1)
 
-    const userSupabase = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!, {
-      global: {
-        headers: { Authorization: authHeader },
+    const isFirstUser = !existingUsers || existingUsers.length === 0
+
+    // If not the first user, require authentication and admin role
+    if (!isFirstUser) {
+      const authHeader = req.headers.get('Authorization')
+      if (!authHeader) {
+        return new Response(
+          JSON.stringify({ success: false, error: 'Authorization header required' }),
+          { 
+            status: 401,
+            headers: { 
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            }
+          }
+        )
       }
-    })
 
-    // Verify the requesting user is authenticated and is an admin
-    const { data: { user }, error: authError } = await userSupabase.auth.getUser()
-    if (authError || !user) {
-      return new Response(
-        JSON.stringify({ success: false, error: 'Invalid authentication' }),
-        { 
-          status: 401,
-          headers: { 
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-          }
+      const userSupabase = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!, {
+        global: {
+          headers: { Authorization: authHeader },
         }
-      )
-    }
+      })
 
-    // Check if user is admin by querying their profile
-    console.log('[DEBUG] Checking admin role...')
-    const { data: profile, error: profileError } = await userSupabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-
-    if (profileError || !profile || profile.role !== 'admin') {
-      return new Response(
-        JSON.stringify({ success: false, error: 'Admin access required' }),
-        { 
-          status: 403,
-          headers: { 
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+      // Verify the requesting user is authenticated and is an admin
+      const { data: { user }, error: authError } = await userSupabase.auth.getUser()
+      if (authError || !user) {
+        return new Response(
+          JSON.stringify({ success: false, error: 'Invalid authentication' }),
+          { 
+            status: 401,
+            headers: { 
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            }
           }
-        }
-      )
+        )
+      }
+
+      // Check if user is admin by querying their profile
+      console.log('[DEBUG] Checking admin role...')
+      const { data: profile, error: profileError } = await userSupabase
+        .from('user_profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+
+      if (profileError || !profile || profile.role !== 'admin') {
+        return new Response(
+          JSON.stringify({ success: false, error: 'Admin access required' }),
+          { 
+            status: 403,
+            headers: { 
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            }
+          }
+        )
+      }
+    } else {
+      // First user creation - force admin role
+      console.log('[DEBUG] First user creation - bootstrap mode')
     }
 
     // Parse request body
@@ -139,8 +155,8 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Create admin Supabase client with service role
-    const adminSupabase = createClient(supabaseUrl, supabaseServiceKey)
+    // Force first user to be admin
+    const finalRole = isFirstUser ? 'admin' : (userData.role || 'user')
 
     // Create the auth user
     const { data: authData, error: createError } = await adminSupabase.auth.admin.createUser({
@@ -171,7 +187,7 @@ Deno.serve(async (req) => {
 
     // Create the user profile
     const { error: profileInsertError } = await adminSupabase
-      .from('profiles')
+      .from('user_profiles')
       .insert({
         id: authData.user.id,
         first_name: userData.first_name,
@@ -180,7 +196,7 @@ Deno.serve(async (req) => {
         location: userData.location || '',
         full_address: userData.full_address || '',
         avatar_url: userData.avatar_url || null,
-        role: userData.role || 'user'
+        role: finalRole
       })
 
     if (profileInsertError) {
@@ -209,7 +225,7 @@ Deno.serve(async (req) => {
         email: authData.user.email!,
         first_name: userData.first_name,
         last_name: userData.last_name,
-        role: userData.role || 'user'
+        role: finalRole
       }
     }
 

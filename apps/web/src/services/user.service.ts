@@ -78,15 +78,9 @@ export class UserService {
                 return { success: false, error: data?.error || 'Unknown error from user creation function' }
             }
 
-            // If successful, fetch the complete user data to ensure consistency
-            if (data.data?.id) {
-                const completeUser = await this.fetchUser(data.data.id)
-                if (completeUser) {
-                    return { success: true, data: completeUser }
-                }
-            }
-
-            // Fallback: return the data from Edge function if fetch fails
+            // Return the data from Edge function directly
+            // Note: We don't fetch the complete user profile here because it requires authentication
+            // and during admin creation, no user is logged in yet
             return { success: true, data: data.data as User }
         } catch (error) {
             console.error('Unexpected error in createUser:', error)
@@ -127,7 +121,7 @@ export class UserService {
         try {
             // Remove undefined values
             const cleanProfileData = Object.fromEntries(
-                Object.entries(profileData).filter(([_, value]) => value !== undefined)
+                Object.entries(profileData).filter(([, value]) => value !== undefined)
             ) as ProfileUpdate
 
             // If updating role, use the admin RPC function for proper permissions
@@ -143,7 +137,8 @@ export class UserService {
                 }
 
                 // Remove role from profileData since it's already updated via RPC
-                const { role, ...profileDataWithoutRole } = cleanProfileData
+                const { ...profileDataWithoutRole } = cleanProfileData
+                delete profileDataWithoutRole.role
                 
                 // Update remaining profile fields if any
                 if (Object.keys(profileDataWithoutRole).length > 0) {
@@ -273,6 +268,23 @@ export class UserService {
         } catch (error) {
             console.error('Unexpected error searching user ID:', error)
             return null
+        }
+    }
+
+    // Check if any users exist (public function for bootstrap purposes)
+    static async usersExist(): Promise<boolean> {
+        try {
+            const { data, error } = await supabase.rpc('users_exist')
+            
+            if (error) {
+                console.error('Error checking if users exist:', error)
+                return false
+            }
+            
+            return data === true
+        } catch (error) {
+            console.error('Unexpected error checking users exist:', error)
+            return false
         }
     }
 

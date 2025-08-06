@@ -258,6 +258,16 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
+  // Check if users exist (for bootstrap purposes)
+  async function checkUsersExist(): Promise<boolean> {
+    try {
+      return await UserService.usersExist()
+    } catch (err) {
+      console.error('Error checking if users exist:', err)
+      return false
+    }
+  }
+
   return {
     // State
     users: computed(() => users.value),
@@ -282,6 +292,7 @@ export const useUserStore = defineStore('user', () => {
     searchUserID,
     refreshCache,
     getCurrentUser,
-    loadCurrentUserProfile
+    loadCurrentUserProfile,
+    checkUsersExist
   }
 })
