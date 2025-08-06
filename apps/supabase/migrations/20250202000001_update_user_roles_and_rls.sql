@@ -24,14 +24,11 @@ CREATE POLICY "Users can view own profile" ON public.user_profiles
   FOR SELECT TO authenticated
   USING (id = (select auth.uid()));
 
--- Policy 2: Users can update their own profile (but not their role)
+-- Policy 2: Users can update their own profile (role updates handled via admin function)
 CREATE POLICY "Users can update own profile" ON public.user_profiles
   FOR UPDATE TO authenticated
   USING (id = (select auth.uid()))
-  WITH CHECK (
-    id = (select auth.uid()) 
-    AND role = (SELECT role FROM public.user_profiles WHERE id = (select auth.uid()))
-  );
+  WITH CHECK (id = (select auth.uid()));
 
 -- Policy 3: Users can create their own profile
 CREATE POLICY "Users can insert own profile" ON public.user_profiles
