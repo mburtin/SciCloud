@@ -8,7 +8,6 @@
     "web:dev": "pnpm --filter web dev",
     "web:build": "pnpm --filter web build",
     "web:preview": "pnpm --filter web preview",
-    "web:test": "pnpm --filter web test",
     "supabase:start": "cd apps/supabase && supabase start",
     "supabase:stop": "cd apps/supabase && supabase stop",
     "supabase:reset": "cd apps/supabase && supabase db reset",
@@ -16,7 +15,10 @@
     "supabase:functions": "sleep 5 && cd apps/supabase && supabase functions serve --no-verify-jwt",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "type-check": "pnpm --filter web type-check"
+    "type-check": "pnpm --filter web type-check",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage"
   },
   "keywords": [
     "scientific research",
@@ -32,8 +34,17 @@
     "@types/node": "^24.1.0",
     "@typescript-eslint/eslint-plugin": "^8.38.0",
     "@typescript-eslint/parser": "^8.38.0",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "@vitest/coverage-v8": "^3.1.1",
+    "@vitest/ui": "^3.1.1",
+    "@vue/test-utils": "^2.4.6",
     "concurrently": "^9.2.0",
     "eslint": "^9.32.0",
-    "globals": "^16.3.0"
+    "globals": "^16.3.0",
+    "jsdom": "^25.0.1",
+    "pinia": "^3.0.3",
+    "vite": "^6.0.7",
+    "vitest": "^3.1.1",
+    "vue": "^3.5.18"
   }
 }

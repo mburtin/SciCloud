@@ -12,8 +12,8 @@ import {
   getStatusVariant,
   formatDate
 } from '@/utils/user.utils'
-import { users, usersList } from '@/test/utils/fixtures'
-import { createMockUser } from '@/test/utils/test-utils'
+import { users, usersList } from '../../utils/fixtures'
+import { createMockUser } from '../../utils/test-utils'
 import type { User, UserRole } from '@/types/supabase'
 
 describe('user.utils', () => {

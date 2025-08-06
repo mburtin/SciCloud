@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { createMockUser } from '@/test/utils/test-utils'
+import { createMockUser } from '../../utils/test-utils'
 
 // Create inline fixtures to avoid import errors
 const createUserData = {

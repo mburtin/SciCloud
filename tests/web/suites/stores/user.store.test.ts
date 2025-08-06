@@ -6,8 +6,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useUserStore } from '@/stores/user.store'
-import { createMockUser } from '@/test/utils/test-utils'
-import { mockUsers } from '@/test/__mocks__/supabase.mock'
+import { createMockUser } from '../../utils/test-utils'
+import { mockUsers } from '../../__mocks__/supabase.mock'
 import type { User } from '@/types/supabase'
 
 // Mock the UserService using vi.hoisted
