@@ -229,7 +229,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -333,4 +333,11 @@ const goToLogin = () => {
 onMounted(() => {
   checkUsersExist();
 });
+
+// Watch route changes to trigger redirect check even on manual navigation
+watch(() => router.currentRoute.value.path, (newPath) => {
+  if (newPath === '/welcome' && !showSuccess.value && !skipUserCheck.value) {
+    checkUsersExist();
+  }
+}, { immediate: true });
 </script>

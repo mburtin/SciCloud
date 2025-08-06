@@ -271,8 +271,11 @@ const isModuleActive = (module: NavigationModule) => {
 const logout = async () => {
   try {
     await authStore.logout()
-    // Force navigation immediately after logout
-    window.location.href = '/login'
+    // Navigate to login after successful logout
+    router.push('/login').catch(() => {
+      // If router navigation fails, force reload to login
+      window.location.href = '/login'
+    })
   } catch (error) {
     console.error('Logout failed:', error)
     // Redirect to error page in case of logout failure
