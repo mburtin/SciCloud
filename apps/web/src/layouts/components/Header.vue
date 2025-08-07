@@ -125,7 +125,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useAuthStore } from '@/stores/auth.store'
-import { useNavigation } from '@/composables/useNavigation'
 import { useUserStore } from '@/stores/user.store'
 import { useNotificationsStore } from '@/stores/notifications.store'
 import { useRealtimeNotifications } from '@/composables/useRealtimeNotifications'
@@ -138,8 +137,14 @@ const authStore = useAuthStore()
 const userStore = useUserStore()
 const notificationsStore = useNotificationsStore()
 
+// Navigation modules
+const mainModules: NavigationModule[] = [
+  { id: 'dashboard', label: 'Dashboard', icon: 'layout-dashboard', to: '/dashboard' },
+  { id: 'laboratory', label: 'Laboratory', icon: 'test-tube', to: '/lab/animals' },
+  { id: 'projects', label: 'Projects', icon: 'folder-open', to: '/projects' },
+]
+
 // Use composables
-const { mainModules } = useNavigation()
 const realtimeNotifications = useRealtimeNotifications()
 
 // Local state
