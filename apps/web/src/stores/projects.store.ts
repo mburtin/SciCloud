@@ -100,9 +100,8 @@ export const useProjectsStore = defineStore('projects', () => {
       const fetchedProjects = await projectsService.getProjects()
       projects.value = fetchedProjects
       isInitialized.value = true
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to fetch projects'
-      console.error('Error fetching projects:', err)
+    } catch {
+      error.value = 'Failed to fetch projects'
     } finally {
       loading.value = false
     }
@@ -125,9 +124,7 @@ export const useProjectsStore = defineStore('projects', () => {
         }
       }
       return project
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to fetch project'
-      console.error('Error fetching project:', err)
+    } catch {
       return null
     }
   }
@@ -140,9 +137,7 @@ export const useProjectsStore = defineStore('projects', () => {
       const newProject = await projectsService.createProject(projectData)
       projects.value.unshift(newProject) // Add to beginning of array
       return newProject
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to create project'
-      console.error('Error creating project:', err)
+    } catch {
       return null
     } finally {
       loading.value = false
@@ -160,9 +155,7 @@ export const useProjectsStore = defineStore('projects', () => {
       }
       
       return updatedProject
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to update project'
-      console.error('Error updating project:', err)
+    } catch {
       return null
     }
   }
@@ -178,9 +171,7 @@ export const useProjectsStore = defineStore('projects', () => {
       }
       
       return true
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to delete project'
-      console.error('Error deleting project:', err)
+    } catch {
       return false
     }
   }
@@ -196,9 +187,7 @@ export const useProjectsStore = defineStore('projects', () => {
       }
       
       return true
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to toggle favorite'
-      console.error('Error toggling favorite:', err)
+    } catch {
       return false
     }
   }
@@ -214,9 +203,7 @@ export const useProjectsStore = defineStore('projects', () => {
       }
       
       return true
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to toggle archive'
-      console.error('Error toggling archive:', err)
+    } catch {
       return false
     }
   }
@@ -230,9 +217,7 @@ export const useProjectsStore = defineStore('projects', () => {
       await getProjectById(projectId)
       
       return true
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to add project member'
-      console.error('Error adding project member:', err)
+    } catch {
       return false
     }
   }
@@ -245,9 +230,7 @@ export const useProjectsStore = defineStore('projects', () => {
       await getProjectById(projectId)
       
       return true
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to remove project member'
-      console.error('Error removing project member:', err)
+    } catch {
       return false
     }
   }
@@ -260,9 +243,7 @@ export const useProjectsStore = defineStore('projects', () => {
       await getProjectById(projectId)
       
       return true
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to update project member role'
-      console.error('Error updating project member role:', err)
+    } catch {
       return false
     }
   }

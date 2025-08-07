@@ -8,7 +8,6 @@ import { setActivePinia, createPinia } from 'pinia'
 import { useUserStore } from '@/stores/user.store'
 import { createMockUser } from '../../utils/test-utils'
 import { mockUsers } from '../../__mocks__/supabase.mock'
-import type { User } from '@/types/supabase'
 
 // Mock the UserService using vi.hoisted
 const mockUserService = vi.hoisted(() => ({

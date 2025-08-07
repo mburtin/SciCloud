@@ -143,9 +143,10 @@ export const createMockSupabaseClient = () => {
     // RPC (Remote Procedure Call) methods
     rpc: vi.fn().mockImplementation(async (functionName, params) => {
       switch (functionName) {
-        case 'get_user_profile':
+        case 'get_user_profile': {
           const user = mockDataStore.users.find(u => u.id === params?.user_id)
           return createMockResponse(user, user ? null : { message: 'User not found' })
+        }
           
         case 'get_all_user_profiles':
           return createMockResponse(mockDataStore.users)
@@ -153,13 +154,14 @@ export const createMockSupabaseClient = () => {
         case 'users_exist':
           return createMockResponse(mockDataStore.users.length > 0)
           
-        case 'admin_update_user_role':
+        case 'admin_update_user_role': {
           const targetUser = mockDataStore.users.find(u => u.id === params?.target_user_id)
           if (targetUser) {
             targetUser.role = params?.new_role
             return createMockResponse(null)
           }
           return createMockResponse(null, { message: 'User not found' })
+        }
           
         default:
           return createMockResponse(null, { message: 'Function not found' })
@@ -170,7 +172,7 @@ export const createMockSupabaseClient = () => {
     functions: {
       invoke: vi.fn().mockImplementation(async (functionName, { body }) => {
         switch (functionName) {
-          case 'create-user':
+          case 'create-user': {
             const newUser = {
               id: `mock-user-${Date.now()}`,
               email: body.email,
@@ -181,14 +183,16 @@ export const createMockSupabaseClient = () => {
             }
             mockDataStore.users.push(newUser)
             return createMockResponse({ success: true, data: newUser })
+          }
             
-          case 'delete-user':
+          case 'delete-user': {
             const userIndex = mockDataStore.users.findIndex(u => u.id === body.userId)
             if (userIndex >= 0) {
               mockDataStore.users.splice(userIndex, 1)
               return createMockResponse({ success: true })
             }
             return createMockResponse({ success: false, error: 'User not found' })
+          }
             
           default:
             return createMockResponse({ success: false, error: 'Function not found' })

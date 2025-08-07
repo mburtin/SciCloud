@@ -9,7 +9,6 @@ import type {
   Notification,
   NotificationSettings,
   NotificationSettingsUpdate,
-  NotificationsState,
   NotificationTypeCategory,
   UUID
 } from '@/types/notifications'
@@ -59,9 +58,8 @@ export const useNotificationsStore = defineStore('notifications', () => {
       } else {
         notifications.value.push(...data)
       }
-    } catch (error) {
-      console.error('Failed to fetch notifications:', error)
-      lastError.value = error instanceof Error ? error.message : 'Failed to fetch notifications'
+    } catch {
+      lastError.value = "Unknown error"; // 'Failed to fetch notifications'
     } finally {
       loading.value = false
     }
@@ -74,9 +72,8 @@ export const useNotificationsStore = defineStore('notifications', () => {
       
       const data = await notificationsService.getSettings()
       settings.value = data
-    } catch (error) {
-      console.error('Failed to fetch notification settings:', error)
-      lastError.value = error instanceof Error ? error.message : 'Failed to fetch settings'
+    } catch {
+      lastError.value = "Unknown error"; // 'Failed to fetch settings'
     } finally {
       loading.value = false
     }
@@ -92,9 +89,8 @@ export const useNotificationsStore = defineStore('notifications', () => {
         notification.read = true
         notification.updated_at = new Date().toISOString()
       }
-    } catch (error) {
-      console.error('Failed to mark notification as read:', error)
-      lastError.value = error instanceof Error ? error.message : 'Failed to mark as read'
+    } catch {
+      lastError.value = "Unknown error"; // 'Failed to mark as read'
     }
   }
 
@@ -109,9 +105,8 @@ export const useNotificationsStore = defineStore('notifications', () => {
           notification.updated_at = new Date().toISOString()
         }
       })
-    } catch (error) {
-      console.error('Failed to mark all notifications as read:', error)
-      lastError.value = error instanceof Error ? error.message : 'Failed to mark all as read'
+    } catch {
+      lastError.value = "Unknown error"; // 'Failed to mark all as read'
     }
   }
 
@@ -124,9 +119,8 @@ export const useNotificationsStore = defineStore('notifications', () => {
       if (index !== -1) {
         notifications.value.splice(index, 1)
       }
-    } catch (error) {
-      console.error('Failed to delete notification:', error)
-      lastError.value = error instanceof Error ? error.message : 'Failed to delete notification'
+    } catch {
+      lastError.value = "Unknown error"; // 'Failed to delete notification'
     }
   }
 
@@ -137,9 +131,8 @@ export const useNotificationsStore = defineStore('notifications', () => {
       
       const updatedSettings = await notificationsService.updateSettings(updates)
       settings.value = updatedSettings
-    } catch (error) {
-      console.error('Failed to update notification settings:', error)
-      lastError.value = error instanceof Error ? error.message : 'Failed to update settings'
+    } catch {
+      lastError.value = "Unknown error"; // 'Failed to update settings'
     } finally {
       loading.value = false
     }
@@ -194,10 +187,10 @@ export const useNotificationsStore = defineStore('notifications', () => {
       
       // Log discrepancy for debugging
       if (serverCount !== unreadCount.value) {
-        console.warn(`Unread count mismatch: local=${unreadCount.value}, server=${serverCount}`)
+        // Server count differs from client count
       }
-    } catch (error) {
-      console.error('Failed to refresh unread count:', error)
+    } catch {
+      // Error fetching server count
     }
   }
 
@@ -224,8 +217,8 @@ export const useNotificationsStore = defineStore('notifications', () => {
         fetchNotifications(),
         fetchSettings()
       ])
-    } catch (error) {
-      console.error('Failed to initialize notifications store:', error)
+    } catch {
+      // Error during initialization
     }
   }
 

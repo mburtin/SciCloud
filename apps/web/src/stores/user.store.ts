@@ -47,8 +47,8 @@ export const useUserStore = defineStore('user', () => {
       }
 
       return user
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch user'
+    } catch {
+      const errorMessage = "Unknown error";//  'Failed to fetch user'
       error.value = errorMessage
       return null
     } finally {
@@ -66,8 +66,8 @@ export const useUserStore = defineStore('user', () => {
       users.value = fetchedUsers
 
       return fetchedUsers
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch users'
+    } catch {
+      const errorMessage = "Unknown error";//  'Failed to fetch users'
       error.value = errorMessage
       return []
     } finally {
@@ -101,8 +101,8 @@ export const useUserStore = defineStore('user', () => {
       }
 
       return result
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to create user'
+    } catch {
+      const errorMessage = "Unknown error";//  'Failed to create user'
       error.value = errorMessage
       return { success: false, error: errorMessage }
     } finally {
@@ -134,8 +134,8 @@ export const useUserStore = defineStore('user', () => {
       }
 
       return result
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update profile'
+    } catch {
+      const errorMessage = "Unknown error";//  'Failed to update profile'
       error.value = errorMessage
       return { success: false, error: errorMessage }
     } finally {
@@ -156,8 +156,8 @@ export const useUserStore = defineStore('user', () => {
       }
 
       return result
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update email'
+    } catch {
+      const errorMessage = "Unknown error";//  'Failed to update email'
       error.value = errorMessage
       return { success: false, error: errorMessage }
     } finally {
@@ -178,8 +178,8 @@ export const useUserStore = defineStore('user', () => {
       }
 
       return result
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update password'
+    } catch {
+      const errorMessage = "Unknown error";//  'Failed to update password'
       error.value = errorMessage
       return { success: false, error: errorMessage }
     } finally {
@@ -208,8 +208,8 @@ export const useUserStore = defineStore('user', () => {
       }
 
       return result
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to delete user'
+    } catch {
+      const errorMessage = "Unknown error";//  'Failed to delete user'
       error.value = errorMessage
       return { success: false, error: errorMessage }
     } finally {
@@ -226,8 +226,8 @@ export const useUserStore = defineStore('user', () => {
       const userId = await UserService.searchUserID(query)
 
       return userId
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to search user'
+    } catch {
+      const errorMessage = "Unknown error";//  'Failed to search user'
       error.value = errorMessage
       return null
     } finally {
@@ -262,8 +262,7 @@ export const useUserStore = defineStore('user', () => {
   async function checkUsersExist(): Promise<boolean> {
     try {
       return await UserService.usersExist()
-    } catch (err) {
-      console.error('Error checking if users exist:', err)
+    } catch {
       return false
     }
   }

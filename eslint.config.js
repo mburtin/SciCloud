@@ -6,6 +6,31 @@ import globals from 'globals';
 export default [
   js.configs.recommended,
   
+  // Supabase Edge Functions configuration (Deno environment)
+  {
+    files: ['apps/supabase/functions/**/*.{ts,js}'],
+    languageOptions: {
+      parser: tsparser,
+      globals: {
+        ...globals.browser,
+        Deno: 'readonly',
+        console: 'readonly'
+      },
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module'
+      }
+    },
+    plugins: {
+      '@typescript-eslint': tseslint
+    },
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'warn',
+      'no-console': 'off', // Allow console.log in Edge Functions for debugging
+      'no-undef': 'error'
+    }
+  },
+  
   // JavaScript configuration
   {
     files: ['**/*.{js,mjs,cjs}'],
@@ -27,7 +52,9 @@ export default [
       parser: tsparser,
       globals: {
         ...globals.browser,
-        ...globals.node
+        ...globals.node,
+        confirm: 'readonly',
+        requestAnimationFrame: 'readonly'
       },
       parserOptions: {
         ecmaVersion: 'latest',
@@ -45,11 +72,19 @@ export default [
     }
   },
   
+  // Test files configuration - allow 'any' type for mocking and test utilities
+  {
+    files: ['tests/**/*.{ts,tsx}', '**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off'
+    }
+  },
+  
   {
     ignores: [
       'node_modules/**',
-      'dist/**',
-      'build/**',
+      '**/dist/**',
+      '**/build/**',
       '.git/**',
       'coverage/**',
       '**/*.vue',

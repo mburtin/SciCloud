@@ -182,8 +182,7 @@ router.beforeEach(async (to, _from, next) => {
       // User is authenticated and users exist, proceed to dashboard
       next('/dashboard')
       return
-    } catch (error) {
-      console.error('Error checking users for root path:', error)
+    } catch {
       next('/welcome')
       return
     }
@@ -197,8 +196,7 @@ router.beforeEach(async (to, _from, next) => {
         next('/welcome')
         return
       }
-    } catch (error) {
-      console.error('Error checking users for login path:', error)
+    } catch {
       next('/welcome')
       return
     }
@@ -219,8 +217,8 @@ router.beforeEach(async (to, _from, next) => {
           next('/welcome')
           return
         }
-      } catch (error) {
-        console.error('Error checking users:', error)
+      } catch {
+        // Error checking users exist
       }
       next('/login')
       return
@@ -239,8 +237,7 @@ router.beforeEach(async (to, _from, next) => {
           next('/error/403')
           return
         }
-      } catch (error) {
-        console.error('Error checking admin permissions:', error)
+      } catch {
         next('/error/500')
         return
       }

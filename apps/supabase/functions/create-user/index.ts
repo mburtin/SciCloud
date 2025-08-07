@@ -66,7 +66,7 @@ Deno.serve(async (req) => {
     const adminSupabase = createClient(supabaseUrl, supabaseServiceKey)
     
     // Check if this is the first user (bootstrap case)
-    const { data: existingUsers, error: usersError } = await adminSupabase
+    const { data: existingUsers } = await adminSupabase
       .from('user_profiles')
       .select('id')
       .limit(1)
@@ -111,7 +111,6 @@ Deno.serve(async (req) => {
       }
 
       // Check if user is admin by querying their profile
-      console.log('[DEBUG] Checking admin role...')
       const { data: profile, error: profileError } = await userSupabase
         .from('user_profiles')
         .select('role')
@@ -132,7 +131,6 @@ Deno.serve(async (req) => {
       }
     } else {
       // First user creation - force admin role
-      console.log('[DEBUG] First user creation - bootstrap mode')
     }
 
     // Parse request body
@@ -240,8 +238,7 @@ Deno.serve(async (req) => {
       }
     )
 
-  } catch (error) {
-    console.error('Edge function error:', error)
+  } catch {
     return new Response(
       JSON.stringify({ 
         success: false, 

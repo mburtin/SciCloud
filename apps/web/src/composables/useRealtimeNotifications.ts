@@ -9,12 +9,11 @@ import { useNotification } from '@/composables/useNotification'
 import { notificationsService } from '@/services/notifications.service'
 import type { 
   Notification,
-  UseRealtimeNotificationsReturn, 
   UUID,
   RealtimeNotificationPayload 
 } from '@/types/notifications'
 
-export function useRealtimeNotifications(): UseRealtimeNotificationsReturn {
+export function useRealtimeNotifications() {
   const notificationsStore = useNotificationsStore()
   const { success, error, info } = useNotification()
 
@@ -31,7 +30,6 @@ export function useRealtimeNotifications(): UseRealtimeNotificationsReturn {
 
       // Check if notifications are enabled (use store instead of API call)
       if (!notificationsStore.isNotificationsEnabled) {
-        console.log('In-app notifications disabled for user')
         return
       }
 
@@ -43,8 +41,7 @@ export function useRealtimeNotifications(): UseRealtimeNotificationsReturn {
 
       isConnected.value = true
       notificationsStore.setRealtimeConnected(true)
-    } catch (err) {
-      console.error('Failed to connect to realtime notifications:', err)
+    } catch {
       isConnected.value = false
       notificationsStore.setRealtimeConnected(false)
     }
@@ -59,7 +56,6 @@ export function useRealtimeNotifications(): UseRealtimeNotificationsReturn {
     isConnected.value = false
     notificationsStore.setRealtimeConnected(false)
     
-    console.log('Disconnected from realtime notifications')
   }
 
   const showNotificationToast = (notification: Notification): void => {
@@ -105,10 +101,9 @@ export function useRealtimeNotifications(): UseRealtimeNotificationsReturn {
           break
 
         default:
-          console.warn('Unknown realtime event type:', payload.eventType)
       }
-    } catch (err) {
-      console.error('Error handling realtime notification event:', err)
+    } catch {
+      // Error handling realtime event
     }
   }
 

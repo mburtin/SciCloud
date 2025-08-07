@@ -43,8 +43,8 @@ export function useDashboard() {
       statCards.value = statsData
       recentProjects.value = projectsData
       upcomingDeadlines.value = deadlinesData
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to load dashboard data'
+    } catch {
+      error.value = 'Failed to fetch dashboard data'
     } finally {
       isLoading.value = false
     }

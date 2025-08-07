@@ -155,9 +155,8 @@ export const useConsumablesStore = defineStore('consumables', () => {
       const fetchedConsumables = await consumablesService.getConsumables()
       consumables.value = fetchedConsumables
       isInitialized.value = true
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to fetch consumables'
-      console.error('Error fetching consumables:', err)
+    } catch {
+      error.value = 'Failed to fetch consumables'
     } finally {
       loading.value = false
     }
@@ -180,9 +179,7 @@ export const useConsumablesStore = defineStore('consumables', () => {
         }
       }
       return consumable
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to fetch consumable'
-      console.error('Error fetching consumable:', err)
+    } catch {
       return null
     }
   }
@@ -204,9 +201,7 @@ export const useConsumablesStore = defineStore('consumables', () => {
         }
       }
       return consumable
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to fetch consumable'
-      console.error('Error fetching consumable by reference:', err)
+    } catch {
       return null
     }
   }
@@ -219,9 +214,7 @@ export const useConsumablesStore = defineStore('consumables', () => {
       const newConsumable = await consumablesService.createConsumable(consumableData)
       consumables.value.unshift(newConsumable) // Add to beginning of array
       return newConsumable
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to create consumable'
-      console.error('Error creating consumable:', err)
+    } catch {
       return null
     } finally {
       loading.value = false
@@ -239,9 +232,7 @@ export const useConsumablesStore = defineStore('consumables', () => {
       }
       
       return updatedConsumable
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to update consumable'
-      console.error('Error updating consumable:', err)
+    } catch {
       return null
     }
   }
@@ -257,9 +248,7 @@ export const useConsumablesStore = defineStore('consumables', () => {
       }
       
       return true
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to delete consumable'
-      console.error('Error deleting consumable:', err)
+    } catch {
       return false
     }
   }
@@ -276,9 +265,7 @@ export const useConsumablesStore = defineStore('consumables', () => {
       }
       
       return true
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to update consumable stock'
-      console.error('Error updating consumable stock:', err)
+    } catch {
       return false
     }
   }
@@ -287,9 +274,7 @@ export const useConsumablesStore = defineStore('consumables', () => {
   async function searchConsumables(query: string): Promise<Consumable[]> {
     try {
       return await consumablesService.searchConsumables(query)
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to search consumables'
-      console.error('Error searching consumables:', err)
+    } catch {
       return []
     }
   }

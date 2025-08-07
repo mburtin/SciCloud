@@ -132,9 +132,8 @@ export const useInstrumentsStore = defineStore('instruments', () => {
       const fetchedInstruments = await instrumentsService.getInstruments()
       instruments.value = fetchedInstruments
       isInitialized.value = true
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to fetch instruments'
-      console.error('Error fetching instruments:', err)
+    } catch {
+      error.value = 'Failed to fetch instruments'
     } finally {
       loading.value = false
     }
@@ -157,9 +156,7 @@ export const useInstrumentsStore = defineStore('instruments', () => {
         }
       }
       return instrument
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to fetch instrument'
-      console.error('Error fetching instrument:', err)
+    } catch {
       return null
     }
   }
@@ -181,9 +178,7 @@ export const useInstrumentsStore = defineStore('instruments', () => {
         }
       }
       return instrument
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to fetch instrument'
-      console.error('Error fetching instrument by serial number:', err)
+    } catch {
       return null
     }
   }
@@ -196,9 +191,7 @@ export const useInstrumentsStore = defineStore('instruments', () => {
       const newInstrument = await instrumentsService.createInstrument(instrumentData)
       instruments.value.unshift(newInstrument) // Add to beginning of array
       return newInstrument
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to create instrument'
-      console.error('Error creating instrument:', err)
+    } catch {
       return null
     } finally {
       loading.value = false
@@ -216,9 +209,7 @@ export const useInstrumentsStore = defineStore('instruments', () => {
       }
       
       return updatedInstrument
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to update instrument'
-      console.error('Error updating instrument:', err)
+    } catch {
       return null
     }
   }
@@ -234,9 +225,7 @@ export const useInstrumentsStore = defineStore('instruments', () => {
       }
       
       return true
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to delete instrument'
-      console.error('Error deleting instrument:', err)
+    } catch {
       return false
     }
   }
@@ -253,9 +242,7 @@ export const useInstrumentsStore = defineStore('instruments', () => {
       }
       
       return true
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to update instrument status'
-      console.error('Error updating instrument status:', err)
+    } catch {
       return false
     }
   }
@@ -271,9 +258,7 @@ export const useInstrumentsStore = defineStore('instruments', () => {
       }
       
       return true
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to update maintenance status'
-      console.error('Error updating maintenance status:', err)
+    } catch {
       return false
     }
   }
@@ -282,9 +267,7 @@ export const useInstrumentsStore = defineStore('instruments', () => {
   async function searchInstruments(query: string): Promise<Instrument[]> {
     try {
       return await instrumentsService.searchInstruments(query)
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to search instruments'
-      console.error('Error searching instruments:', err)
+    } catch {
       return []
     }
   }

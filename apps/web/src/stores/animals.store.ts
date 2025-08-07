@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { animalsService } from '@/services/animals.service'
 import type { Animal, AnimalStatus, AnimalInsert, AnimalUpdate, HealthStatus } from '@/types/supabase'
+import type { AnimalDocument, MedicalRecord, Measurement } from '@/types/lab'
 
 export const useAnimalsStore = defineStore('animals', () => {
   // State
@@ -137,9 +138,8 @@ export const useAnimalsStore = defineStore('animals', () => {
       const fetchedAnimals = await animalsService.getAnimals()
       animals.value = fetchedAnimals
       isInitialized.value = true
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to fetch animals'
-      console.error('Error fetching animals:', err)
+    } catch {
+      error.value = 'Failed to fetch animals'
     } finally {
       loading.value = false
     }
@@ -162,9 +162,7 @@ export const useAnimalsStore = defineStore('animals', () => {
         }
       }
       return animal
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to fetch animal'
-      console.error('Error fetching animal:', err)
+    } catch {
       return null
     }
   }
@@ -186,9 +184,7 @@ export const useAnimalsStore = defineStore('animals', () => {
         }
       }
       return animal
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to fetch animal'
-      console.error('Error fetching animal by identifier:', err)
+    } catch {
       return null
     }
   }
@@ -201,9 +197,7 @@ export const useAnimalsStore = defineStore('animals', () => {
       const newAnimal = await animalsService.createAnimal(animalData)
       animals.value.unshift(newAnimal) // Add to beginning of array
       return newAnimal
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to create animal'
-      console.error('Error creating animal:', err)
+    } catch {
       return null
     } finally {
       loading.value = false
@@ -221,9 +215,7 @@ export const useAnimalsStore = defineStore('animals', () => {
       }
       
       return updatedAnimal
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to update animal'
-      console.error('Error updating animal:', err)
+    } catch {
       return null
     }
   }
@@ -239,9 +231,7 @@ export const useAnimalsStore = defineStore('animals', () => {
       }
       
       return true
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to delete animal'
-      console.error('Error deleting animal:', err)
+    } catch {
       return false
     }
   }
@@ -258,9 +248,7 @@ export const useAnimalsStore = defineStore('animals', () => {
       }
       
       return true
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to update animal weight'
-      console.error('Error updating animal weight:', err)
+    } catch {
       return false
     }
   }
@@ -276,9 +264,7 @@ export const useAnimalsStore = defineStore('animals', () => {
       }
       
       return true
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to update animal status'
-      console.error('Error updating animal status:', err)
+    } catch {
       return false
     }
   }
@@ -294,15 +280,13 @@ export const useAnimalsStore = defineStore('animals', () => {
       }
       
       return true
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to update animal health status'
-      console.error('Error updating animal health status:', err)
+    } catch {
       return false
     }
   }
 
   // Document management
-  async function addDocument(id: string, document: any): Promise<boolean> {
+  async function addDocument(id: string, document: AnimalDocument): Promise<boolean> {
     try {
       const updatedAnimal = await animalsService.addDocument(id, document)
       
@@ -313,9 +297,7 @@ export const useAnimalsStore = defineStore('animals', () => {
       }
       
       return true
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to add document'
-      console.error('Error adding document:', err)
+    } catch {
       return false
     }
   }
@@ -331,15 +313,13 @@ export const useAnimalsStore = defineStore('animals', () => {
       }
       
       return true
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to remove document'
-      console.error('Error removing document:', err)
+    } catch {
       return false
     }
   }
 
   // Medical record management
-  async function addMedicalRecord(id: string, record: any): Promise<boolean> {
+  async function addMedicalRecord(id: string, record: MedicalRecord): Promise<boolean> {
     try {
       const updatedAnimal = await animalsService.addMedicalRecord(id, record)
       
@@ -350,15 +330,13 @@ export const useAnimalsStore = defineStore('animals', () => {
       }
       
       return true
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to add medical record'
-      console.error('Error adding medical record:', err)
+    } catch {
       return false
     }
   }
 
   // Measurement management
-  async function addMeasurement(id: string, measurement: any): Promise<boolean> {
+  async function addMeasurement(id: string, measurement: Measurement): Promise<boolean> {
     try {
       const updatedAnimal = await animalsService.addMeasurement(id, measurement)
       
@@ -369,9 +347,7 @@ export const useAnimalsStore = defineStore('animals', () => {
       }
       
       return true
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to add measurement'
-      console.error('Error adding measurement:', err)
+    } catch {
       return false
     }
   }
@@ -380,9 +356,7 @@ export const useAnimalsStore = defineStore('animals', () => {
   async function searchAnimals(query: string): Promise<Animal[]> {
     try {
       return await animalsService.searchAnimals(query)
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to search animals'
-      console.error('Error searching animals:', err)
+    } catch {
       return []
     }
   }

@@ -5,11 +5,10 @@
 
 import { toast } from 'vue-sonner'
 import type {
-  ToastNotification,
-  UseNotificationReturn
+  ToastNotification
 } from '@/types/notifications'
 
-export function useNotification(): UseNotificationReturn {
+export function useNotification() {
   
   const showToast = (notification: ToastNotification) => {
     const { title, message, variant, duration, action } = notification

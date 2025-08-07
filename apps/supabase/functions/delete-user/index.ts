@@ -12,11 +12,9 @@ interface DeleteUserResponse {
 }
 
 Deno.serve(async (req) => {
-  console.log(`[DEBUG] ${new Date().toISOString()} - Delete user request:`, req.method, req.url)
   
   // Handle CORS for preflight requests
   if (req.method === 'OPTIONS') {
-    console.log('[DEBUG] CORS preflight request')
     return new Response(null, {
       status: 200,
       headers: {
@@ -48,10 +46,8 @@ Deno.serve(async (req) => {
 
     // Create Supabase client with user's auth context for validation
     const authHeader = req.headers.get('Authorization')
-    console.log('[DEBUG] Authorization header:', authHeader ? 'Present' : 'Missing')
     
     if (!authHeader) {
-      console.log('[DEBUG] No authorization header')
       return new Response(
         JSON.stringify({ success: false, error: 'Authorization header required' }),
         { 
@@ -71,11 +67,9 @@ Deno.serve(async (req) => {
     })
 
     // Verify the requesting user is authenticated and is an admin
-    console.log('[DEBUG] Verifying user authentication...')
     const { data: { user }, error: authError } = await userSupabase.auth.getUser()
     
     if (authError) {
-      console.log('[DEBUG] Auth error:', authError)
       return new Response(
         JSON.stringify({ success: false, error: 'Invalid authentication' }),
         { 
@@ -89,7 +83,6 @@ Deno.serve(async (req) => {
     }
 
     if (!user) {
-      console.log('[DEBUG] No user found')
       return new Response(
         JSON.stringify({ success: false, error: 'Invalid authentication' }),
         { 
@@ -102,10 +95,8 @@ Deno.serve(async (req) => {
       )
     }
 
-    console.log('[DEBUG] User authenticated:', user.id, user.email)
 
     // Check if user is admin by querying their profile
-    console.log('[DEBUG] Checking admin role...')
     const { data: profile, error: profileError } = await userSupabase
       .from('user_profiles')
       .select('role')
@@ -113,7 +104,6 @@ Deno.serve(async (req) => {
       .single()
 
     if (profileError) {
-      console.log('[DEBUG] Profile error:', profileError)
       return new Response(
         JSON.stringify({ success: false, error: 'Admin access required' }),
         { 
@@ -127,7 +117,6 @@ Deno.serve(async (req) => {
     }
 
     if (!profile) {
-      console.log('[DEBUG] No profile found')
       return new Response(
         JSON.stringify({ success: false, error: 'Admin access required' }),
         { 
@@ -140,10 +129,8 @@ Deno.serve(async (req) => {
       )
     }
 
-    console.log('[DEBUG] User profile role:', profile.role)
 
     if (profile.role !== 'admin') {
-      console.log('[DEBUG] User is not admin')
       return new Response(
         JSON.stringify({ success: false, error: 'Admin access required' }),
         { 
@@ -156,11 +143,9 @@ Deno.serve(async (req) => {
       )
     }
 
-    console.log('[DEBUG] Admin validation passed')
 
     // Parse request body
     const deleteData: DeleteUserRequest = await req.json()
-    console.log('[DEBUG] Delete request for user ID:', deleteData.userId)
 
     // Validate required fields
     if (!deleteData.userId) {
@@ -181,7 +166,6 @@ Deno.serve(async (req) => {
 
     // Prevent admin from deleting themselves
     if (deleteData.userId === user.id) {
-      console.log('[DEBUG] Admin trying to delete themselves')
       return new Response(
         JSON.stringify({ 
           success: false, 
@@ -201,11 +185,9 @@ Deno.serve(async (req) => {
     const adminSupabase = createClient(supabaseUrl, supabaseServiceKey)
 
     // Delete the user (this will cascade delete the profile due to foreign key constraint)
-    console.log('[DEBUG] Deleting user with admin client...')
     const { error: deleteError } = await adminSupabase.auth.admin.deleteUser(deleteData.userId)
 
     if (deleteError) {
-      console.log('[DEBUG] Delete error:', deleteError)
       return new Response(
         JSON.stringify({ 
           success: false, 
@@ -221,7 +203,6 @@ Deno.serve(async (req) => {
       )
     }
 
-    console.log('[DEBUG] User deleted successfully')
 
     // Return success response
     const response: DeleteUserResponse = {
@@ -239,8 +220,7 @@ Deno.serve(async (req) => {
       }
     )
 
-  } catch (error) {
-    console.error('[DEBUG] Edge function error:', error)
+  } catch {
     return new Response(
       JSON.stringify({ 
         success: false, 

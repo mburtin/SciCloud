@@ -2,8 +2,10 @@
  * Notification types for real-time system
  */
 
-import type { Ref } from 'vue'
 import type { UUID } from './base'
+
+// Re-export UUID for convenience
+export type { UUID }
 
 // Notification type categories
 export type NotificationTypeCategory = 'project' | 'collaboration' | 'system' | 'document'
@@ -100,17 +102,4 @@ export interface NotificationsState {
   realtimeConnected: boolean
 }
 
-// Composable return types
-export interface UseNotificationReturn {
-  showToast: (notification: ToastNotification) => void
-  success: (title: string, message: string) => void
-  error: (title: string, message: string) => void
-  warning: (title: string, message: string) => void
-  info: (title: string, message: string) => void
-}
-
-export interface UseRealtimeNotificationsReturn {
-  isConnected: Readonly<Ref<boolean>>
-  connect: (userId: UUID) => void
-  disconnect: () => void
-}
+// Note: Composable return types are inferred using ReturnType<typeof composable>

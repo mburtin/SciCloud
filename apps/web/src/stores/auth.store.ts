@@ -38,8 +38,8 @@ export const useAuthStore = defineStore('auth', () => {
       // Set up auth state change listener
       setupAuthStateListener()
       isInitialized.value = true
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Auth initialization failed'
+    } catch {
+      error.value = 'Failed to initialize authentication'
     } finally {
       loading.value = false
     }
@@ -75,8 +75,8 @@ export const useAuthStore = defineStore('auth', () => {
 
       // Auth state listener will automatically update session/user state
       return { success: true }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Login failed'
+    } catch {
+      const errorMessage = "Unknown error";//  'Login failed'
       error.value = errorMessage
       return { success: false, error: errorMessage }
     } finally {
@@ -96,8 +96,8 @@ export const useAuthStore = defineStore('auth', () => {
       }
 
       return { success: true, data: result.data }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Registration failed'
+    } catch {
+      const errorMessage = "Unknown error"; // 'Registration failed'
       return { success: false, error: errorMessage }
     } finally {
       loading.value = false
@@ -117,8 +117,8 @@ export const useAuthStore = defineStore('auth', () => {
       
       // Auth state listener will automatically clear session/user state
       return { success: true }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Logout failed'
+    } catch {
+      const errorMessage = "Unknown error";//  'Logout failed'
       error.value = errorMessage
       return { success: false, error: errorMessage }
     } finally {
@@ -138,8 +138,8 @@ export const useAuthStore = defineStore('auth', () => {
       }
       
       return { success: true }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Global logout failed'
+    } catch {
+      const errorMessage = "Unknown error";//  'Global logout failed'
       error.value = errorMessage
       return { success: false, error: errorMessage }
     } finally {
