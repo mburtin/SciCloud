@@ -1,152 +1,48 @@
 <template>
   <div class="space-y-6">
-    <!-- Stat Cards -->
-    <div class="grid layout-standard-grid layout-section-gap">
-      <Card>
-        <CardHeader class="flex flex-row items-center justify-between pb-2">
-          <CardTitle class="text-sm font-medium">
-            Total documents
-          </CardTitle>
-          <FileText class="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div class="text-2xl font-bold">
-            3
-          </div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader class="flex flex-row items-center justify-between pb-2">
-          <CardTitle class="text-sm font-medium">
-            Total size
-          </CardTitle>
-          <TrendingUp class="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div class="text-2xl font-bold">
-            33.8 MB
-          </div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader class="flex flex-row items-center justify-between pb-2">
-          <CardTitle class="text-sm font-medium">
-            Recent (7d)
-          </CardTitle>
-          <Calendar class="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div class="text-2xl font-bold">
-            0
-          </div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader class="flex flex-row items-center justify-between pb-2">
-          <CardTitle class="text-sm font-medium">
-            Popular types
-          </CardTitle>
-          <Tag class="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div class="text-sm text-muted-foreground">
-            report: 1, data: 1
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-
-    <!-- Documents List -->
-    <div>
-      <div class="flex items-center justify-between mb-4">
-        <div>
-          <h2 class="text-xl font-semibold">
-            Documents
-          </h2>
-          <p class="text-muted-foreground">
-            Manage documents for Water Quality Analysis
-          </p>
-        </div>
-        <Button>
-          <Plus class="h-4 w-4 mr-2" />
-          Add document
-        </Button>
-      </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>Documents (3)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul class="space-y-4">
-            <li v-for="doc in documents" :key="doc.name" class="flex items-start gap-4 p-4 border rounded-lg hover:bg-muted/50">
-              <div class="p-3 bg-muted rounded-lg">
-                <component :is="doc.icon" class="h-6 w-6 text-muted-foreground" />
-              </div>
-              <div class="flex-1">
-                <div class="flex items-center justify-between">
-                  <div class="font-medium">
-                    {{ doc.name }} <Badge variant="outline" class="ml-2">
-                      {{ doc.type }}
-                    </Badge>
-                  </div>
-                </div>
-                <p class="text-sm text-muted-foreground mt-1">
-                  {{ doc.description }}
-                </p>
-                <div class="text-xs text-muted-foreground mt-2 flex items-center gap-4">
-                  <div class="flex items-center gap-1">
-                    <Calendar class="h-3 w-3" /> {{ doc.uploadDate }}
-                  </div>
-                  <div class="flex items-center gap-1">
-                    <User class="h-3 w-3" /> {{ doc.uploader }}
-                  </div>
-                  <span>{{ doc.size }}</span>
-                </div>
-                <div class="mt-2 flex gap-2">
-                  <Badge v-for="tag in doc.tags" :key="tag" variant="secondary">
-                    {{ tag }}
-                  </Badge>
-                </div>
-              </div>
-              <div class="flex items-center gap-2">
-                <Button variant="ghost" size="icon">
-                  <Eye class="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon">
-                  <Download class="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon">
-                  <MoreHorizontal class="h-4 w-4" />
-                </Button>
-              </div>
-            </li>
-          </ul>
-        </CardContent>
-      </Card>
-    </div>
+    <DocumentManager
+      title="Project Documents"
+      description="Manage documents for Water Quality Analysis"
+      :initial-documents="projectDocuments"
+      :show-stats="true"
+      :available-types="['pdf', 'docx', 'xlsx', 'pptx', 'txt', 'csv', 'image', 'video', 'audio']"
+      display-mode="cards"
+      add-button-text="Add document"
+      empty-state-text="Start by adding your first document to the project."
+      upload-dialog-description="Upload a new document to the project. Accepted formats: PDF, DOCX, XLSX, PPTX."
+      @document-uploaded="handleDocumentUploaded"
+      @documents-updated="handleDocumentsUpdated"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { FileText, TrendingUp, Calendar, Tag, Plus, User, Eye, Download, MoreHorizontal, File, FileType2, FileQuestion } from 'lucide-vue-next';
+import { ref, computed } from 'vue'
+import type { Document } from '@/types/documents'
+import DocumentManager from '@/components/shared/DocumentManager.vue'
 import { mockProjectDocuments } from '@/mocks/project-documents.mock';
 
-const getFileIcon = (fileName: string) => {
-  if (fileName.endsWith('.pdf')) return FileType2;
-  if (fileName.endsWith('.xlsx')) return File;
-  if (fileName.endsWith('.docx')) return File;
-  return FileQuestion;
-};
-
-// Documents data with computed icons
-const documents = ref(
-  mockProjectDocuments.map(doc => ({
-    ...doc,
-    icon: getFileIcon(doc.name)
+// Convert Documents to Document format
+const projectDocuments = computed((): Document[] => {
+  return mockProjectDocuments.map(doc => ({
+    id: doc.id,
+    name: doc.name,
+    type: doc.type.toLowerCase(),
+    uploadDate: doc.uploadDate,
+    size: doc.size,
+    uploadedBy: doc.uploader,
+    description: doc.description,
+    tags: doc.tags
   }))
-)
+})
+
+const handleDocumentUploaded = (document: Document) => {
+  // Handle document upload - could save to store or API
+  console.log('Document uploaded:', document)
+}
+
+const handleDocumentsUpdated = (documents: Document[]) => {
+  // Handle documents update - could sync with store or API
+  console.log('Documents updated:', documents)
+}
 </script>

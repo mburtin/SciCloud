@@ -384,12 +384,14 @@
 
         <TabsContent value="documents" class="space-y-4">
           <DocumentManager
-            entity-type="animal"
-            :entity-id="animal.id"
-            :entity-name="`${animal.identifier} - ${speciesLabels[animal.species as keyof typeof speciesLabels] || animal.species}`"
-            :initial-documents="animal.documents"
+            title="Animal Documents"
+            :description="`Manage documents for ${animal.identifier} - ${speciesLabels[animal.species as keyof typeof speciesLabels] || animal.species}`"
+            :initial-documents="convertAnimalDocuments(animal.documents)"
             :show-stats="true"
-            @add-documents="handleAddDocuments"
+            :available-types="['health-certificate', 'protocol', 'report', 'photo', 'analysis', 'authorization', 'other']"
+            display-mode="cards"
+            @document-uploaded="handleDocumentUploaded"
+            @documents-updated="handleDocumentsUpdated"
           />
         </TabsContent>
       </Tabs>
@@ -447,6 +449,7 @@ import {
 
 import type { Animal } from '@/types/supabase'
 import type { Measurement, MedicalRecord, AnimalDocument } from '@/types/lab'
+import type { Document } from '@/types/documents'
 import { speciesLabels } from '@/types/lab'
 import { useAnimalsStore } from '@/stores/animals.store'
 
@@ -459,7 +462,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import AnimalFormDialog from '@/components/labs/AnimalFormDialog.vue'
 import NewMeasurementDialog from '@/components/labs/NewMeasurementDialog.vue'
 import NewMedicalExamDialog from '@/components/labs/NewMedicalExamDialog.vue'
-import DocumentManager from '@/components/labs/DocumentManager.vue'
+import DocumentManager from '@/components/shared/DocumentManager.vue'
 import { formatDate } from '@/utils/format.utils'
 
 const route = useRoute()
@@ -663,11 +666,36 @@ const handleAddMedicalRecord = async (newRecord: Omit<MedicalRecord, 'id'>) => {
   }
 }
 
-const handleAddDocuments = async (newDocuments: AnimalDocument[]) => {
+// Convert AnimalDocument to Document format
+const convertAnimalDocuments = (animalDocs: AnimalDocument[]): Document[] => {
+  return animalDocs.map(doc => ({
+    id: doc.id,
+    name: doc.name,
+    type: doc.type,
+    uploadDate: doc.uploadDate,
+    size: doc.size,
+    uploadedBy: doc.uploadedBy
+  }))
+}
+
+const handleDocumentUploaded = async (document: Document) => {
   if (!animal.value) return
 
-  for (const document of newDocuments) {
-    await animalsStore.addDocument(animalId, document)
+  // Convert back to AnimalDocument for store
+  const animalDocument: AnimalDocument = {
+    id: document.id,
+    name: document.name,
+    type: document.type as AnimalDocument['type'],
+    uploadDate: document.uploadDate,
+    size: document.size,
+    uploadedBy: document.uploadedBy
   }
+
+  await animalsStore.addDocument(animalId, animalDocument)
+}
+
+const handleDocumentsUpdated = async (documents: Document[]) => {
+  // Optionally sync the updated documents list back to the store
+  // This could be used for bulk operations or reordering
 }
 </script>
