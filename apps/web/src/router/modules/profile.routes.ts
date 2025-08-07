@@ -8,7 +8,7 @@ const profileRoutes: RouteRecordRaw[] = [
   },
   {
     path: '/profile/notifications',
-    name: 'Notifications',
+    name: 'NotificationSettings',
     component: () => import('@/pages/profile/NotificationsPage.vue'),
   },
   {

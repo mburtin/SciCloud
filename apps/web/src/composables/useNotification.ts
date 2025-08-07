@@ -1,58 +1,81 @@
-import { ref } from 'vue'
+/**
+ * Notification Composable - Vue Sonner Integration
+ * Provides toast notifications and integrates with notifications store
+ */
 
-interface NotificationState {
-  open: boolean
-  title: string
-  message: string
-  variant: 'success' | 'error' | 'warning' | 'info'
-}
+import { toast } from 'vue-sonner'
+import type {
+  ToastNotification,
+  UseNotificationReturn
+} from '@/types/notifications'
 
-// Global notification state
-const notificationState = ref<NotificationState>({
-  open: false,
-  title: '',
-  message: '',
-  variant: 'info'
-})
+export function useNotification(): UseNotificationReturn {
+  
+  const showToast = (notification: ToastNotification) => {
+    const { title, message, variant, duration, action } = notification
 
-export function useNotification() {
-  const showNotification = (
-    title: string, 
-    message: string, 
-    variant: NotificationState['variant'] = 'info'
-  ) => {
-    notificationState.value = {
-      open: true,
-      title,
-      message,
-      variant
+    const toastOptions = {
+      description: message,
+      duration: duration || 4000,
+      action: action ? {
+        label: action.label,
+        onClick: action.onClick
+      } : undefined
+    }
+
+    switch (variant) {
+      case 'success':
+        toast.success(title, toastOptions)
+        break
+      case 'error':
+        toast.error(title, toastOptions)
+        break
+      case 'warning':
+        toast.warning(title, toastOptions)
+        break
+      case 'info':
+      default:
+        toast.info(title, toastOptions)
+        break
     }
   }
 
-  const hideNotification = () => {
-    notificationState.value.open = false
-  }
-
   const success = (title: string, message: string) => {
-    showNotification(title, message, 'success')
+    showToast({
+      title,
+      message,
+      variant: 'success'
+    })
   }
 
   const error = (title: string, message: string) => {
-    showNotification(title, message, 'error')
+    showToast({
+      title,
+      message,
+      variant: 'error',
+      duration: 6000 // Errors should stay longer
+    })
   }
 
   const warning = (title: string, message: string) => {
-    showNotification(title, message, 'warning')
+    showToast({
+      title,
+      message,
+      variant: 'warning',
+      duration: 5000
+    })
   }
 
   const info = (title: string, message: string) => {
-    showNotification(title, message, 'info')
+    showToast({
+      title,
+      message,
+      variant: 'info'
+    })
   }
 
   return {
-    notificationState,
-    showNotification,
-    hideNotification,
+    showToast,
     success,
     error,
     warning,

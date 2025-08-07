@@ -118,10 +118,57 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Settings, Bell, Clock } from 'lucide-vue-next';
-import { mockNotificationSettings } from '@/mocks/notification-settings.mock';
+import { Settings, Bell, Clock, FolderKanban, FileText, Users, AlertTriangle, Calendar, Mail } from 'lucide-vue-next';
 
-const settings = ref(mockNotificationSettings);
+const settings = ref({
+  methods: {
+    email: { label: 'Email', enabled: true },
+    push: { label: 'Push Notifications', enabled: true },
+  },
+  types: {
+    projectUpdates: { 
+      label: 'Project Updates', 
+      description: 'Status changes, new tasks, etc.', 
+      icon: FolderKanban, 
+      enabled: true 
+    },
+    documentUpdates: { 
+      label: 'Documents & Files', 
+      description: 'New documents, modifications.', 
+      icon: FileText, 
+      enabled: true 
+    },
+    collaborationRequests: { 
+      label: 'Collaboration Requests', 
+      description: 'Invitations to join projects.', 
+      icon: Users, 
+      enabled: true 
+    },
+    systemAlerts: { 
+      label: 'System Alerts', 
+      description: 'Security alerts, system updates.', 
+      icon: AlertTriangle, 
+      enabled: true 
+    },
+    deadlineReminders: { 
+      label: 'Deadline Reminders', 
+      description: 'Upcoming task deadlines.', 
+      icon: Calendar, 
+      enabled: false 
+    },
+    weeklyDigest: { 
+      label: 'Weekly Digest', 
+      description: 'A summary of project activity.', 
+      icon: Mail, 
+      enabled: false 
+    },
+  },
+  quietHours: {
+    enabled: false,
+    start: '22:00',
+    end: '08:00',
+  },
+});
 
 const saveSettings = () => {
   // In a real app, you would send this to your backend.

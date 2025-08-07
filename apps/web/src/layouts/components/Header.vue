@@ -58,89 +58,7 @@
         </div>
         
         <!-- Notifications -->
-        <DropdownMenu v-model:open="notificationsOpen">
-          <DropdownMenuTrigger as-child>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              class="relative p-2.5 text-header-foreground hover:bg-header-accent transition-all duration-300 rounded-xl group"
-            >
-              <Bell class="h-5 w-5 group-hover:text-slate-100 transition-colors" />
-              <Badge 
-                v-if="unreadNotifications > 0" 
-                class="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-blue-600 border-2 border-blue-900 shadow-lg text-white rounded-full"
-              >
-                {{ unreadNotifications > 9 ? '9+' : unreadNotifications }}
-              </Badge>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" class="w-80 overflow-hidden shadow-xl border-slate-200/60 bg-white/95 backdrop-blur-md rounded-2xl">
-            <DropdownMenuLabel class="flex items-center justify-between bg-slate-50 text-slate-700 rounded-t-2xl px-4 py-3">
-              <span class="font-semibold">Notifications</span>
-              <Button 
-                v-if="unreadNotifications > 0"
-                variant="ghost" 
-                size="sm" 
-                class="h-6 text-xs hover:bg-slate-200/60 text-slate-600 px-2"
-                @click="markAllAsRead"
-              >
-                Mark all as read
-              </Button>
-            </DropdownMenuLabel>
-            <div class="border-t border-slate-200"></div>
-            
-            <div v-if="recentNotifications.length === 0" class="p-6 text-center text-sm text-slate-500">
-              <Bell class="h-8 w-8 mx-auto mb-2 text-slate-300" />
-              No notifications
-            </div>
-            
-            <div v-else class="max-h-96 overflow-y-auto scrollbar-hide">
-              <div 
-                v-for="notification in recentNotifications" 
-                :key="notification.id"
-                class="p-3 hover:bg-muted/50 cursor-pointer border-l-2 transition-colors"
-                :class="[
-                  notification.read ? 'border-l-transparent' : 'border-l-primary',
-                  !notification.read ? 'bg-accent/20' : ''
-                ]"
-                @click="markAsRead(notification.id)"
-              >
-                <div class="flex items-start gap-3 min-w-0">
-                  <component 
-                    :is="getNotificationIcon(notification.type, notification.priority).component" 
-                    :class="getNotificationIcon(notification.type, notification.priority).class"
-                  />
-                  <div class="flex-1 space-y-1 min-w-0">
-                    <div class="flex items-center justify-between">
-                      <p :class="[
-                        'text-sm truncate pr-2',
-                        !notification.read ? 'font-medium' : ''
-                      ]">
-                        {{ notification.title }}
-                      </p>
-                      <span class="text-xs text-muted-foreground whitespace-nowrap">
-                        {{ formatTimestamp(notification.timestamp) }}
-                      </span>
-                    </div>
-                    <p class="text-xs text-muted-foreground line-clamp-2 break-words">
-                      {{ truncateMessage(notification.message, 60) }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              <div v-if="hasMoreNotifications" class="border-t border-slate-200">
-                <button
-                  class="w-full p-3 text-center text-sm text-slate-600 hover:bg-slate-50/80 transition-colors flex items-center justify-center gap-2 rounded-b-2xl"
-                  @click="showAllNotifications"
-                >
-                  <MoreHorizontal class="h-4 w-4" />
-                  View all notifications ({{ notifications.length }})
-                </button>
-              </div>
-            </div>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <NotificationBell />
         
         <!-- User menu -->
         <DropdownMenu>
@@ -193,13 +111,10 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { 
-  TestTube, Search, Bell, User, Settings, LogOut,
-  FolderOpen, UserPlus, AlertCircle, FileText, Info,
-  MoreHorizontal
+  TestTube, Search, User, Settings, LogOut
 } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -212,26 +127,23 @@ import {
 import { useAuthStore } from '@/stores/auth.store'
 import { useNavigation } from '@/composables/useNavigation'
 import { useUserStore } from '@/stores/user.store'
+import { useNotificationsStore } from '@/stores/notifications.store'
+import { useRealtimeNotifications } from '@/composables/useRealtimeNotifications'
+import NotificationBell from '@/components/notifications/NotificationBell.vue'
 import type { NavigationModule } from '@/types/ui'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 const userStore = useUserStore()
+const notificationsStore = useNotificationsStore()
 
 // Use composables
-const { 
-  mainModules, 
-  notifications, 
-  unreadNotifications, 
-  markAsRead, 
-  markAllAsRead,
-  formatTimestamp 
-} = useNavigation()
+const { mainModules } = useNavigation()
+const realtimeNotifications = useRealtimeNotifications()
 
 // Local state
 const searchQuery = ref('')
-const notificationsOpen = ref(false)
 
 // Computed - Use userProfile from useUser composable
 const user = computed(() => ({
@@ -246,9 +158,6 @@ const userInitials = computed(() => {
   const lastName = userStore.currentUserProfile.last_name || ''
   return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
 })
-
-const recentNotifications = computed(() => notifications.value.slice(0, 5))
-const hasMoreNotifications = computed(() => notifications.value.length > 5)
 
 // Methods
 const isModuleActive = (module: NavigationModule) => {
@@ -283,39 +192,17 @@ const logout = async () => {
   }
 }
 
-const showAllNotifications = () => {
-  notificationsOpen.value = false
-  // Navigate to full notifications page
-  router.push('/notifications')
-}
 
-const getNotificationIcon = (type: string, priority: string) => {
-  const iconClass = priority === 'high' ? 'text-red-500' : 
-                   priority === 'medium' ? 'text-orange-500' : 
-                   'text-blue-500'
-  
-  switch (type) {
-    case 'project':
-      return { component: FolderOpen, class: `h-4 w-4 ${iconClass}` }
-    case 'collaboration':
-      return { component: UserPlus, class: `h-4 w-4 ${iconClass}` }
-    case 'system':
-      return { component: AlertCircle, class: `h-4 w-4 ${iconClass}` }
-    case 'document':
-      return { component: FileText, class: `h-4 w-4 ${iconClass}` }
-    default:
-      return { component: Info, class: `h-4 w-4 ${iconClass}` }
-  }
-}
-
-const truncateMessage = (message: string, maxLength: number) => {
-  return message.length > maxLength ? `${message.substring(0, maxLength)}...` : message
-}
-
-// Initialize user profile on mount
+// Initialize user profile and notifications on mount
 onMounted(async () => {
   if (!userStore.currentUserProfile) {
     await userStore.loadCurrentUserProfile()
+  }
+  
+  // Initialize notifications store and connect to realtime if user is authenticated
+  if (authStore.user?.id) {
+    await notificationsStore.initialize()
+    realtimeNotifications.connect(authStore.user.id)
   }
 })
 </script>
