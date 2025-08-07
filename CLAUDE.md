@@ -26,6 +26,20 @@ pnpm lint:fix        # Auto-fix linting issues
 pnpm type-check      # Run TypeScript type checking (vue-tsc --noEmit)
 ```
 
+### Testing
+```bash
+# Unit Tests (Vitest)
+pnpm test            # Run unit tests
+pnpm test:ui         # Run unit tests with UI
+pnpm test:coverage   # Run unit tests with coverage report
+
+# E2E Tests (Playwright)
+pnpm test:e2e        # Run E2E tests (headless)
+pnpm test:e2e:ui     # Run E2E tests with Playwright UI
+pnpm test:e2e:headed # Run E2E tests in headed mode (browser visible)
+pnpm test:e2e:debug  # Run E2E tests in debug mode
+```
+
 ### Supabase Management
 ```bash
 pnpm supabase:status  # Check Supabase services status
