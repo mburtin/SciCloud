@@ -42,3 +42,4 @@ build/
 Thumbs.db
 .mcp.json
 /coverage
+/playwright-report
