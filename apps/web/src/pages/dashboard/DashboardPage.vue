@@ -118,7 +118,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
@@ -126,17 +126,38 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
   FolderOpen, Calendar
 } from 'lucide-vue-next'
-import { useDashboard } from '@/composables/useDashboard'
+import { dashboardService } from '@/services/dashboard.service'
 
-// Use dashboard composable
-const {
-  statCards,
-  recentProjects,
-  upcomingDeadlines,
-  isLoading,
-  error,
-  fetchDashboardData
-} = useDashboard()
+// Local state
+import type { StatCard } from '@/types/ui'
+import type { RecentProject, Deadline } from '@/types/projects'
+
+const statCards = ref<StatCard[]>([])
+const recentProjects = ref<RecentProject[]>([])
+const upcomingDeadlines = ref<Deadline[]>([])
+const isLoading = ref(false)
+const error = ref<string | null>(null)
+
+// Fetch method
+const fetchDashboardData = async () => {
+  if (isLoading.value) return
+  isLoading.value = true
+  error.value = null
+  try {
+    const [statsData, projectsData, deadlinesData] = await Promise.all([
+      dashboardService.getStatCards(),
+      dashboardService.getRecentProjects(),
+      dashboardService.getUpcomingDeadlines()
+    ])
+    statCards.value = statsData
+    recentProjects.value = projectsData
+    upcomingDeadlines.value = deadlinesData
+  } catch (e) {
+    error.value = 'Failed to fetch dashboard data'
+  } finally {
+    isLoading.value = false
+  }
+}
 
 // Load dashboard data on mount
 onMounted(() => {
