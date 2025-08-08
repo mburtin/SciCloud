@@ -34,22 +34,24 @@
     <div v-else class="space-y-6">
       <!-- Stat Cards -->
       <div class="grid layout-standard-grid layout-section-gap">
-        <Card v-for="stat in statCards" :key="stat.title">
+        <Card class="flex flex-col gap-2 h-40" v-for="stat in statCards" :key="stat.title">
           <CardHeader class="flex flex-row items-center justify-between pb-2">
             <CardTitle class="text-sm font-medium">
               {{ stat.title }}
             </CardTitle>
             <component :is="stat.icon" class="h-5 w-5 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div class="text-3xl font-bold">
+          <CardContent class="flex-1 flex flex-col items-center justify-center gap-1 pt-0">
+            <div class="text-3xl font-bold text-center">
               {{ stat.value }}
             </div>
+          </CardContent>
+          <CardFooter class="justify-start pt-0 !px-0">
             <p class="text-xs text-muted-foreground flex items-center gap-1">
               <component :is="stat.trendIcon" class="h-4 w-4" :class="stat.trendClass" />
               {{ stat.trendText }}
             </p>
-          </CardContent>
+          </CardFooter>
         </Card>
       </div>
 
@@ -120,6 +122,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import CardFooter from '@/components/ui/card/CardFooter.vue'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
