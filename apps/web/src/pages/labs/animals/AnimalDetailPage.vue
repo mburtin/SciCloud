@@ -386,6 +386,8 @@
           <DocumentManager
             title="Animal Documents"
             :description="`Manage documents for ${animal.identifier} - ${speciesLabels[animal.species as keyof typeof speciesLabels] || animal.species}`"
+            owner-type="animals"
+            :owner-id="animalId"
             :initial-documents="convertAnimalDocuments(animal.documents)"
             :show-stats="true"
             :available-types="['health-certificate', 'protocol', 'report', 'photo', 'analysis', 'authorization', 'other']"

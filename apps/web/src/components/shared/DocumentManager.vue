@@ -71,7 +71,7 @@
           {{ description }}
         </p>
       </div>
-      <Button @click="uploadDialogOpen = true">
+      <Button :disabled="!ownerInfo" @click="uploadDialogOpen = true">
         <Plus class="h-4 w-4 mr-2" />
         {{ addButtonText }}
       </Button>
@@ -99,10 +99,28 @@
               </div>
             </div>
             <div class="flex items-center gap-1">
-              <Button variant="ghost" size="sm" @click="downloadDocument(document)">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                :disabled="!ownerInfo"
+                @click="viewDocument(document)"
+              >
+                <Eye class="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                :disabled="!ownerInfo"
+                @click="downloadDocument(document)"
+              >
                 <Download class="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="sm" @click="deleteDocument(document.id)">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                :disabled="!ownerInfo"
+                @click="deleteDocument(document.id)"
+              >
                 <Trash2 class="h-4 w-4" />
               </Button>
             </div>
@@ -134,10 +152,28 @@
                 <TableCell>{{ formatDate(document.uploadDate) }}</TableCell>
                 <TableCell class="text-right">
                   <div class="flex items-center justify-end gap-1">
-                    <Button variant="ghost" size="sm" @click="downloadDocument(document)">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      :disabled="!ownerInfo"
+                      @click="viewDocument(document)"
+                    >
+                      <Eye class="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      :disabled="!ownerInfo"
+                      @click="downloadDocument(document)"
+                    >
                       <Download class="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" @click="deleteDocument(document.id)">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      :disabled="!ownerInfo"
+                      @click="deleteDocument(document.id)"
+                    >
                       <Trash2 class="h-4 w-4" />
                     </Button>
                   </div>
@@ -156,7 +192,7 @@
       <p class="text-sm text-muted-foreground mb-4">
         {{ emptyStateText }}
       </p>
-      <Button @click="uploadDialogOpen = true">
+      <Button :disabled="!ownerInfo" @click="uploadDialogOpen = true">
         <Plus class="h-4 w-4 mr-2" />
         {{ addButtonText }}
       </Button>
@@ -224,7 +260,7 @@
         </div>
         <DialogFooter>
           <Button variant="outline" @click="uploadDialogOpen = false">Cancel</Button>
-          <Button :disabled="!selectedFile" @click="handleUpload">Upload</Button>
+          <Button :disabled="!selectedFile || !ownerInfo" @click="handleUpload">Upload</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -232,7 +268,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { toast } from 'vue-sonner'
 import { 
   FileText, 
@@ -240,14 +276,16 @@ import {
   Plus, 
   Download, 
   Trash2, 
-  UploadCloud
+  UploadCloud,
+  Eye
 } from 'lucide-vue-next'
 import type { Document } from '@/types/documents'
+import { uploadDocument as uploadToStorage, downloadDocument as downloadFromStorage, deleteDocument as deleteFromStorage, viewDocument as viewFromStorage } from '@/services/documents.service'
 import { documentTypeLabels } from '@/types/documents'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+// removed unused Input import
 import { Label } from '@/components/ui/label'
 import {
   Dialog,
@@ -275,6 +313,12 @@ import {
 import { formatDate, formatFileSize } from '@/utils/format.utils'
 
 interface Props {
+  // Generic ownership (new)
+  ownerType?: string
+  ownerId?: string
+  // Legacy (for backward compatibility)
+  projectId?: string
+  // UI props
   title?: string
   description?: string
   addButtonText?: string
@@ -289,6 +333,9 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  projectId: undefined,
+  ownerType: undefined,
+  ownerId: undefined,
   title: 'Documents',
   description: 'Manage your documents',
   addButtonText: 'Add document',
@@ -302,6 +349,17 @@ const props = withDefaults(defineProps<Props>(), {
   maxFileSize: 25
 })
 
+// Computed owner info (with backward compatibility)
+const ownerInfo = computed(() => {
+  if (props.ownerType && props.ownerId) {
+    return { type: props.ownerType, id: props.ownerId }
+  }
+  if (props.projectId) {
+    return { type: 'projects', id: props.projectId }
+  }
+  return null
+})
+
 const emit = defineEmits<{
   'documents-updated': [documents: Document[]]
   'document-uploaded': [document: Document]
@@ -310,6 +368,14 @@ const emit = defineEmits<{
 
 // State
 const documents = ref<Document[]>([...props.initialDocuments])
+console.log('DocumentManager - initialDocuments received:', props.initialDocuments.length, props.initialDocuments)
+
+// Watch for changes in initialDocuments prop
+watch(() => props.initialDocuments, (newDocs) => {
+  console.log('DocumentManager - initialDocuments changed:', newDocs.length, newDocs)
+  documents.value = [...newDocs]
+}, { deep: true })
+
 const uploadDialogOpen = ref(false)
 const selectedFile = ref<File | null>(null)
 const isDragging = ref(false)
@@ -351,21 +417,48 @@ const getTypeLabel = (type: string): string => {
   return documentTypeLabels[type] || type
 }
 
-const downloadDocument = (document: Document) => {
-  toast.info(`Downloading ${document.name}...`)
-  setTimeout(() => {
-    toast.success(`${document.name} downloaded successfully`)
-  }, 1000)
+const viewDocument = async (document: Document) => {
+  if (!ownerInfo.value) {
+    toast.error('View not available for this document type')
+    return
+  }
+  try {
+    await viewFromStorage(ownerInfo.value.type, ownerInfo.value.id, document.id)
+  } catch (e: any) {
+    toast.error(`View failed: ${e?.message || e}`)
+  }
 }
 
-const deleteDocument = (documentId: string) => {
-  const index = documents.value.findIndex(doc => doc.id === documentId)
-  if (index > -1) {
-    const deletedDoc = documents.value[index]
-    documents.value.splice(index, 1)
-    emit('document-deleted', documentId)
-    emit('documents-updated', documents.value)
-    toast.success(`${deletedDoc.name} deleted successfully`)
+const downloadDocument = async (document: Document) => {
+  if (!ownerInfo.value) {
+    toast.error('Download not available for this document type')
+    return
+  }
+  try {
+    await downloadFromStorage(ownerInfo.value.type, ownerInfo.value.id, document.id, document.name)
+    toast.success(`${document.name} downloaded`)
+  } catch (e: any) {
+    toast.error(`Download failed: ${e?.message || e}`)
+  }
+}
+
+const deleteDocument = async (documentId: string) => {
+  if (!ownerInfo.value) {
+    toast.error('Delete not available for this document type')
+    return
+  }
+  try {
+    await deleteFromStorage(ownerInfo.value.type, ownerInfo.value.id, documentId)
+    const index = documents.value.findIndex(doc => doc.id === documentId)
+    if (index > -1) {
+      const deletedDoc = documents.value[index]!
+      documents.value.splice(index, 1)
+      emit('document-deleted', documentId)
+      emit('documents-updated', documents.value)
+      toast.success(`${deletedDoc.name} deleted`)
+    }
+  } catch (e: any) {
+    toast.error(`Delete failed: ${e?.message || e}`)
   }
 }
 
@@ -405,9 +498,14 @@ const detectFileType = (file: File): string => {
   return 'other'
 }
 
-const handleUpload = () => {
+const handleUpload = async () => {
   if (!selectedFile.value) {
     toast.error('Please select a file')
+    return
+  }
+
+  if (!ownerInfo.value) {
+    toast.error('Upload not available for this document type')
     return
   }
 
@@ -430,24 +528,28 @@ const handleUpload = () => {
     ? newDocumentType.value 
     : detectFileType(selectedFile.value)
 
-  const newDocument: Document = {
-    id: `doc-${Date.now()}`,
-    name: selectedFile.value.name,
-    type: fileType,
-    uploadDate: new Date().toISOString().split('T')[0],
-    size: `${(selectedFile.value.size / 1024 / 1024).toFixed(2)} MB`,
-    uploadedBy: 'Current User'
-  }
+  try {
+    const { path } = await uploadToStorage({ ownerType: ownerInfo.value.type, ownerId: ownerInfo.value.id, file: selectedFile.value, type: fileType })
+    const newDocument: Document = {
+      id: path,
+      name: selectedFile.value.name,
+      type: fileType,
+      uploadDate: new Date().toISOString(),
+      size: `${(selectedFile.value.size / 1024 / 1024).toFixed(2)} MB`,
+      uploadedBy: 'You'
+    }
+    documents.value.unshift(newDocument)
+    emit('document-uploaded', newDocument)
+    emit('documents-updated', documents.value)
 
-  documents.value.unshift(newDocument)
-  emit('document-uploaded', newDocument)
-  emit('documents-updated', documents.value)
-  
-  // Reset form
-  uploadDialogOpen.value = false
-  selectedFile.value = null
-  newDocumentType.value = ''
-  
-  toast.success('Document uploaded successfully')
+    // Reset form
+    uploadDialogOpen.value = false
+    selectedFile.value = null
+    newDocumentType.value = ''
+    
+    toast.success('Document uploaded')
+  } catch (e: any) {
+    toast.error(`Upload failed: ${e?.message || e}`)
+  }
 }
 </script>

@@ -1,8 +1,11 @@
 <template>
   <div class="space-y-6">
     <DocumentManager
+      v-if="projectId"
       title="Project Documents"
       description="Manage documents for Water Quality Analysis"
+      owner-type="projects"
+      :owner-id="projectId"
       :initial-documents="projectDocuments"
       :show-stats="true"
       :available-types="['pdf', 'docx', 'xlsx', 'pptx', 'txt', 'csv', 'image', 'video', 'audio']"
@@ -13,36 +16,57 @@
       @document-uploaded="handleDocumentUploaded"
       @documents-updated="handleDocumentsUpdated"
     />
+    <div v-else class="text-sm text-muted-foreground">Loading project...</div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import type { Document } from '@/types/documents'
 import DocumentManager from '@/components/shared/DocumentManager.vue'
-import { mockProjectDocuments } from '@/mocks/project-documents.mock';
+import { listDocuments } from '@/services/documents.service'
 
-// Convert Documents to Document format
-const projectDocuments = computed((): Document[] => {
-  return mockProjectDocuments.map(doc => ({
-    id: doc.id,
-    name: doc.name,
-    type: doc.type.toLowerCase(),
-    uploadDate: doc.uploadDate,
-    size: doc.size,
-    uploadedBy: doc.uploader,
-    description: doc.description,
-    tags: doc.tags
-  }))
+const route = useRoute()
+const projectId = computed(() => {
+  const id = (route.params.id as string) || ''
+  console.log('ProjectDocumentsPage - route.params:', route.params, 'extracted projectId:', id)
+  return id
+})
+const projectDocuments = ref<Document[]>([])
+
+onMounted(async () => {
+  if (!projectId.value) return
+  try {
+    projectDocuments.value = await listDocuments('projects', projectId.value)
+    console.log('onMounted - projectDocuments loaded:', projectDocuments.value.length, projectDocuments.value)
+  } catch (e) {
+    console.error('Failed to load project documents', e)
+  }
 })
 
-const handleDocumentUploaded = (document: Document) => {
-  // Handle document upload - could save to store or API
-  console.log('Document uploaded:', document)
+watch(projectId, async (id) => {
+  if (!id) return
+  try {
+    projectDocuments.value = await listDocuments('projects', id)
+    console.log('watch projectId - projectDocuments loaded:', projectDocuments.value.length, projectDocuments.value)
+  } catch (e) {
+    console.error('Failed to load project documents', e)
+  }
+})
+
+const handleDocumentUploaded = async (document: Document) => {
+  // Refresh the documents list from Supabase after upload
+  try {
+    projectDocuments.value = await listDocuments('projects', projectId.value)
+  } catch (e) {
+    console.error('Failed to refresh project documents', e)
+    // Fallback: at least add locally
+    projectDocuments.value.unshift(document)
+  }
 }
 
 const handleDocumentsUpdated = (documents: Document[]) => {
-  // Handle documents update - could sync with store or API
-  console.log('Documents updated:', documents)
+  projectDocuments.value = documents
 }
 </script>
