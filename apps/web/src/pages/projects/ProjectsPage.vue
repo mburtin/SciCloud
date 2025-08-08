@@ -221,7 +221,12 @@
                   </div>
                 </TableCell>
                 <TableCell>
-                  <span class="text-sm">{{ project.responsible }}</span>
+                  <span class="text-sm">
+                    {{ project.responsible_profile 
+                      ? `${project.responsible_profile.first_name} ${project.responsible_profile.last_name}` 
+                      : 'Unknown' 
+                    }}
+                  </span>
                 </TableCell>
                 <TableCell>
                   <DropdownMenu>

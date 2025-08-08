@@ -35,6 +35,12 @@ export class ProjectsService {
         *,
         user_favorite_projects!project_id(
           user_id
+        ),
+        responsible_profile:user_profiles!responsible(
+          id,
+          first_name,
+          last_name,
+          avatar_url
         )
       `)
       .order('created_at', { ascending: false })
@@ -63,6 +69,12 @@ export class ProjectsService {
         *,
         user_favorite_projects!project_id(
           user_id
+        ),
+        responsible_profile:user_profiles!responsible(
+          id,
+          first_name,
+          last_name,
+          avatar_url
         )
       `)
       .eq('id', id)

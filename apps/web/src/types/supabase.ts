@@ -379,6 +379,12 @@ export type UserRole = 'admin' | 'user'
 export type Project = Database['public']['Tables']['projects']['Row'] & {
   // Relations (optional for populated queries)
   members?: User[]
+  responsible_profile?: {
+    id: string
+    first_name: string
+    last_name: string
+    avatar_url: string | null
+  }
   // Computed field (populated by services based on current user)
   is_favorite?: boolean
 }
