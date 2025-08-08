@@ -235,6 +235,24 @@ export class UserService {
       }
     }
 
+    // Update current user's phone number (self-service)
+    static async updatePhone(newPhone: string): Promise<{ success: boolean; error?: string }> {
+      try {
+          const { error } = await supabase.auth.updateUser({
+              phone: newPhone
+          })
+
+          if (error) {
+              return { success: false, error: error.message }
+          }
+
+          return { success: true }
+      } catch {
+          const errorMessage = "Unknown error"; // 'Unknown error'
+          return { success: false, error: errorMessage }
+      }
+    }
+
     // Search user ID by first name or last name (profiles table only)
     static async searchUserID(query: string): Promise<string | null> {
       try {

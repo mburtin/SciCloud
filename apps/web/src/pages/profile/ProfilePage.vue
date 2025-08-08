@@ -161,7 +161,8 @@ const startEditing = () => {
     last_name: user.value.last_name,
     biography: user.value.biography,
     location: user.value.location,
-    full_address: user.value.full_address
+    full_address: user.value.full_address,
+    phone: user.value.phone
   };
   isEditing.value = true;
 };
@@ -177,18 +178,33 @@ const saveProfile = async () => {
   try {
     isSaving.value = true;
     
-    // Exclude email and phone from profile update as they're in auth.users table
+    // Separate phone update (auth.users table) from profile update (user_profiles table)
     const { email, phone, ...profileData } = editedUser.value;
     
-    const result = await userStore.updateProfile(user.value.id, profileData);
+    // Update profile data first
+    const profileResult = await userStore.updateProfile(user.value.id, profileData);
     
-    if (result.success) {
-      isEditing.value = false;
-      editedUser.value = {};
-    } else {
-      // Handle error - you might want to add a toast notification here
-      console.error('Failed to update profile:', result.error);
+    if (!profileResult.success) {
+      console.error('Failed to update profile:', profileResult.error);
+      return;
     }
+    
+    // Update phone number if it changed
+    if (phone !== user.value.phone) {
+      const phoneResult = await userStore.updatePhone(phone || '');
+      if (!phoneResult.success) {
+        console.error('Failed to update phone:', phoneResult.error);
+        return;
+      }
+    }
+    
+    // If both operations succeeded
+    isEditing.value = false;
+    editedUser.value = {};
+    
+    // Reload profile to get updated data
+    await userStore.loadCurrentUserProfile();
+    
   } catch (error) {
     console.error('Error saving profile:', error);
   } finally {

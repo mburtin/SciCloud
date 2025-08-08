@@ -187,6 +187,28 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
+  // Update current user's phone number
+  async function updatePhone(newPhone: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      loading.value = true
+      error.value = null
+
+      const result = await UserService.updatePhone(newPhone)
+
+      if (!result.success && result.error) {
+        error.value = result.error
+      }
+
+      return result
+    } catch {
+      const errorMessage = "Unknown error";//  'Failed to update phone'
+      error.value = errorMessage
+      return { success: false, error: errorMessage }
+    } finally {
+      loading.value = false
+    }
+  }
+
   // Delete user
   async function deleteUser(userId: string): Promise<{ success: boolean; error?: string }> {
     try {
@@ -287,6 +309,7 @@ export const useUserStore = defineStore('user', () => {
     updateProfile,
     updateEmail,
     updatePassword,
+    updatePhone,
     deleteUser,
     searchUserID,
     refreshCache,
