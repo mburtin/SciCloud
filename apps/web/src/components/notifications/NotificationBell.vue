@@ -110,7 +110,7 @@ import {
   MoreHorizontal 
 } from 'lucide-vue-next'
 import { useNotificationsStore } from '@/stores/notifications.store'
-import { formatTimeAgo, truncateText } from '@/utils/format.utils'
+import { formatTimeAgo, truncateText } from '@/lib/format.utils'
 
 const router = useRouter()
 const notificationsStore = useNotificationsStore()

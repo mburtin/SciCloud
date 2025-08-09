@@ -310,7 +310,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { formatDate, formatFileSize } from '@/utils/format.utils'
+import { formatDate, formatFileSize } from '@/lib/format.utils'
 
 interface Props {
   // Generic ownership (new)

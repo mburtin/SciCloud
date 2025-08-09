@@ -385,7 +385,7 @@ import {
 import { useProjectsStore } from '@/stores/projects.store'
 import { storeToRefs } from 'pinia'
 import { supabase } from '@/lib/supabase'
-import { formatDate } from '@/utils/format.utils'
+import { formatDate } from '@/lib/format.utils'
 
 // Reactive state
 const router = useRouter();

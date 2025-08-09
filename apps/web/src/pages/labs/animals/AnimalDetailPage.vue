@@ -465,7 +465,7 @@ import AnimalFormDialog from '@/components/labs/AnimalFormDialog.vue'
 import NewMeasurementDialog from '@/components/labs/NewMeasurementDialog.vue'
 import NewMedicalExamDialog from '@/components/labs/NewMedicalExamDialog.vue'
 import DocumentManager from '@/components/shared/DocumentManager.vue'
-import { formatDate } from '@/utils/format.utils'
+import { formatDate } from '@/lib/format.utils'
 
 const route = useRoute()
 const animalId = route.params.id as string

@@ -101,7 +101,7 @@ import {
 } from '@/components/ui/dialog'
 import { Shield, User, AlertTriangle } from 'lucide-vue-next'
 import { useUserStore } from '@/stores/user.store'
-import { getRoleLabel, getRoleVariant } from '@/utils/user.utils'
+import { getRoleLabel, getRoleVariant } from '@/lib/user.utils'
 import type { User as UserType, UserRole } from '@/types/supabase'
 
 interface Props {

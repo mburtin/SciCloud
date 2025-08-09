@@ -312,7 +312,7 @@ import {
 import CreateUserDialog from '@/components/admin/CreateUserDialog.vue'
 import EditUserRoleDialog from '@/components/admin/EditUserRoleDialog.vue'
 import type { User as UserType } from '@/types/supabase'
-import { getUserStatus, formatDate, getRoleLabel, getRoleVariant, getStatusVariant, calculateUserStats } from '@/utils/user.utils'
+import { getUserStatus, formatDate, getRoleLabel, getRoleVariant, getStatusVariant, calculateUserStats } from '@/lib/user.utils'
 import { useUserStore } from '@/stores/user.store'
 import { storeToRefs } from 'pinia'
 

@@ -461,7 +461,7 @@ import {
 import { useConsumablesStore } from '@/stores/consumables.store';
 import type { StockLevel } from '@/types/supabase';
 import { useAuthStore } from '@/stores/auth.store';
-import { formatDate } from '@/utils/format.utils';
+import { formatDate } from '@/lib/format.utils';
 
 // Stores
 const consumablesStore = useConsumablesStore()

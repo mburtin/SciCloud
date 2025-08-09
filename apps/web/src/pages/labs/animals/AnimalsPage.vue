@@ -304,7 +304,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { formatDate } from '@/utils/format.utils'
+import { formatDate } from '@/lib/format.utils'
 
 // Router and store
 const router = useRouter()
