@@ -17,60 +17,31 @@ Users can easily add community-developed features as modules.
 - Use **pnpm** as the package manager
 - Self-hosted by default with Docker
 
-## Technology Stack
+## Core Features & Modules
 
-### Frontend Framework
+### 1. Project Management
+- Project creation, editing, and deletion
+- Team member management with role-based permissions
+- Document storage and management
+- Task management and progress tracking
+- Project favorites and categorization
 
-- **Vue 3**: Reactive UI framework with Composition API
-- **Vite**: Fast build tool and development server
-- **Vue Router**: Client-side routing
-- **Pinia**: State management
+### 2. Laboratory Management
+- **Animal Management**: Complete animal tracking with health records
+- **Instrument Management**: Equipment tracking and maintenance scheduling
+- **Consumables Management**: Inventory tracking with stock level monitoring
 
-### Backend Framework
+### 3. User Management
+- User profiles with role-based access control
+- Admin panel for user administration
+- Profile customization and preferences
 
-- **AdonisJS 6**: Will look later if it's necessary
+### 4. Notification System
+- Real-time notifications via Supabase subscriptions
+- Configurable notification preferences
+- Bell component with notification count
 
-### Database & Backend Services
-
-- **Supabase** (self-hosted):
-  - **PostgreSQL**: Relational database
-  - **Auth**: User authentication and authorization
-  - **Storage**: File storage for images, documents, etc.
-
-### UI & Design System
-
-- **ShadCN/UI**: High-quality accessible components
-- **Tailwind CSS**: Utility-first CSS framework
-- **Lucide Vue**: Beautiful icon library
-- **VueUse**: Collection of essential Vue composition utilities
-
-### Additional Services
-
-- **Redis**: Additional caching and session storage
-- **Gitea**: Lightweight Git server for code versioning (Docker container)
-
-### Development & Deployment
-- **TypeScript**: Type safety throughout the application
-- **Vite**: Fast build tool and development server
-- **pnpm**: Fast, disk space efficient package manager
-- **ESLint**: Code linting
-- **Prettier**: Code formatting
-- **Docker & Docker Compose**: Container orchestration
-- **Vitest**: Unit testing framework
-- **Playwright**: E2E testing
-
-## Project structure
-
-scicloud/
-├── apps/
-│ ├── web/                  # Vue 3 + Vite application
-│ ├── server/               # AdonisJS API
-│ ├── supabase/             # Supabase configuration
-│ └── shared/               # Shared types and utilities
-├── docker/                 # Docker configurations
-├── docs/                   # Documentation
-├── tests/                  # E2E tests
-├── docker-compose.yml      # Service orchestration
-├── pnpm-workspace.yaml     # PNPM workspace configuration
-└── package.json            # Root package.json
-└── .npmrc                  # Root .npmrc
+### 5. Dashboard & Analytics
+- Overview statistics and metrics
+- Recent activity tracking
+- Quick access to key features
