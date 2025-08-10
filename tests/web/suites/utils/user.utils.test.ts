@@ -11,7 +11,7 @@ import {
   getRoleVariant,
   getStatusVariant,
   formatDate
-} from '@/utils/user.utils'
+} from '@/lib/user.utils'
 import { users, usersList } from '../../utils/fixtures'
 import { createMockUser } from '../../utils/test-utils'
 import type { User, UserRole } from '@/types/supabase'

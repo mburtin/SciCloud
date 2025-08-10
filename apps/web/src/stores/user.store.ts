@@ -47,8 +47,8 @@ export const useUserStore = defineStore('user', () => {
       }
 
       return user
-    } catch {
-      const errorMessage = "Unknown error";//  'Failed to fetch user'
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Unknown error"
       error.value = errorMessage
       return null
     } finally {
@@ -66,8 +66,8 @@ export const useUserStore = defineStore('user', () => {
       users.value = fetchedUsers
 
       return fetchedUsers
-    } catch {
-      const errorMessage = "Unknown error";//  'Failed to fetch users'
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Unknown error"
       error.value = errorMessage
       return []
     } finally {
@@ -101,8 +101,8 @@ export const useUserStore = defineStore('user', () => {
       }
 
       return result
-    } catch {
-      const errorMessage = "Unknown error";//  'Failed to create user'
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Unknown error"
       error.value = errorMessage
       return { success: false, error: errorMessage }
     } finally {
@@ -248,8 +248,8 @@ export const useUserStore = defineStore('user', () => {
       const userId = await UserService.searchUserID(query)
 
       return userId
-    } catch {
-      const errorMessage = "Unknown error";//  'Failed to search user'
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Unknown error"
       error.value = errorMessage
       return null
     } finally {

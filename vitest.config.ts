@@ -56,7 +56,11 @@ export default defineConfig({
     
     // Configuration pour le rendu des composants Vue
     deps: {
-      inline: ['@vue', '@vueuse']
+      optimizer: {
+        web: {
+          include: ['@vue', '@vueuse']
+        }
+      }
     },
   },
 })

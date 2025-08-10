@@ -17,6 +17,11 @@ dist-ssr
 dist/
 build/
 
+# Test output
+/test-results
+/coverage
+/playwright-report
+
 # Supabase
 .branches
 .temp
@@ -41,5 +46,3 @@ build/
 .DS_Store
 Thumbs.db
 .mcp.json
-/coverage
-/playwright-report
