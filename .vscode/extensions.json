@@ -6,6 +6,7 @@
     "bradlc.vscode-tailwindcss",
     "vitest.explorer",
     "streetsidesoftware.code-spell-checker",
-    "usernamehw.errorlens"
+    "usernamehw.errorlens",
+    "bungcip.better-toml"
   ]
 }
