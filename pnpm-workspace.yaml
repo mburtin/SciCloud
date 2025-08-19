@@ -1,5 +1,4 @@
 packages:
   - "apps/web/"
-  - "apps/server/"
-  - "supabase/"
-  - "shared/"
+  - "apps/supabase/"
+  - "apps/shared/"
