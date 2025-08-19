@@ -1,25 +1,25 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
+import { defineConfig } from 'vite'
 
 export default defineConfig({
   plugins: [vue()],
-  
+
   resolve: {
     alias: {
       '@': resolve(__dirname, './apps/web/src'),
       '@/test': resolve(__dirname, './tests/web'),
     },
   },
-  
+
   test: {
-    // Configuration globale des tests
+    // Global configuration
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./tests/web/setup.ts'],
-    
-    // Coverage avec v8 (plus rapide que c8)
+
+    // Coverage v8
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
@@ -31,7 +31,7 @@ export default defineConfig({
         'tests/',
         '**/*.d.ts',
         '**/*.config.{js,ts}',
-        '**/index.ts', // Fichiers d'export
+        '**/index.ts',
       ],
       thresholds: {
         branches: 70,
@@ -41,20 +41,17 @@ export default defineConfig({
       },
     },
 
-    // Organisation des tests
     include: [
       './tests/web/**/*.{test,spec}.{js,ts,tsx}',
     ],
-    
+
     exclude: [
       'node_modules/',
       'dist/',
     ],
 
-    // Timeout pour les tests (2 secondes par défaut)
     testTimeout: 10000,
-    
-    // Configuration pour le rendu des composants Vue
+
     deps: {
       optimizer: {
         web: {
