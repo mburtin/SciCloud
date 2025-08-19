@@ -1,12 +1,41 @@
-# CLAUDE.md
+## Project Overview
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Scicloud is a open-source scientific laboratory management platform. It provides several features to simplify research life. It a self-hosted and modular solution using modern and secure technologies. Users can create or install community-based modules to extend the platform's functionality.
 
-## Development Commands
+## Using Modular Prompts
 
-### Prerequisites
-- **pnpm** as package manager (pnpm@10.13.1)
-- **Supabase CLI** for local database
+To work effectively on specific areas of Positron, research the codebase and ask Claude to include relevant context files:
+
+- **UI Components**: `Please read .claude/ui-components.md` - For SciCloud UI development
+- **Backend Services**: `Please read .claude/backend.md` - (Coming soon)
+- **Database**: `Please read .claude/supabase.md` - (Coming soon)
+- **Modules System**: `Please read .claude/modules-system.md` - (Coming soon)
+- **Language Support**: `Please read .claude/language-support.md` - (Coming soon)
+- **Deploy System**: `Please read .claude/build-system.md` - (Coming soon)
+- **E2E Testing**: `Please read .claude/e2e-testing.md` - (Coming soon)
+
+## Architecture Overview
+
+### Project Structure
+This is a **pnpm workspace monorepo** with the following apps:
+- `apps/web/` - Vue 3 frontend application (main development focus)
+- `apps/supabase/` - Supabase configuration and migrations
+- `apps/shared/` - Shared types and utilities
+
+### Frontend Stack (apps/web/)
+- **Vue 3** with Composition API and `<script setup>` syntax
+- **Vite** as build tool and dev server
+- **Vue Router** for client-side routing with lazy-loaded pages
+- **Pinia** for state management
+- **TypeScript** throughout
+- **Tailwind CSS** + **ShadCN/UI** component library (using Radix Vue)
+- **Supabase** for backend services (auth, database, storage)
+
+### Development Environment
+- **Vite dev server**: http://localhost:3000
+- **Supabase Studio**: http://localhost:54323
+- **Supabase API**: http://localhost:54321
+- Vue DevTools and Vite DevTools enabled in development
 
 ### Starting Development
 ```bash
@@ -26,57 +55,20 @@ pnpm lint:fix        # Auto-fix linting issues
 pnpm type-check      # Run TypeScript type checking (vue-tsc --noEmit)
 ```
 
-### Testing
-```bash
-# Unit Tests (Vitest)
-pnpm test            # Run unit tests
-pnpm test:ui         # Run unit tests with UI
-pnpm test:coverage   # Run unit tests with coverage report
-
-# E2E Tests (Playwright)
-pnpm test:e2e        # Run E2E tests (headless)
-pnpm test:e2e:ui     # Run E2E tests with Playwright UI
-pnpm test:e2e:headed # Run E2E tests in headed mode (browser visible)
-pnpm test:e2e:debug  # Run E2E tests in debug mode
-```
-
 ### Supabase Management
 ```bash
 pnpm supabase:status  # Check Supabase services status
 pnpm supabase:stop    # Stop local Supabase instance
 ```
 
-## Architecture Overview
-
-### Project Structure
-This is a **pnpm workspace monorepo** with the following apps:
-- `apps/web/` - Vue 3 frontend application (main development focus)
-- `apps/server/` - AdonisJS API (planned, not yet implemented)
-- `apps/supabase/` - Supabase configuration and migrations
-- `apps/shared/` - Shared types and utilities
-
-### Frontend Stack (apps/web/)
-- **Vue 3** with Composition API and `<script setup>` syntax
-- **Vite** as build tool and dev server
-- **Vue Router** for client-side routing with lazy-loaded pages
-- **Pinia** for state management
-- **TypeScript** throughout
-- **Tailwind CSS** + **ShadCN/UI** component library (using Radix Vue)
-- **Supabase** for backend services (auth, database, storage)
-
-### Development Environment
-- **Vite dev server**: http://localhost:3000
-- **Supabase Studio**: http://localhost:54323
-- **Supabase API**: http://localhost:54321
-- Vue DevTools and Vite DevTools enabled in development
-
 ## Development Guidelines
+
+### 🚨 CRITICAL RULES:
 - **English Only**: All code, comments, variable names, function names, and documentation must be in English
+- **Read the documentation**: Read the documentation in the `docs` folder for more information about the project or research last documentations on the web
 - **Prioritize Reusability**: Before writing a new function, always search the codebase to determine if a similar utility already exists. Reuse existing code whenever possible to avoid duplication.
 - **No Legacy/Backward Compatibility**: Do not create legacy methods or backward compatibility layers - always refactor cleanly
-- **Read the documentation**: Read the documentation in the `docs` folder for more information about the project or research last documentations on the web
-
-## Architecture
+- **Follow S.O.L.I.D. principles**: Follow the S.O.L.I.D. principles to ensure the codebase is scalable, maintainable, and robust
 
 ### Architectural Principles (S.O.L.I.D.)
 
