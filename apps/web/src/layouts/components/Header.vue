@@ -18,26 +18,15 @@
       </div>
 
       <!-- Main navigation -->
-      <nav class="flex items-center gap-1 bg-header-accent backdrop-blur-sm rounded-xl p-1 border border-header-border shadow-sm">
-        <RouterLink
-          v-for="module in mainModules"
-          :key="module.id"
-          v-slot="{ href, navigate }"
-          :to="module.to"
-          custom
-        >
-          <Button
-            :href="href"
-            variant="ghost"
-            size="sm"
-            :class="[
-              'flex items-center gap-2.5 px-4 py-2.5 rounded-lg transition-all duration-300 relative group',
-              isModuleActive(module) 
-                ? 'nav-active shadow-md' 
-                : 'text-header-foreground hover:nav-hover'
-            ]"
-            @click="navigate"
-          >
+      <nav
+        class="flex items-center gap-1 bg-header-accent backdrop-blur-sm rounded-xl p-1 border border-header-border shadow-sm">
+        <RouterLink v-for="module in mainModules" :key="module.id" v-slot="{ href, navigate }" :to="module.to" custom>
+          <Button :href="href" variant="ghost" size="sm" :class="[
+            'flex items-center gap-2.5 px-4 py-2.5 rounded-lg transition-all duration-300 relative group',
+            isModuleActive(module)
+              ? 'nav-active shadow-md'
+              : 'text-header-foreground hover:nav-hover'
+          ]" @click="navigate">
             <span class="font-medium">{{ module.label }}</span>
           </Button>
         </RouterLink>
@@ -49,24 +38,20 @@
       <div class="flex items-center gap-3 pr-6">
         <!-- Search -->
         <div class="relative group">
-          <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-          <Input 
-            v-model="searchQuery"
-            placeholder="Search..."
-            class="pl-10 layout-search-width !bg-white border-border text-foreground placeholder:text-muted-foreground focus:!bg-white focus:border-primary/50 rounded-xl transition-all duration-300"
-          />
+          <Search
+            class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+          <Input v-model="searchQuery" placeholder="Search..."
+            class="pl-10 layout-search-width !bg-white border-border text-foreground placeholder:text-muted-foreground focus:!bg-white focus:border-primary/50 rounded-xl transition-all duration-300" />
         </div>
-        
+
         <!-- Notifications -->
         <NotificationBell />
-        
+
         <!-- User menu -->
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
-            <Button 
-              variant="ghost" 
-              class="relative h-10 w-10 rounded-full hover:bg-header-accent transition-all duration-300"
-            >
+            <Button variant="ghost"
+              class="relative h-10 w-10 rounded-full hover:bg-header-accent transition-all duration-300">
               <Avatar class="h-10 w-10 border-2 border-header-border">
                 <AvatarImage :src="user.avatar" alt="User avatar" />
                 <AvatarFallback class="bg-primary text-primary-foreground font-medium">
@@ -75,7 +60,8 @@
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" class="w-56 border-border shadow-xl bg-popover/95 backdrop-blur-md rounded-xl">
+          <DropdownMenuContent align="end"
+            class="w-56 border-border shadow-xl bg-popover/95 backdrop-blur-md rounded-xl">
             <DropdownMenuLabel class="px-4 py-3">
               <div v-if="authStore.loading" class="flex items-center gap-2">
                 <div class="animate-pulse h-4 bg-muted rounded w-20"></div>
@@ -93,7 +79,8 @@
             <DropdownMenuItem @click="() => router.push('/profile')">
               <User class="h-4 w-4 mr-2" /> Profile
             </DropdownMenuItem>
-            <DropdownMenuItem v-if="userStore.currentUserProfile?.role === 'admin'" @click="() => router.push('/admin/settings')">
+            <DropdownMenuItem v-if="userStore.currentUserProfile?.role === 'admin'"
+              @click="() => router.push('/admin/settings')">
               <Settings class="h-4 w-4 mr-2" /> Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -108,14 +95,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { 
-  TestTube, Search, User, Settings, LogOut
-} from 'lucide-vue-next'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import NotificationBell from '@/components/notifications/NotificationBell.vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -124,12 +106,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useAuthStore } from '@/stores/auth.store'
-import { useUserStore } from '@/stores/user.store'
-import { useNotificationsStore } from '@/stores/notifications.store'
+import { Input } from '@/components/ui/input'
 import { useRealtimeNotifications } from '@/composables/useRealtimeNotifications'
-import NotificationBell from '@/components/notifications/NotificationBell.vue'
+import { useAuthStore } from '@/stores/auth.store'
+import { useNotificationsStore } from '@/stores/notifications.store'
+import { useUserStore } from '@/stores/user.store'
 import type { NavigationModule } from '@/types/ui'
+import {
+  LogOut,
+  Search,
+  Settings,
+  TestTube,
+  User
+} from 'lucide-vue-next'
+import { computed, onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 const router = useRouter()
 const route = useRoute()
@@ -167,7 +158,7 @@ const userInitials = computed(() => {
 // Methods
 const isModuleActive = (module: NavigationModule) => {
   const currentPath = route.path
-  
+
   // Handle special cases for modules that have multiple sub-routes
   switch (module.id) {
     case 'laboratory':
@@ -203,7 +194,7 @@ onMounted(async () => {
   if (!userStore.currentUserProfile) {
     await userStore.loadCurrentUserProfile()
   }
-  
+
   // Initialize notifications store and connect to realtime if user is authenticated
   if (authStore.user?.id) {
     await notificationsStore.initialize()

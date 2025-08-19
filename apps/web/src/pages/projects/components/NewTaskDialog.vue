@@ -52,7 +52,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -71,6 +70,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { ref } from 'vue';
 
 defineProps<{ open: boolean }>();
 const emit = defineEmits(['update:open', 'task-added']);

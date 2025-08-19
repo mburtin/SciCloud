@@ -1,8 +1,8 @@
-import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
 import { animalsService } from '@/services/animals.service'
-import type { Animal, AnimalStatus, AnimalInsert, AnimalUpdate, HealthStatus } from '@/types/supabase'
-import type { AnimalDocument, MedicalRecord, Measurement } from '@/types/lab'
+import type { AnimalDocument, Measurement, MedicalRecord } from '@/types/lab'
+import type { Animal, AnimalInsert, AnimalStatus, AnimalUpdate, HealthStatus } from '@/types/supabase'
+import { defineStore } from 'pinia'
+import { computed, ref } from 'vue'
 
 export const useAnimalsStore = defineStore('animals', () => {
   // State
@@ -10,7 +10,7 @@ export const useAnimalsStore = defineStore('animals', () => {
   const loading = ref(false)
   const error = ref<string | null>(null)
   const isInitialized = ref(false)
-  
+
   // Filters and search
   const searchQuery = ref('')
   const statusFilter = ref<AnimalStatus | 'all'>('all')
@@ -25,7 +25,7 @@ export const useAnimalsStore = defineStore('animals', () => {
     // Search filter
     if (searchQuery.value.trim()) {
       const query = searchQuery.value.toLowerCase()
-      filtered = filtered.filter(animal => 
+      filtered = filtered.filter(animal =>
         animal.identifier.toLowerCase().includes(query) ||
         animal.species.toLowerCase().includes(query) ||
         animal.strain.toLowerCase().includes(query) ||
@@ -101,15 +101,15 @@ export const useAnimalsStore = defineStore('animals', () => {
     return Array.from(vetSet).sort()
   })
 
-  const activeAnimals = computed(() => 
+  const activeAnimals = computed(() =>
     animals.value.filter(animal => animal.status === 'alive')
   )
 
-  const criticalAnimals = computed(() => 
+  const criticalAnimals = computed(() =>
     animals.value.filter(animal => animal.health_status === 'critical' && animal.status === 'alive')
   )
 
-  const concerningAnimals = computed(() => 
+  const concerningAnimals = computed(() =>
     animals.value.filter(animal => animal.health_status === 'concerning' && animal.status === 'alive')
   )
 
@@ -134,7 +134,7 @@ export const useAnimalsStore = defineStore('animals', () => {
     try {
       loading.value = true
       error.value = null
-      
+
       const fetchedAnimals = await animalsService.getAnimals()
       animals.value = fetchedAnimals
       isInitialized.value = true
@@ -207,13 +207,13 @@ export const useAnimalsStore = defineStore('animals', () => {
   async function updateAnimal(id: string, updates: AnimalUpdate): Promise<Animal | null> {
     try {
       const updatedAnimal = await animalsService.updateAnimal(id, updates)
-      
+
       // Update in store
       const index = animals.value.findIndex(a => a.id === id)
       if (index !== -1) {
         animals.value[index] = updatedAnimal
       }
-      
+
       return updatedAnimal
     } catch {
       return null
@@ -223,13 +223,13 @@ export const useAnimalsStore = defineStore('animals', () => {
   async function deleteAnimal(id: string): Promise<boolean> {
     try {
       await animalsService.deleteAnimal(id)
-      
+
       // Remove from store
       const index = animals.value.findIndex(a => a.id === id)
       if (index !== -1) {
         animals.value.splice(index, 1)
       }
-      
+
       return true
     } catch {
       return false
@@ -240,13 +240,13 @@ export const useAnimalsStore = defineStore('animals', () => {
   async function updateAnimalWeight(id: string, weight: number): Promise<boolean> {
     try {
       const updatedAnimal = await animalsService.updateAnimalWeight(id, weight)
-      
+
       // Update in store
       const index = animals.value.findIndex(a => a.id === id)
       if (index !== -1) {
         animals.value[index] = updatedAnimal
       }
-      
+
       return true
     } catch {
       return false
@@ -256,13 +256,13 @@ export const useAnimalsStore = defineStore('animals', () => {
   async function updateAnimalStatus(id: string, status: AnimalStatus): Promise<boolean> {
     try {
       const updatedAnimal = await animalsService.updateAnimalStatus(id, status)
-      
+
       // Update in store
       const index = animals.value.findIndex(a => a.id === id)
       if (index !== -1) {
         animals.value[index] = updatedAnimal
       }
-      
+
       return true
     } catch {
       return false
@@ -272,13 +272,13 @@ export const useAnimalsStore = defineStore('animals', () => {
   async function updateAnimalHealthStatus(id: string, healthStatus: HealthStatus): Promise<boolean> {
     try {
       const updatedAnimal = await animalsService.updateAnimalHealthStatus(id, healthStatus)
-      
+
       // Update in store
       const index = animals.value.findIndex(a => a.id === id)
       if (index !== -1) {
         animals.value[index] = updatedAnimal
       }
-      
+
       return true
     } catch {
       return false
@@ -289,13 +289,13 @@ export const useAnimalsStore = defineStore('animals', () => {
   async function addDocument(id: string, document: AnimalDocument): Promise<boolean> {
     try {
       const updatedAnimal = await animalsService.addDocument(id, document)
-      
+
       // Update in store
       const index = animals.value.findIndex(a => a.id === id)
       if (index !== -1) {
         animals.value[index] = updatedAnimal
       }
-      
+
       return true
     } catch {
       return false
@@ -305,13 +305,13 @@ export const useAnimalsStore = defineStore('animals', () => {
   async function removeDocument(id: string, documentId: string): Promise<boolean> {
     try {
       const updatedAnimal = await animalsService.removeDocument(id, documentId)
-      
+
       // Update in store
       const index = animals.value.findIndex(a => a.id === id)
       if (index !== -1) {
         animals.value[index] = updatedAnimal
       }
-      
+
       return true
     } catch {
       return false
@@ -322,13 +322,13 @@ export const useAnimalsStore = defineStore('animals', () => {
   async function addMedicalRecord(id: string, record: MedicalRecord): Promise<boolean> {
     try {
       const updatedAnimal = await animalsService.addMedicalRecord(id, record)
-      
+
       // Update in store
       const index = animals.value.findIndex(a => a.id === id)
       if (index !== -1) {
         animals.value[index] = updatedAnimal
       }
-      
+
       return true
     } catch {
       return false
@@ -339,13 +339,13 @@ export const useAnimalsStore = defineStore('animals', () => {
   async function addMeasurement(id: string, measurement: Measurement): Promise<boolean> {
     try {
       const updatedAnimal = await animalsService.addMeasurement(id, measurement)
-      
+
       // Update in store
       const index = animals.value.findIndex(a => a.id === id)
       if (index !== -1) {
         animals.value[index] = updatedAnimal
       }
-      
+
       return true
     } catch {
       return false

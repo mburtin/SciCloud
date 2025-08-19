@@ -1,6 +1,7 @@
 <template>
   <div>
-    <NewMemberDialog :open="isNewMemberDialogOpen" @update:open="isNewMemberDialogOpen = $event" @member-added="handleMemberAdded" />
+    <NewMemberDialog :open="isNewMemberDialogOpen" @update:open="isNewMemberDialogOpen = $event"
+      @member-added="handleMemberAdded" />
     <div class="space-y-4">
       <div class="flex justify-between items-center">
         <h3 class="text-lg font-medium">
@@ -38,11 +39,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { UserPlus, Mail } from 'lucide-vue-next';
+import { Mail, UserPlus } from 'lucide-vue-next';
+import { ref } from 'vue';
 import NewMemberDialog from './NewMemberDialog.vue';
 
 const isNewMemberDialogOpen = ref(false);

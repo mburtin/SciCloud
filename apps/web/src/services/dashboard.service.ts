@@ -4,9 +4,9 @@
  * (no extra Supabase tables, no mocks)
  */
 
-import type { StatCard } from '@/types/ui'
-import type { RecentProject, Deadline } from '@/types/projects'
 import { projectsService } from '@/services/projects.service'
+import type { Deadline, RecentProject } from '@/types/projects'
+import type { StatCard } from '@/types/ui'
 
 export class DashboardService {
   /**

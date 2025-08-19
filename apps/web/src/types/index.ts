@@ -4,15 +4,13 @@
  */
 
 // Base types
-export type { UUID, Timestamp, AuditableRecord, ApiResponse, PaginatedResponse, CreateInput, UpdateInput } from './base'
-export type { Priority } from './base' // Use Priority from base
+export type { ApiResponse, AuditableRecord, CreateInput, PaginatedResponse, Priority, Timestamp, UpdateInput, UUID } from './base'
 
 // Feature modules
 export * from './auth'
-export * from './projects'
-export type { AnimalDocument, MedicalRecord, Measurement, speciesLabels, statusLabels, healthStatusLabels, documentTypeLabels } from './lab'
-export type { StockLevel } from './lab' // Use StockLevel from lab
-export * from './ui'
-export * from './supabase'
-export * from './notifications'
 export * from './documents'
+export type { AnimalDocument, documentTypeLabels, healthStatusLabels, Measurement, MedicalRecord, speciesLabels, statusLabels, StockLevel } from './lab'
+export * from './notifications'
+export * from './projects'
+export * from './supabase'
+export * from './ui'

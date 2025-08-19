@@ -28,7 +28,8 @@
             </p>
           </CardHeader>
           <CardContent class="space-y-4">
-            <div v-for="(type, key) in settings.types" :key="key" class="flex items-center justify-between p-4 border rounded-lg">
+            <div v-for="(type, key) in settings.types" :key="key"
+              class="flex items-center justify-between p-4 border rounded-lg">
               <div class="flex items-center gap-4">
                 <component :is="type.icon" class="h-6 w-6 text-muted-foreground" />
                 <div>
@@ -54,7 +55,8 @@
             </CardTitle>
           </CardHeader>
           <CardContent class="space-y-4">
-            <div v-for="(method, key) in settings.methods" :key="key" class="flex items-center justify-between p-4 border rounded-lg">
+            <div v-for="(method, key) in settings.methods" :key="key"
+              class="flex items-center justify-between p-4 border rounded-lg">
               <div>
                 <Label :for="key">{{ method.label }}</Label>
               </div>
@@ -78,16 +80,20 @@
                   Pause notifications during specific times.
                 </p>
               </div>
-              <Switch id="quiet-hours" :checked="settings.quietHours.enabled" @update:checked="settings.quietHours.enabled = $event" />
+              <Switch id="quiet-hours" :checked="settings.quietHours.enabled"
+                @update:checked="settings.quietHours.enabled = $event" />
             </div>
             <div v-if="settings.quietHours.enabled" class="grid grid-cols-2 gap-4 pt-2">
               <div>
                 <Label for="quiet-start">Start</Label>
                 <Select v-model="settings.quietHours.start">
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
-                    <SelectItem v-for="hour in 24" :key="`start-${hour-1}`" :value="`${(hour-1).toString().padStart(2, '0')}:00`">
-                      {{ (hour-1).toString().padStart(2, '0') }}:00
+                    <SelectItem v-for="hour in 24" :key="`start-${hour - 1}`"
+                      :value="`${(hour - 1).toString().padStart(2, '0')}:00`">
+                      {{ (hour - 1).toString().padStart(2, '0') }}:00
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -95,10 +101,13 @@
               <div>
                 <Label for="quiet-end">End</Label>
                 <Select v-model="settings.quietHours.end">
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
-                    <SelectItem v-for="hour in 24" :key="`end-${hour-1}`" :value="`${(hour-1).toString().padStart(2, '0')}:00`">
-                      {{ (hour-1).toString().padStart(2, '0') }}:00
+                    <SelectItem v-for="hour in 24" :key="`end-${hour - 1}`"
+                      :value="`${(hour - 1).toString().padStart(2, '0')}:00`">
+                      {{ (hour - 1).toString().padStart(2, '0') }}:00
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -112,13 +121,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Settings, Bell, Clock, FolderKanban, FileText, Users, AlertTriangle, Calendar, Mail } from 'lucide-vue-next';
+import { Switch } from '@/components/ui/switch';
+import { AlertTriangle, Bell, Calendar, Clock, FileText, FolderKanban, Mail, Settings, Users } from 'lucide-vue-next';
+import { ref } from 'vue';
 
 const settings = ref({
   methods: {
@@ -126,41 +135,41 @@ const settings = ref({
     push: { label: 'Push Notifications', enabled: true },
   },
   types: {
-    projectUpdates: { 
-      label: 'Project Updates', 
-      description: 'Status changes, new tasks, etc.', 
-      icon: FolderKanban, 
-      enabled: true 
+    projectUpdates: {
+      label: 'Project Updates',
+      description: 'Status changes, new tasks, etc.',
+      icon: FolderKanban,
+      enabled: true
     },
-    documentUpdates: { 
-      label: 'Documents & Files', 
-      description: 'New documents, modifications.', 
-      icon: FileText, 
-      enabled: true 
+    documentUpdates: {
+      label: 'Documents & Files',
+      description: 'New documents, modifications.',
+      icon: FileText,
+      enabled: true
     },
-    collaborationRequests: { 
-      label: 'Collaboration Requests', 
-      description: 'Invitations to join projects.', 
-      icon: Users, 
-      enabled: true 
+    collaborationRequests: {
+      label: 'Collaboration Requests',
+      description: 'Invitations to join projects.',
+      icon: Users,
+      enabled: true
     },
-    systemAlerts: { 
-      label: 'System Alerts', 
-      description: 'Security alerts, system updates.', 
-      icon: AlertTriangle, 
-      enabled: true 
+    systemAlerts: {
+      label: 'System Alerts',
+      description: 'Security alerts, system updates.',
+      icon: AlertTriangle,
+      enabled: true
     },
-    deadlineReminders: { 
-      label: 'Deadline Reminders', 
-      description: 'Upcoming task deadlines.', 
-      icon: Calendar, 
-      enabled: false 
+    deadlineReminders: {
+      label: 'Deadline Reminders',
+      description: 'Upcoming task deadlines.',
+      icon: Calendar,
+      enabled: false
     },
-    weeklyDigest: { 
-      label: 'Weekly Digest', 
-      description: 'A summary of project activity.', 
-      icon: Mail, 
-      enabled: false 
+    weeklyDigest: {
+      label: 'Weekly Digest',
+      description: 'A summary of project activity.',
+      icon: Mail,
+      enabled: false
     },
   },
   quietHours: {

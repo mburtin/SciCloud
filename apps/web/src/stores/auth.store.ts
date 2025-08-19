@@ -1,8 +1,8 @@
-import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
-import type { LoginCredentials, RegisterCredentials } from '@/types/auth'
 import * as authService from '@/services/auth.service'
+import type { LoginCredentials, RegisterCredentials } from '@/types/auth'
 import type { Session, User as SupabaseUser } from '@supabase/supabase-js'
+import { defineStore } from 'pinia'
+import { computed, ref } from 'vue'
 
 export const useAuthStore = defineStore('auth', () => {
   // Simplified reactive state - following modern Supabase patterns
@@ -11,7 +11,7 @@ export const useAuthStore = defineStore('auth', () => {
   const loading = ref(false)
   const error = ref<string | null>(null)
   const isInitialized = ref(false)
-  
+
   // Auth state change listener cleanup
   let authUnsubscribe: (() => void) | null = null
 
@@ -23,11 +23,11 @@ export const useAuthStore = defineStore('auth', () => {
     if (isInitialized.value) {
       return
     }
-    
+
     try {
       loading.value = true
       error.value = null
-      
+
       // Get current session using simplified auth service
       const result = await authService.getCurrentSession()
       if (result.success && result.data) {
@@ -50,10 +50,10 @@ export const useAuthStore = defineStore('auth', () => {
     if (authUnsubscribe) {
       authUnsubscribe()
     }
-    
+
     // Use simplified auth service listener
     authUnsubscribe = authService.onAuthStateChange((event, newSession) => {
-      
+
       // Update state directly from Supabase events - single source of truth
       session.value = newSession
       user.value = newSession?.user || null
@@ -66,9 +66,9 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       loading.value = true
       error.value = null
-      
+
       const result = await authService.signInWithPassword(credentials)
-      
+
       if (!result.success) {
         throw new Error(result.error)
       }
@@ -88,9 +88,9 @@ export const useAuthStore = defineStore('auth', () => {
   async function register(credentials: RegisterCredentials) {
     try {
       loading.value = true
-      
+
       const result = await authService.signUpWithPassword(credentials)
-      
+
       if (!result.success) {
         throw new Error(result.error)
       }
@@ -108,13 +108,13 @@ export const useAuthStore = defineStore('auth', () => {
   async function logout() {
     try {
       loading.value = true
-      
+
       const result = await authService.signOut()
-      
+
       if (!result.success) {
         throw new Error(result.error || 'Failed to sign out')
       }
-      
+
       // Auth state listener will automatically clear session/user state
       return { success: true }
     } catch {
@@ -125,18 +125,18 @@ export const useAuthStore = defineStore('auth', () => {
       loading.value = false
     }
   }
-  
+
   // Logout from all sessions
   async function logoutEverywhere() {
     try {
       loading.value = true
-      
+
       const result = await authService.signOutEverywhere()
-      
+
       if (!result.success) {
         throw new Error(result.error || 'Failed to sign out from all sessions')
       }
-      
+
       return { success: true }
     } catch {
       const errorMessage = "Unknown error";//  'Global logout failed'
@@ -147,7 +147,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  
+
   // Cleanup on store disposal
   function dispose() {
     if (authUnsubscribe) {
@@ -156,20 +156,20 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  return { 
+  return {
     // State
     session: computed(() => session.value),
     user: computed(() => user.value),
     loading: computed(() => loading.value),
     error: computed(() => error.value),
-    
+
     // Computed
     isAuthenticated,
     isInitialized: computed(() => isInitialized.value),
-    
+
     // Actions
     initialize,
-    login, 
+    login,
     register,
     logout,
     logoutEverywhere,

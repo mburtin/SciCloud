@@ -1,5 +1,5 @@
-import { createRouter, createWebHistory, type RouteLocationNormalized } from 'vue-router'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
+import { createRouter, createWebHistory, type RouteLocationNormalized } from 'vue-router'
 
 // Pages
 // Pages are imported dynamically (lazy-loaded) to improve initial load time.
@@ -22,9 +22,9 @@ import { useAuthStore } from '@/stores/auth.store'
 import { useUserStore } from '@/stores/user.store'
 
 // Import route modules
-import { labRoutes } from './modules/lab.routes';
-import profileRoutes from './modules/profile.routes';
-import adminRoutes from './modules/admin.routes';
+import adminRoutes from './modules/admin.routes'
+import { labRoutes } from './modules/lab.routes'
+import profileRoutes from './modules/profile.routes'
 
 // Route meta type extensions
 declare module 'vue-router' {
@@ -136,7 +136,7 @@ const routes = [
     path: '/error/:errorCode',
     name: 'error',
     component: ErrorPage,
-        props: (route: RouteLocationNormalized) => ({ errorCode: route.params.errorCode as string }),
+    props: (route: RouteLocationNormalized) => ({ errorCode: route.params.errorCode as string }),
     meta: { requiresAuth: false }
   },
   // Route for not found page (404)
@@ -207,7 +207,7 @@ router.beforeEach(async (to, _from, next) => {
     if (!authStore.isInitialized) {
       await authStore.initialize()
     }
-    
+
     // Simple authentication check - trust the store state
     if (!authStore.isAuthenticated) {
       // Check if users exist before redirecting to login
@@ -231,7 +231,7 @@ router.beforeEach(async (to, _from, next) => {
         if (!userStore.currentUserProfile) {
           await userStore.loadCurrentUserProfile()
         }
-        
+
         // Check if user has admin role
         if (!userStore.currentUserProfile || userStore.currentUserProfile.role !== 'admin') {
           next('/error/403')
@@ -242,7 +242,7 @@ router.beforeEach(async (to, _from, next) => {
         return
       }
     }
-    
+
     next()
   } else if (to.path === '/login' && authStore.isAuthenticated) {
     // Redirect authenticated users away from login page

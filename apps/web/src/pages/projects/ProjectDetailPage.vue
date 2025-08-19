@@ -33,15 +33,15 @@
 </template>
 
 <script setup lang="ts">
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { useProjectsStore } from '@/stores/projects.store';
+import type { Project } from '@/types/supabase';
+import { ArrowLeft } from 'lucide-vue-next';
+import { storeToRefs } from 'pinia';
 import { computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { ArrowLeft } from 'lucide-vue-next';
-import { useProjectsStore } from '@/stores/projects.store';
-import { storeToRefs } from 'pinia';
-import type { Project } from '@/types/supabase';
 
 const route = useRoute();
 const router = useRouter();

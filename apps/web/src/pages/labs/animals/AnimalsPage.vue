@@ -100,11 +100,7 @@
     <!-- Filters -->
     <div class="bg-card border rounded-lg p-4 flex items-center gap-4">
       <div class="relative w-full max-w-sm">
-        <Input
-          v-model="searchQuery"
-          placeholder="Search by ID, species, strain, veterinarian..."
-          class="pl-10"
-        />
+        <Input v-model="searchQuery" placeholder="Search by ID, species, strain, veterinarian..." class="pl-10" />
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <Search class="h-5 w-5 text-muted-foreground" />
         </div>
@@ -191,12 +187,8 @@
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow
-              v-for="animal in filteredAnimals"
-              :key="animal.id"
-              class="cursor-pointer hover:bg-muted/50"
-              @click="navigateToAnimalDetail(animal.id)"
-            >
+            <TableRow v-for="animal in filteredAnimals" :key="animal.id" class="cursor-pointer hover:bg-muted/50"
+              @click="navigateToAnimalDetail(animal.id)">
               <TableCell>{{ animal.identifier }}</TableCell>
               <TableCell>
                 <div class="flex items-center gap-2">
@@ -253,38 +245,16 @@
   </div>
 
   <!-- Animal Form Dialogs -->
-  <AnimalFormDialog
-    v-model:open="isNewAnimalDialogOpen"
-    mode="create"
-    @save="handleCreateAnimal"
-  />
+  <AnimalFormDialog v-model:open="isNewAnimalDialogOpen" mode="create" @save="handleCreateAnimal" />
 
-  <AnimalFormDialog
-    v-model:open="isEditDialogOpen"
-    mode="edit"
-    :animal="editingAnimal"
-    @save="handleUpdateAnimal"
-  />
+  <AnimalFormDialog v-model:open="isEditDialogOpen" mode="edit" :animal="editingAnimal" @save="handleUpdateAnimal" />
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import AnimalFormDialog from '@/components/labs/AnimalFormDialog.vue'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { 
-  Search, 
-  Plus, 
-  MoreHorizontal,
-  Users,
-  CheckCircle2,
-  FlaskConical,
-  HeartPulse,
-  CalendarDays
-} from 'lucide-vue-next';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -293,9 +263,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Input } from '@/components/ui/input'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useAnimalsStore } from '@/stores/animals.store'
 import type { Animal, AnimalInsert } from '@/types/supabase'
-import AnimalFormDialog from '@/components/labs/AnimalFormDialog.vue'
+import {
+  CalendarDays,
+  CheckCircle2,
+  FlaskConical,
+  HeartPulse,
+  MoreHorizontal,
+  Plus,
+  Search,
+  Users
+} from 'lucide-vue-next'
+import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 import {
   Select,
@@ -320,8 +303,8 @@ const totalAnimals = computed(() => animalsStore.stats.total)
 const aliveAnimals = computed(() => animalsStore.stats.alive)
 const experimentAnimals = computed(() => animalsStore.stats.experimental)
 const healthMonitoringAnimals = computed(() => animalsStore.stats.concerning + animalsStore.stats.critical)
-const upcomingExamsAnimals = computed(() => 
-  animalsStore.animals.filter(a => 
+const upcomingExamsAnimals = computed(() =>
+  animalsStore.animals.filter(a =>
     a.next_exam_date && new Date(a.next_exam_date) <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
   ).length
 )
@@ -383,7 +366,7 @@ const calculateAge = (birthDate: string) => {
   const birth = new Date(birthDate)
   const today = new Date()
   const diffInDays = Math.floor((today.getTime() - birth.getTime()) / (1000 * 3600 * 24))
-  
+
   if (diffInDays < 30) {
     return `${diffInDays} days`
   } else if (diffInDays < 365) {

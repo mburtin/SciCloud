@@ -22,10 +22,7 @@
     <!-- Error State -->
     <div v-else-if="error" class="text-center py-8">
       <p class="text-destructive">{{ error }}</p>
-      <button 
-        @click="fetchDashboardData"
-        class="mt-2 text-sm text-primary hover:underline"
-      >
+      <button @click="fetchDashboardData" class="mt-2 text-sm text-primary hover:underline">
         Try again
       </button>
     </div>
@@ -120,20 +117,21 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import CardFooter from '@/components/ui/card/CardFooter.vue'
-import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import {
-  FolderOpen, Calendar
-} from 'lucide-vue-next'
 import { dashboardService } from '@/services/dashboard.service'
+import {
+  Calendar,
+  FolderOpen
+} from 'lucide-vue-next'
+import { onMounted, ref } from 'vue'
 
 // Local state
+import type { Deadline, RecentProject } from '@/types/projects'
 import type { StatCard } from '@/types/ui'
-import type { RecentProject, Deadline } from '@/types/projects'
 
 const statCards = ref<StatCard[]>([])
 const recentProjects = ref<RecentProject[]>([])

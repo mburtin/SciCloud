@@ -3,13 +3,13 @@
  * Provides toast notifications and integrates with notifications store
  */
 
-import { toast } from 'vue-sonner'
 import type {
   ToastNotification
 } from '@/types/notifications'
+import { toast } from 'vue-sonner'
 
 export function useNotification() {
-  
+
   const showToast = (notification: ToastNotification) => {
     const { title, message, variant, duration, action } = notification
 

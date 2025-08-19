@@ -15,12 +15,7 @@
         <!-- Date -->
         <div class="space-y-2">
           <Label for="date">Measurement date *</Label>
-          <Input
-            id="date"
-            type="date"
-            v-model="formData.date"
-            :max="today"
-          />
+          <Input id="date" type="date" v-model="formData.date" :max="today" />
         </div>
 
         <!-- Type de mesure -->
@@ -31,11 +26,7 @@
               <SelectValue placeholder="Select a measurement type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem
-                v-for="type in measurementTypes"
-                :key="type.value"
-                :value="type.value"
-              >
+              <SelectItem v-for="type in measurementTypes" :key="type.value" :value="type.value">
                 <div class="flex items-center gap-2">
                   <component :is="type.icon" class="h-4 w-4" />
                   {{ type.label }}
@@ -50,36 +41,19 @@
           <div class="space-y-2">
             <Label for="value">
               Value *
-              <component 
-                v-if="selectedTypeInfo?.icon" 
-                :is="selectedTypeInfo.icon" 
-                class="h-4 w-4 inline ml-1" 
-              />
+              <component v-if="selectedTypeInfo?.icon" :is="selectedTypeInfo.icon" class="h-4 w-4 inline ml-1" />
             </Label>
-            <Input
-              id="value"
-              type="number"
-              step="0.01"
-              v-model="formData.value"
-              :placeholder="selectedTypeInfo?.placeholder || '0'"
-              :disabled="!formData.type"
-            />
+            <Input id="value" type="number" step="0.01" v-model="formData.value"
+              :placeholder="selectedTypeInfo?.placeholder || '0'" :disabled="!formData.type" />
           </div>
           <div class="space-y-2">
             <Label for="unit">Unit *</Label>
-            <Select 
-              v-model="formData.unit"
-              :disabled="!formData.type"
-            >
+            <Select v-model="formData.unit" :disabled="!formData.type">
               <SelectTrigger>
                 <SelectValue placeholder="Unit" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem
-                  v-for="unit in availableUnits"
-                  :key="unit"
-                  :value="unit"
-                >
+                <SelectItem v-for="unit in availableUnits" :key="unit" :value="unit">
                   {{ unit === 'none' ? 'No unit' : unit }}
                 </SelectItem>
               </SelectContent>
@@ -95,11 +69,7 @@
               <SelectValue placeholder="Select a person" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem
-                v-for="person in measurementPersonnel"
-                :key="person"
-                :value="person"
-              >
+              <SelectItem v-for="person in measurementPersonnel" :key="person" :value="person">
                 {{ person }}
               </SelectItem>
             </SelectContent>
@@ -109,25 +79,19 @@
         <!-- Notes -->
         <div class="space-y-2">
           <Label for="notes">Notes and observations</Label>
-          <Textarea
-            id="notes"
-            v-model="formData.notes"
-            placeholder="Additional notes about the measurement..."
-            :rows="3"
-          />
+          <Textarea id="notes" v-model="formData.notes" placeholder="Additional notes about the measurement..."
+            :rows="3" />
         </div>
 
         <!-- Aperçu de la mesure -->
         <div v-if="formData.type && formData.value && formData.unit" class="bg-muted p-4 rounded-lg">
           <h4 class="font-medium mb-2">Measurement preview</h4>
           <div class="flex items-center gap-2 text-sm">
-            <component 
-              v-if="selectedTypeInfo?.icon" 
-              :is="selectedTypeInfo.icon" 
-              class="h-4 w-4 text-muted-foreground" 
-            />
+            <component v-if="selectedTypeInfo?.icon" :is="selectedTypeInfo.icon"
+              class="h-4 w-4 text-muted-foreground" />
             <span class="font-medium">{{ selectedTypeInfo?.label }}:</span>
-            <span class="text-lg font-bold">{{ formData.value }} {{ formData.unit === 'none' ? '' : formData.unit }}</span>
+            <span class="text-lg font-bold">{{ formData.value }} {{ formData.unit === 'none' ? '' : formData.unit
+              }}</span>
             <span class="text-muted-foreground">
               • {{ formatDateSimple(formData.date) }}
             </span>
@@ -154,17 +118,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
-import { toast } from 'vue-sonner'
-import { 
-  Scale,
-  Thermometer,
-  Heart,
-  Activity,
-  Stethoscope,
-  FlaskConical
-} from 'lucide-vue-next'
-import type { Measurement } from '@/types/lab'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -173,6 +127,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -180,11 +136,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { formatDateSimple } from '@/lib/format.utils'
+import type { Measurement } from '@/types/lab'
+import {
+  Activity,
+  FlaskConical,
+  Heart,
+  Scale,
+  Stethoscope,
+  Thermometer
+} from 'lucide-vue-next'
+import { computed, reactive, ref } from 'vue'
+import { toast } from 'vue-sonner'
 
 interface Props {
   open: boolean
@@ -201,37 +165,37 @@ const isSubmitting = ref(false)
 const today = new Date().toISOString().split('T')[0]
 
 const measurementTypes = [
-  { 
-    value: 'weight', 
-    label: 'Weight', 
+  {
+    value: 'weight',
+    label: 'Weight',
     icon: Scale,
     defaultUnit: 'g',
     placeholder: '28.5'
   },
-  { 
-    value: 'temperature', 
-    label: 'Temperature', 
+  {
+    value: 'temperature',
+    label: 'Temperature',
     icon: Thermometer,
     defaultUnit: '°C',
     placeholder: '37.2'
   },
-  { 
-    value: 'blood-pressure', 
-    label: 'Blood pressure', 
+  {
+    value: 'blood-pressure',
+    label: 'Blood pressure',
     icon: Heart,
     defaultUnit: 'mmHg',
     placeholder: '120'
   },
-  { 
-    value: 'behavior', 
-    label: 'Behavioral score', 
+  {
+    value: 'behavior',
+    label: 'Behavioral score',
     icon: Activity,
     defaultUnit: 'score',
     placeholder: '8'
   },
-  { 
-    value: 'other', 
-    label: 'Other measurement', 
+  {
+    value: 'other',
+    label: 'Other measurement',
     icon: FlaskConical,
     defaultUnit: '',
     placeholder: '0'
@@ -266,7 +230,7 @@ const formData = reactive({
   notes: ''
 })
 
-const selectedTypeInfo = computed(() => 
+const selectedTypeInfo = computed(() =>
   measurementTypes.find(t => t.value === formData.type)
 )
 
@@ -307,7 +271,7 @@ const handleSubmit = async () => {
 
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     const newMeasurement: Omit<Measurement, 'id'> = {
       date: formData.date,
       type: formData.type,
@@ -319,7 +283,7 @@ const handleSubmit = async () => {
 
     emit('save', newMeasurement)
     emit('update:open', false)
-    
+
     // Reset form
     Object.assign(formData, {
       date: today,
@@ -329,7 +293,7 @@ const handleSubmit = async () => {
       measuredBy: '',
       notes: ''
     })
-    
+
     toast.success('Measurement successfully added')
   } catch (error) {
     toast.error('Error adding measurement')

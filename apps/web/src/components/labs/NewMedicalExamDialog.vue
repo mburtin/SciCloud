@@ -19,12 +19,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="space-y-2">
             <Label for="date">Exam date *</Label>
-            <Input
-              id="date"
-              type="date"
-              v-model="formData.date"
-              :max="today"
-            />
+            <Input id="date" type="date" v-model="formData.date" :max="today" />
           </div>
 
           <div class="space-y-2">
@@ -34,11 +29,7 @@
                 <SelectValue placeholder="Select a type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem
-                  v-for="type in examTypes"
-                  :key="type.value"
-                  :value="type.value"
-                >
+                <SelectItem v-for="type in examTypes" :key="type.value" :value="type.value">
                   <div class="flex items-center gap-2">
                     <component :is="type.icon" class="h-4 w-4" />
                     <div>
@@ -60,11 +51,7 @@
               <SelectValue placeholder="Select a veterinarian" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem
-                v-for="vet in veterinarians"
-                :key="vet"
-                :value="vet"
-              >
+              <SelectItem v-for="vet in veterinarians" :key="vet" :value="vet">
                 {{ vet }}
               </SelectItem>
             </SelectContent>
@@ -74,45 +61,29 @@
         <!-- Description -->
         <div class="space-y-2">
           <Label for="description">Exam description *</Label>
-          <Textarea
-            id="description"
-            v-model="formData.description"
-            placeholder="Describe the purpose and context of the exam..."
-            :rows="3"
-          />
+          <Textarea id="description" v-model="formData.description"
+            placeholder="Describe the purpose and context of the exam..." :rows="3" />
         </div>
 
         <!-- Observations cliniques -->
         <div class="space-y-2">
           <Label for="findings">Clinical findings</Label>
-          <Textarea
-            id="findings"
-            v-model="formData.findings"
-            placeholder="Describe clinical findings, results, and observations..."
-            :rows="3"
-          />
+          <Textarea id="findings" v-model="formData.findings"
+            placeholder="Describe clinical findings, results, and observations..." :rows="3" />
         </div>
 
         <!-- Traitement et Suivi -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="space-y-2">
             <Label for="treatment">Treatment administered</Label>
-            <Textarea
-              id="treatment"
-              v-model="formData.treatment"
-              placeholder="Medications, procedures, interventions..."
-              :rows="3"
-            />
+            <Textarea id="treatment" v-model="formData.treatment"
+              placeholder="Medications, procedures, interventions..." :rows="3" />
           </div>
 
           <div class="space-y-2">
             <Label for="followUp">Follow-up required</Label>
-            <Textarea
-              id="followUp"
-              v-model="formData.followUp"
-              placeholder="Follow-up instructions, next exam..."
-              :rows="3"
-            />
+            <Textarea id="followUp" v-model="formData.followUp" placeholder="Follow-up instructions, next exam..."
+              :rows="3" />
           </div>
         </div>
 
@@ -124,11 +95,7 @@
               <SelectValue placeholder="Assess severity" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem
-                v-for="level in severityLevels"
-                :key="level.value"
-                :value="level.value"
-              >
+              <SelectItem v-for="level in severityLevels" :key="level.value" :value="level.value">
                 <div class="flex items-center gap-2">
                   <component :is="level.icon" class="h-4 w-4" />
                   <div>
@@ -149,40 +116,33 @@
           </h4>
           <div class="space-y-2 text-sm">
             <div class="flex items-center gap-2">
-              <component 
-                v-if="selectedExamType?.icon" 
-                :is="selectedExamType.icon" 
-                class="h-4 w-4 text-muted-foreground" 
-              />
+              <component v-if="selectedExamType?.icon" :is="selectedExamType.icon"
+                class="h-4 w-4 text-muted-foreground" />
               <span class="font-medium">{{ selectedExamType?.label }}</span>
               <span class="text-muted-foreground">
                 • {{ formatDateSimple(formData.date) }}
               </span>
             </div>
-            
+
             <div class="flex items-center gap-2">
               <span class="font-medium">Veterinarian:</span>
               <span>{{ formData.veterinarian }}</span>
             </div>
-            
+
             <div>
               <span class="font-medium">Description:</span>
               <p class="text-muted-foreground mt-1">"{{ formData.description }}"</p>
             </div>
-            
+
             <div v-if="formData.findings">
               <span class="font-medium">Observations:</span>
               <p class="text-muted-foreground mt-1">"{{ formData.findings }}"</p>
             </div>
-            
+
             <div class="flex items-center gap-2 pt-2">
               <span class="font-medium">Severity:</span>
               <div class="flex items-center gap-1">
-                <component 
-                  v-if="selectedSeverity?.icon" 
-                  :is="selectedSeverity.icon" 
-                  class="h-4 w-4" 
-                />
+                <component v-if="selectedSeverity?.icon" :is="selectedSeverity.icon" class="h-4 w-4" />
                 <span :class="`px-2 py-1 rounded text-xs font-medium ${selectedSeverity?.color}`">
                   {{ selectedSeverity?.label }}
                 </span>
@@ -205,21 +165,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
-import { toast } from 'vue-sonner'
-import { 
-  Stethoscope,
-  Syringe,
-  Scissors,
-  Eye,
-  ClipboardList,
-  FlaskConical,
-  CheckCircle,
-  Info,
-  AlertTriangle,
-  AlertCircle
-} from 'lucide-vue-next'
-import type { MedicalRecord } from '@/types/lab'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -228,6 +174,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -235,11 +183,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { formatDateSimple } from '@/lib/format.utils'
+import type { MedicalRecord } from '@/types/lab'
+import {
+  AlertCircle,
+  AlertTriangle,
+  CheckCircle,
+  ClipboardList,
+  Eye,
+  FlaskConical,
+  Info,
+  Scissors,
+  Stethoscope,
+  Syringe
+} from 'lucide-vue-next'
+import { computed, reactive, ref } from 'vue'
+import { toast } from 'vue-sonner'
 
 interface Props {
   open: boolean
@@ -257,69 +217,69 @@ const isSubmitting = ref(false)
 const today = new Date().toISOString().split('T')[0]
 
 const examTypes = [
-  { 
-    value: 'examination', 
-    label: 'Routine examination', 
+  {
+    value: 'examination',
+    label: 'Routine examination',
     icon: Stethoscope,
     description: 'General medical examination'
   },
-  { 
-    value: 'vaccination', 
-    label: 'Vaccination', 
+  {
+    value: 'vaccination',
+    label: 'Vaccination',
     icon: Syringe,
     description: 'Vaccine administration'
   },
-  { 
-    value: 'treatment', 
-    label: 'Medical treatment', 
+  {
+    value: 'treatment',
+    label: 'Medical treatment',
     icon: ClipboardList,
     description: 'Administration of a treatment'
   },
-  { 
-    value: 'surgery', 
-    label: 'Surgical procedure', 
+  {
+    value: 'surgery',
+    label: 'Surgical procedure',
     icon: Scissors,
     description: 'Surgical procedure'
   },
-  { 
-    value: 'sampling', 
-    label: 'Sampling', 
+  {
+    value: 'sampling',
+    label: 'Sampling',
     icon: FlaskConical,
     description: 'Sample collection'
   },
-  { 
-    value: 'observation', 
-    label: 'Behavioral observation', 
+  {
+    value: 'observation',
+    label: 'Behavioral observation',
     icon: Eye,
     description: 'Behavioral observation'
   }
 ] as const
 
 const severityLevels = [
-  { 
-    value: 'normal', 
-    label: 'Normal', 
+  {
+    value: 'normal',
+    label: 'Normal',
     icon: CheckCircle,
     color: 'bg-green-100 text-green-800',
     description: 'Normal result, no intervention needed'
   },
-  { 
-    value: 'minor', 
-    label: 'Minor', 
+  {
+    value: 'minor',
+    label: 'Minor',
     icon: Info,
     color: 'bg-blue-100 text-blue-800',
     description: 'Minor anomaly, monitoring recommended'
   },
-  { 
-    value: 'moderate', 
-    label: 'Moderate', 
+  {
+    value: 'moderate',
+    label: 'Moderate',
     icon: AlertTriangle,
     color: 'bg-orange-100 text-orange-800',
     description: 'Moderate problem, intervention needed'
   },
-  { 
-    value: 'severe', 
-    label: 'Severe', 
+  {
+    value: 'severe',
+    label: 'Severe',
     icon: AlertCircle,
     color: 'bg-red-100 text-red-800',
     description: 'Severe problem, urgent intervention required'
@@ -346,11 +306,11 @@ const formData = reactive({
   severity: 'normal' as MedicalRecord['severity']
 })
 
-const selectedExamType = computed(() => 
+const selectedExamType = computed(() =>
   examTypes.find(t => t.value === formData.type)
 )
 
-const selectedSeverity = computed(() => 
+const selectedSeverity = computed(() =>
   severityLevels.find(s => s.value === formData.severity)
 )
 
@@ -375,7 +335,7 @@ const handleSubmit = async () => {
 
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     const newMedicalRecord: Omit<MedicalRecord, 'id'> = {
       date: formData.date,
       type: formData.type,
@@ -389,7 +349,7 @@ const handleSubmit = async () => {
 
     emit('save', newMedicalRecord)
     emit('update:open', false)
-    
+
     // Reset form
     Object.assign(formData, {
       date: today,
@@ -401,7 +361,7 @@ const handleSubmit = async () => {
       followUp: '',
       severity: 'normal' as MedicalRecord['severity']
     })
-    
+
     toast.success('Medical exam successfully added')
   } catch (error) {
     toast.error('Error adding medical exam')

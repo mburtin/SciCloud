@@ -7,26 +7,19 @@
             {{ section.title }}
           </h3>
           <div class="space-y-1">
-            <RouterLink
-              v-for="item in section.items"
-              :key="item.id"
-              v-slot="{ href, navigate, isActive }"
-              :to="item.to"
-              custom
-            >
-              <a
-                :href="href"
-                :class="[
-                  'flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 group',
-                  isActive
-                    ? 'sidebar-active shadow-lg'
-                    : 'text-sidebar-foreground hover:sidebar-hover'
-                ]"
-                @click="navigate"
-              >
-                <component :is="item.icon" class="h-5 w-5 mr-3 text-sidebar-section-foreground group-hover:text-sidebar-primary transition-colors" />
+            <RouterLink v-for="item in section.items" :key="item.id" v-slot="{ href, navigate, isActive }" :to="item.to"
+              custom>
+              <a :href="href" :class="[
+                'flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 group',
+                isActive
+                  ? 'sidebar-active shadow-lg'
+                  : 'text-sidebar-foreground hover:sidebar-hover'
+              ]" @click="navigate">
+                <component :is="item.icon"
+                  class="h-5 w-5 mr-3 text-sidebar-section-foreground group-hover:text-sidebar-primary transition-colors" />
                 <span class="flex-1">{{ item.label }}</span>
-                <Badge v-if="item.count" variant="secondary" class="bg-sidebar-accent text-sidebar-accent-foreground text-xs">
+                <Badge v-if="item.count" variant="secondary"
+                  class="bg-sidebar-accent text-sidebar-accent-foreground text-xs">
                   {{ item.count }}
                 </Badge>
               </a>
@@ -39,13 +32,26 @@
 </template>
 
 <script setup lang="ts">
+import { Badge } from '@/components/ui/badge'
+import { useUserStore } from '@/stores/user.store'
+import {
+  Activity,
+  Archive,
+  Bell,
+  Book,
+  Calendar,
+  Eye,
+  FileText,
+  Folder,
+  LayoutDashboard,
+  Lock,
+  Microscope, Package,
+  Star,
+  User,
+  Users
+} from 'lucide-vue-next'
 import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { Badge } from '@/components/ui/badge'
-import {
-  LayoutDashboard, Folder, Star, Archive, Lock, Calendar, FileText, Eye, Book, Microscope, Package, Activity, User, Bell, Users
-} from 'lucide-vue-next'
-import { useUserStore } from '@/stores/user.store'
 
 const route = useRoute()
 const userStore = useUserStore()

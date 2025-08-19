@@ -7,7 +7,7 @@
           Change the role for {{ user.first_name }} {{ user.last_name }}
         </DialogDescription>
       </DialogHeader>
-      
+
       <div v-if="user" class="space-y-6">
         <!-- User Info -->
         <div class="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
@@ -28,18 +28,8 @@
         <div class="space-y-4">
           <Label>New Role</Label>
           <div class="space-y-3">
-            <div 
-              v-for="role in availableRoles" 
-              :key="role.value"
-              class="flex items-start space-x-3"
-            >
-              <input
-                :id="role.value"
-                v-model="selectedRole"
-                :value="role.value"
-                type="radio"
-                class="mt-1"
-              />
+            <div v-for="role in availableRoles" :key="role.value" class="flex items-start space-x-3">
+              <input :id="role.value" v-model="selectedRole" :value="role.value" type="radio" class="mt-1" />
               <div class="flex-1">
                 <Label :for="role.value" class="cursor-pointer">
                   <div class="flex items-center gap-2">
@@ -56,7 +46,8 @@
         </div>
 
         <!-- Warning for role changes -->
-        <div v-if="selectedRole !== user.role && selectedRole" class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+        <div v-if="selectedRole !== user.role && selectedRole"
+          class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
           <div class="flex items-start gap-2">
             <AlertTriangle class="h-4 w-4 text-yellow-600 mt-0.5" />
             <div class="text-sm">
@@ -73,10 +64,7 @@
         <Button type="button" variant="outline" @click="$emit('close')">
           Cancel
         </Button>
-        <Button 
-          @click="handleSubmit" 
-          :disabled="isSubmitting || !selectedRole || selectedRole === user?.role"
-        >
+        <Button @click="handleSubmit" :disabled="isSubmitting || !selectedRole || selectedRole === user?.role">
           <Shield class="h-4 w-4 mr-2" />
           {{ isSubmitting ? 'Updating...' : 'Update Role' }}
         </Button>
@@ -86,11 +74,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -99,10 +85,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Shield, User, AlertTriangle } from 'lucide-vue-next'
-import { useUserStore } from '@/stores/user.store'
+import { Label } from '@/components/ui/label'
 import { getRoleLabel, getRoleVariant } from '@/lib/user.utils'
-import type { User as UserType, UserRole } from '@/types/supabase'
+import { useUserStore } from '@/stores/user.store'
+import type { UserRole, User as UserType } from '@/types/supabase'
+import { AlertTriangle, Shield, User } from 'lucide-vue-next'
+import { ref, watch } from 'vue'
 
 interface Props {
   open: boolean
@@ -151,9 +139,9 @@ const handleSubmit = async () => {
 
   try {
     isSubmitting.value = true
-    
+
     const result = await userStore.updateProfile(props.user.id, { role: selectedRole.value })
-    
+
     if (result.success) {
       emit('role-updated')
       emit('close')

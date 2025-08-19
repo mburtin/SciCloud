@@ -32,7 +32,7 @@
         <!-- Day Headers -->
         <div class="grid grid-cols-[auto_1fr_1fr_1fr] gap-x-4">
           <div class="text-right pr-4">
-&nbsp;
+            &nbsp;
           </div> <!-- Spacer for alignment -->
           <div v-for="day in displayedDays" :key="day.date" class="text-center py-2">
             <p class="font-semibold">
@@ -44,55 +44,51 @@
           </div>
         </div>
       </CardHeader>
-    <CardContent>
+      <CardContent>
 
-      <!-- Calendar Grid -->
-      <div class="grid grid-cols-[auto_1fr_1fr_1fr] gap-x-4 border-t border-border mt-2">
-        <!-- Hour Labels -->
-        <div class="grid grid-rows-10 text-sm text-muted-foreground text-right pr-4">
-          <div v-for="hour in hours" :key="hour" class="h-24 border-b border-border flex items-center justify-end">
-            {{ hour }}:00
-          </div>
-        </div>
-
-        <!-- Day Columns -->
-        <div v-for="day in displayedDays" :key="day.date" class="relative grid grid-rows-10 border-l border-border">
-          <!-- Hour Cells for grid lines -->
-          <div v-for="hour in hours" :key="hour" class="h-24 border-b border-border" />
-
-          <!-- Events -->
-          <div
-            v-for="event in day.events"
-            :key="event.id" 
-            class="absolute left-2 right-2 p-2 rounded-lg shadow-md flex flex-col justify-center" 
-            :style="getEventStyle(event)" 
-            :class="event.colorClass.bg"
-          >
-            <p class="font-semibold text-sm truncate">
-              {{ event.title }}
-            </p>
-            <div class="flex items-center gap-1.5 text-xs">
-              <Clock class="h-3 w-3" />
-              <span>{{ event.startTime }} - {{ event.endTime }}</span>
+        <!-- Calendar Grid -->
+        <div class="grid grid-cols-[auto_1fr_1fr_1fr] gap-x-4 border-t border-border mt-2">
+          <!-- Hour Labels -->
+          <div class="grid grid-rows-10 text-sm text-muted-foreground text-right pr-4">
+            <div v-for="hour in hours" :key="hour" class="h-24 border-b border-border flex items-center justify-end">
+              {{ hour }}:00
             </div>
-            <Badge :class="[event.colorClass.badge, 'absolute top-2 right-2']">
-              {{ event.category }}
-            </Badge>
+          </div>
+
+          <!-- Day Columns -->
+          <div v-for="day in displayedDays" :key="day.date" class="relative grid grid-rows-10 border-l border-border">
+            <!-- Hour Cells for grid lines -->
+            <div v-for="hour in hours" :key="hour" class="h-24 border-b border-border" />
+
+            <!-- Events -->
+            <div v-for="event in day.events" :key="event.id"
+              class="absolute left-2 right-2 p-2 rounded-lg shadow-md flex flex-col justify-center"
+              :style="getEventStyle(event)" :class="event.colorClass.bg">
+              <p class="font-semibold text-sm truncate">
+                {{ event.title }}
+              </p>
+              <div class="flex items-center gap-1.5 text-xs">
+                <Clock class="h-3 w-3" />
+                <span>{{ event.startTime }} - {{ event.endTime }}</span>
+              </div>
+              <Badge :class="[event.colorClass.badge, 'absolute top-2 right-2']">
+                {{ event.category }}
+              </Badge>
+            </div>
           </div>
         </div>
-      </div>
-    </CardContent>
+      </CardContent>
     </Card>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Clock, ChevronLeft, ChevronRight, Plus } from 'lucide-vue-next';
-import { format, addDays, subDays } from 'date-fns';
+import { addDays, format, subDays } from 'date-fns';
+import { ChevronLeft, ChevronRight, Clock, Plus } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 
 // --- Types --- //
 interface CalendarEvent {

@@ -3,8 +3,8 @@
  * Core Project types are now in supabase.ts
  */
 
-import type { UUID, Timestamp, Priority, AuditableRecord } from './base'
-import type { User, Project } from './supabase'
+import type { AuditableRecord, Priority, Timestamp, UUID } from './base'
+import type { Project, User } from './supabase'
 
 // Task status (kept separate from core types)
 export type TaskStatus = 'todo' | 'in-progress' | 'done'

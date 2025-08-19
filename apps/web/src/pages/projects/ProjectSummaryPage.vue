@@ -65,10 +65,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar } from 'lucide-vue-next';
+import { ref } from 'vue';
 
 const team = ref([
   { name: 'Dr. Marie Dubois', role: 'Principal Investigator', initials: 'MD' },

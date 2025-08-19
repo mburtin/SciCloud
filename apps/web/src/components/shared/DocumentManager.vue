@@ -49,12 +49,7 @@
           <div class="space-y-2">
             <p class="text-sm text-muted-foreground">Popular types</p>
             <div class="flex flex-wrap gap-1">
-              <Badge
-                v-for="[type, count] in topTypes"
-                :key="type"
-                variant="secondary"
-                class="text-xs"
-              >
+              <Badge v-for="[type, count] in topTypes" :key="type" variant="secondary" class="text-xs">
                 {{ type }}: {{ count }}
               </Badge>
             </div>
@@ -99,28 +94,13 @@
               </div>
             </div>
             <div class="flex items-center gap-1">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                :disabled="!ownerInfo"
-                @click="viewDocument(document)"
-              >
+              <Button variant="ghost" size="sm" :disabled="!ownerInfo" @click="viewDocument(document)">
                 <Eye class="h-4 w-4" />
               </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                :disabled="!ownerInfo"
-                @click="downloadDocument(document)"
-              >
+              <Button variant="ghost" size="sm" :disabled="!ownerInfo" @click="downloadDocument(document)">
                 <Download class="h-4 w-4" />
               </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                :disabled="!ownerInfo"
-                @click="deleteDocument(document.id)"
-              >
+              <Button variant="ghost" size="sm" :disabled="!ownerInfo" @click="deleteDocument(document.id)">
                 <Trash2 class="h-4 w-4" />
               </Button>
             </div>
@@ -152,28 +132,13 @@
                 <TableCell>{{ formatDate(document.uploadDate) }}</TableCell>
                 <TableCell class="text-right">
                   <div class="flex items-center justify-end gap-1">
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      :disabled="!ownerInfo"
-                      @click="viewDocument(document)"
-                    >
+                    <Button variant="ghost" size="sm" :disabled="!ownerInfo" @click="viewDocument(document)">
                       <Eye class="h-4 w-4" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      :disabled="!ownerInfo"
-                      @click="downloadDocument(document)"
-                    >
+                    <Button variant="ghost" size="sm" :disabled="!ownerInfo" @click="downloadDocument(document)">
                       <Download class="h-4 w-4" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      :disabled="!ownerInfo"
-                      @click="deleteDocument(document.id)"
-                    >
+                    <Button variant="ghost" size="sm" :disabled="!ownerInfo" @click="deleteDocument(document.id)">
                       <Trash2 class="h-4 w-4" />
                     </Button>
                   </div>
@@ -211,17 +176,14 @@
           <!-- File dropzone -->
           <div class="space-y-2">
             <Label>Document File</Label>
-            <div 
-              class="flex items-center justify-center w-full p-4 border-2 border-dashed rounded-lg transition-colors"
-              :class="{ 'border-primary bg-primary/10': isDragging }"
-              @dragover.prevent="isDragging = true"
-              @dragleave.prevent="isDragging = false"
-              @drop.prevent="handleFileDrop"
-            >
+            <div class="flex items-center justify-center w-full p-4 border-2 border-dashed rounded-lg transition-colors"
+              :class="{ 'border-primary bg-primary/10': isDragging }" @dragover.prevent="isDragging = true"
+              @dragleave.prevent="isDragging = false" @drop.prevent="handleFileDrop">
               <label for="file-upload" class="flex flex-col items-center justify-center w-full cursor-pointer">
                 <div v-if="!selectedFile" class="text-center">
                   <UploadCloud class="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                  <p class="mb-1 text-sm text-muted-foreground"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                  <p class="mb-1 text-sm text-muted-foreground"><span class="font-semibold">Click to upload</span> or
+                    drag and drop</p>
                   <p class="text-xs text-muted-foreground">Max file size: 25MB</p>
                 </div>
                 <div v-else class="text-center">
@@ -229,12 +191,7 @@
                   <p class="text-sm font-medium">{{ selectedFile.name }}</p>
                   <p class="text-xs text-muted-foreground">{{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB</p>
                 </div>
-                <input
-                  id="file-upload"
-                  type="file"
-                  class="hidden"
-                  @change="handleFileSelect"
-                >
+                <input id="file-upload" type="file" class="hidden" @change="handleFileSelect">
               </label>
             </div>
           </div>
@@ -247,11 +204,7 @@
                 <SelectValue placeholder="Select document type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem
-                  v-for="type in availableTypes"
-                  :key="type"
-                  :value="type"
-                >
+                <SelectItem v-for="type in availableTypes" :key="type" :value="type">
                   {{ getTypeLabel(type) }}
                 </SelectItem>
               </SelectContent>
@@ -268,25 +221,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import { toast } from 'vue-sonner'
-import { 
-  FileText, 
-  TrendingUp, 
-  Plus, 
-  Download, 
-  Trash2, 
-  UploadCloud,
-  Eye
-} from 'lucide-vue-next'
-import type { Document } from '@/types/documents'
-import { uploadDocument as uploadToStorage, downloadDocument as downloadFromStorage, deleteDocument as deleteFromStorage, viewDocument as viewFromStorage } from '@/services/documents.service'
-import { documentTypeLabels } from '@/types/documents'
-import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { deleteDocument as deleteFromStorage, downloadDocument as downloadFromStorage, uploadDocument as uploadToStorage, viewDocument as viewFromStorage } from '@/services/documents.service'
+import type { Document } from '@/types/documents'
+import { documentTypeLabels } from '@/types/documents'
+import {
+  Download,
+  Eye,
+  FileText,
+  Plus,
+  Trash2,
+  TrendingUp,
+  UploadCloud
+} from 'lucide-vue-next'
+import { computed, ref, watch } from 'vue'
+import { toast } from 'vue-sonner'
 // removed unused Input import
-import { Label } from '@/components/ui/label'
 import {
   Dialog,
   DialogContent,
@@ -295,6 +247,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -390,10 +343,10 @@ const stats = computed(() => {
     const multiplier = doc.size.includes('MB') ? 1024 * 1024 : 1024
     return sum + (size * multiplier)
   }, 0)
-  
+
   const sevenDaysAgo = new Date()
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
-  const recentCount = documents.value.filter(doc => 
+  const recentCount = documents.value.filter(doc =>
     new Date(doc.uploadDate) > sevenDaysAgo
   ).length
 
@@ -406,9 +359,9 @@ const stats = computed(() => {
   return { total, totalSize, recentCount, byType }
 })
 
-const topTypes = computed(() => 
+const topTypes = computed(() =>
   Object.entries(stats.value.byType)
-    .sort(([,a], [,b]) => b - a)
+    .sort(([, a], [, b]) => b - a)
     .slice(0, 2)
 )
 
@@ -480,7 +433,7 @@ const handleFileDrop = (event: DragEvent) => {
 const detectFileType = (file: File): string => {
   const extension = file.name.split('.').pop()?.toLowerCase()
   const mimeType = file.type.toLowerCase()
-  
+
   // Try to match based on MIME type first
   if (mimeType.includes('pdf')) return 'pdf'
   if (mimeType.includes('word') || mimeType.includes('officedocument.wordprocessingml')) return 'docx'
@@ -491,10 +444,10 @@ const detectFileType = (file: File): string => {
   if (mimeType.startsWith('image/')) return 'image'
   if (mimeType.startsWith('video/')) return 'video'
   if (mimeType.startsWith('audio/')) return 'audio'
-  
+
   // Fallback to extension
   if (extension) return extension
-  
+
   return 'other'
 }
 
@@ -524,8 +477,8 @@ const handleUpload = async () => {
     }
   }
 
-  const fileType = props.availableTypes.length > 0 && newDocumentType.value 
-    ? newDocumentType.value 
+  const fileType = props.availableTypes.length > 0 && newDocumentType.value
+    ? newDocumentType.value
     : detectFileType(selectedFile.value)
 
   try {
@@ -546,7 +499,7 @@ const handleUpload = async () => {
     uploadDialogOpen.value = false
     selectedFile.value = null
     newDocumentType.value = ''
-    
+
     toast.success('Document uploaded')
   } catch (e: any) {
     toast.error(`Upload failed: ${e?.message || e}`)

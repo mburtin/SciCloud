@@ -8,13 +8,13 @@
  */
 export const formatDate = (dateString: string | null | undefined): string => {
   if (!dateString) return ''
-  
+
   try {
     const date = new Date(dateString)
-    
+
     // Check for invalid date
     if (isNaN(date.getTime())) return ''
-    
+
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -30,13 +30,13 @@ export const formatDate = (dateString: string | null | undefined): string => {
  */
 export const formatDateSimple = (dateString: string | null | undefined): string => {
   if (!dateString) return ''
-  
+
   try {
     const date = new Date(dateString)
-    
+
     // Check for invalid date
     if (isNaN(date.getTime())) return ''
-    
+
     return date.toLocaleDateString('en-US')
   } catch {
     return ''
@@ -88,7 +88,7 @@ export const formatTimeAgo = (timestamp: string | Date): string => {
     const date = new Date(timestamp)
     const now = new Date()
     const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60))
-    
+
     if (diffInMinutes < 1) {
       return 'Just now'
     } else if (diffInMinutes < 60) {

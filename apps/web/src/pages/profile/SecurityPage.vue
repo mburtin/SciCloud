@@ -26,55 +26,41 @@
         <CardContent class="space-y-4">
           <div class="space-y-2">
             <Label for="current-password">Current Password</Label>
-            <Input 
-              id="current-password" 
-              v-model="passwordForm.current" 
-              type="password"
-              :class="{ 'border-red-500': passwordForm.current.length > 0 && !passwordValidation.currentNotEmpty }"
-            />
+            <Input id="current-password" v-model="passwordForm.current" type="password"
+              :class="{ 'border-red-500': passwordForm.current.length > 0 && !passwordValidation.currentNotEmpty }" />
           </div>
           <div class="space-y-2">
             <Label for="new-password">New Password</Label>
-            <Input 
-              id="new-password" 
-              v-model="passwordForm.new" 
-              type="password"
-              :class="{ 
-                'border-red-500': passwordMessages.newPassword.error,
-                'border-green-500': passwordMessages.newPassword.success && passwordForm.new.length > 0
-              }"
-            />
+            <Input id="new-password" v-model="passwordForm.new" type="password" :class="{
+              'border-red-500': passwordMessages.newPassword.error,
+              'border-green-500': passwordMessages.newPassword.success && passwordForm.new.length > 0
+            }" />
             <p v-if="passwordMessages.newPassword.error" class="text-sm text-red-500">
               {{ passwordMessages.newPassword.error }}
             </p>
-            <p v-if="passwordMessages.newPassword.success && !passwordMessages.newPassword.error" class="text-sm text-green-600">
+            <p v-if="passwordMessages.newPassword.success && !passwordMessages.newPassword.error"
+              class="text-sm text-green-600">
               {{ passwordMessages.newPassword.success }}
             </p>
           </div>
           <div class="space-y-2">
             <Label for="confirm-password">Confirm New Password</Label>
-            <Input 
-              id="confirm-password" 
-              v-model="passwordForm.confirm" 
-              type="password"
-              :class="{ 
-                'border-red-500': passwordMessages.confirmPassword.error,
-                'border-green-500': passwordMessages.confirmPassword.success && passwordForm.confirm.length > 0
-              }"
-            />
+            <Input id="confirm-password" v-model="passwordForm.confirm" type="password" :class="{
+              'border-red-500': passwordMessages.confirmPassword.error,
+              'border-green-500': passwordMessages.confirmPassword.success && passwordForm.confirm.length > 0
+            }" />
             <p v-if="passwordMessages.confirmPassword.error" class="text-sm text-red-500">
               {{ passwordMessages.confirmPassword.error }}
             </p>
-            <p v-if="passwordMessages.confirmPassword.success && !passwordMessages.confirmPassword.error" class="text-sm text-green-600">
+            <p v-if="passwordMessages.confirmPassword.success && !passwordMessages.confirmPassword.error"
+              class="text-sm text-green-600">
               {{ passwordMessages.confirmPassword.success }}
             </p>
           </div>
         </CardContent>
         <CardFooter>
-          <Button 
-            @click="handlePasswordChange" 
-            :disabled="isUpdatingPassword || !passwordValidation.currentNotEmpty || !passwordValidation.newMinLength || !passwordValidation.passwordsMatch || !passwordValidation.newDifferentFromCurrent"
-          >
+          <Button @click="handlePasswordChange"
+            :disabled="isUpdatingPassword || !passwordValidation.currentNotEmpty || !passwordValidation.newMinLength || !passwordValidation.passwordsMatch || !passwordValidation.newDifferentFromCurrent">
             {{ isUpdatingPassword ? 'Updating...' : 'Update Password' }}
           </Button>
         </CardFooter>
@@ -90,15 +76,10 @@
         <CardContent class="space-y-4">
           <div class="space-y-2">
             <Label for="new-email">New Email</Label>
-            <Input 
-              id="new-email" 
-              v-model="emailForm.new" 
-              type="email"
-              :class="{ 
-                'border-red-500': emailMessages.newEmail.error,
-                'border-green-500': emailMessages.newEmail.success && emailForm.new.length > 0
-              }"
-            />
+            <Input id="new-email" v-model="emailForm.new" type="email" :class="{
+              'border-red-500': emailMessages.newEmail.error,
+              'border-green-500': emailMessages.newEmail.success && emailForm.new.length > 0
+            }" />
             <p v-if="emailMessages.newEmail.error" class="text-sm text-red-500">
               {{ emailMessages.newEmail.error }}
             </p>
@@ -108,28 +89,22 @@
           </div>
           <div class="space-y-2">
             <Label for="confirm-email">Confirm New Email</Label>
-            <Input 
-              id="confirm-email" 
-              v-model="emailForm.confirm" 
-              type="email"
-              :class="{ 
-                'border-red-500': emailMessages.confirmEmail.error,
-                'border-green-500': emailMessages.confirmEmail.success && emailForm.confirm.length > 0
-              }"
-            />
+            <Input id="confirm-email" v-model="emailForm.confirm" type="email" :class="{
+              'border-red-500': emailMessages.confirmEmail.error,
+              'border-green-500': emailMessages.confirmEmail.success && emailForm.confirm.length > 0
+            }" />
             <p v-if="emailMessages.confirmEmail.error" class="text-sm text-red-500">
               {{ emailMessages.confirmEmail.error }}
             </p>
-            <p v-if="emailMessages.confirmEmail.success && !emailMessages.confirmEmail.error" class="text-sm text-green-600">
+            <p v-if="emailMessages.confirmEmail.success && !emailMessages.confirmEmail.error"
+              class="text-sm text-green-600">
               {{ emailMessages.confirmEmail.success }}
             </p>
           </div>
         </CardContent>
         <CardFooter>
-          <Button 
-            @click="handleEmailChange" 
-            :disabled="isUpdatingEmail || !emailValidation.newValidFormat || !emailValidation.emailsMatch"
-          >
+          <Button @click="handleEmailChange"
+            :disabled="isUpdatingEmail || !emailValidation.newValidFormat || !emailValidation.emailsMatch">
             {{ isUpdatingEmail ? 'Updating...' : 'Update Email' }}
           </Button>
         </CardFooter>
@@ -153,7 +128,8 @@
                   Protect your account with a second factor.
                 </p>
               </div>
-              <Switch id="2fa-switch" :checked="securitySettings.twoFactorEnabled" @update:checked="securitySettings.twoFactorEnabled = $event" />
+              <Switch id="2fa-switch" :checked="securitySettings.twoFactorEnabled"
+                @update:checked="securitySettings.twoFactorEnabled = $event" />
             </div>
           </CardContent>
         </Card>
@@ -168,7 +144,9 @@
             <div class="space-y-2">
               <Label for="session-timeout">Session Timeout</Label>
               <Select v-model="securitySettings.sessionTimeout">
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="15">
                     15 minutes
@@ -189,7 +167,8 @@
                   Be alerted for new logins.
                 </p>
               </div>
-              <Switch :checked="securitySettings.loginNotifications" @update:checked="securitySettings.loginNotifications = $event" />
+              <Switch :checked="securitySettings.loginNotifications"
+                @update:checked="securitySettings.loginNotifications = $event" />
             </div>
           </CardContent>
         </Card>
@@ -234,7 +213,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -242,10 +220,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Key, Fingerprint, Shield, Monitor, Mail } from 'lucide-vue-next';
+import { useNotification } from '@/composables/useNotification';
 import { useAuthStore } from '@/stores/auth.store';
 import { useUserStore } from '@/stores/user.store';
-import { useNotification } from '@/composables/useNotification';
+import { Fingerprint, Key, Mail, Monitor, Shield } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 
 // State for password change form
 const passwordForm = ref({
@@ -292,32 +271,32 @@ const emailValidation = computed(() => {
 // Password validation messages
 const passwordMessages = computed(() => ({
   newPassword: {
-    error: passwordValidation.value.newNotEmpty && !passwordValidation.value.newMinLength 
-      ? 'Password must be at least 6 characters long' 
+    error: passwordValidation.value.newNotEmpty && !passwordValidation.value.newMinLength
+      ? 'Password must be at least 6 characters long'
       : passwordValidation.value.newNotEmpty && !passwordValidation.value.newDifferentFromCurrent
-      ? 'New password must be different from current password'
-      : '',
+        ? 'New password must be different from current password'
+        : '',
     success: passwordValidation.value.newMinLength && passwordValidation.value.newDifferentFromCurrent ? 'Valid password' : ''
   },
   confirmPassword: {
-    error: passwordValidation.value.confirmNotEmpty && !passwordValidation.value.passwordsMatch 
-      ? 'Passwords do not match' 
+    error: passwordValidation.value.confirmNotEmpty && !passwordValidation.value.passwordsMatch
+      ? 'Passwords do not match'
       : '',
     success: passwordValidation.value.passwordsMatch ? 'Passwords match' : ''
   }
 }));
 
-// Email validation messages  
+// Email validation messages
 const emailMessages = computed(() => ({
   newEmail: {
-    error: emailValidation.value.newNotEmpty && !emailValidation.value.newValidFormat 
-      ? 'Please enter a valid email address' 
+    error: emailValidation.value.newNotEmpty && !emailValidation.value.newValidFormat
+      ? 'Please enter a valid email address'
       : '',
     success: emailValidation.value.newValidFormat ? 'Valid email format' : ''
   },
   confirmEmail: {
-    error: emailValidation.value.confirmNotEmpty && !emailValidation.value.emailsMatch 
-      ? 'Emails do not match' 
+    error: emailValidation.value.confirmNotEmpty && !emailValidation.value.emailsMatch
+      ? 'Emails do not match'
       : '',
     success: emailValidation.value.emailsMatch ? 'Emails match' : ''
   }
@@ -342,7 +321,7 @@ const currentUser = computed(() => authStore.user);
 const handlePasswordChange = async () => {
   // Use real-time validation instead of manual checks
   const validation = passwordValidation.value;
-  
+
   if (!validation.currentNotEmpty) {
     notification.error('Current Password Required', 'Please enter your current password.');
     return;
@@ -370,14 +349,14 @@ const handlePasswordChange = async () => {
   }
 
   isUpdatingPassword.value = true;
-  
+
   try {
     const result = await userStore.updatePassword(
-      passwordForm.value.current, 
-      passwordForm.value.new, 
+      passwordForm.value.current,
+      passwordForm.value.new,
       currentUser.value.email
     );
-    
+
     if (result.success) {
       notification.success('Success!', 'Your password has been updated successfully.');
       // Reset form
@@ -395,7 +374,7 @@ const handlePasswordChange = async () => {
 const handleEmailChange = async () => {
   // Use real-time validation instead of manual checks
   const validation = emailValidation.value;
-  
+
   if (!validation.newNotEmpty) {
     notification.error('Email Required', 'Please enter a new email address.');
     return;
@@ -410,10 +389,10 @@ const handleEmailChange = async () => {
   }
 
   isUpdatingEmail.value = true;
-  
+
   try {
     const result = await userStore.updateEmail(emailForm.value.new);
-    
+
     if (result.success) {
       notification.success('Email Updated!', 'Please check your new email for confirmation.');
       // Reset form

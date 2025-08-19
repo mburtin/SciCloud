@@ -10,12 +10,7 @@
       <div class="grid gap-4 py-4">
         <div class="grid gap-2">
           <Label for="email">Email</Label>
-          <Input
-            id="email"
-            v-model="email"
-            type="email"
-            placeholder="m@example.com"
-          />
+          <Input id="email" v-model="email" type="email" placeholder="m@example.com" />
         </div>
         <div class="grid gap-2">
           <Label for="role">Role</Label>
@@ -53,7 +48,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -72,6 +66,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { ref } from 'vue';
 
 defineProps<{ open: boolean }>();
 const emit = defineEmits(['update:open', 'member-added']);

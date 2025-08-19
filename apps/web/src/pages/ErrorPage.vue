@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button'
-import { ArrowLeft, AlertTriangle, Lock, Clock, Server, XCircle, ShieldX } from 'lucide-vue-next'
-import { useRouter } from 'vue-router'
-import { computed } from 'vue'
+import { Button } from '@/components/ui/button';
+import { AlertTriangle, ArrowLeft, Clock, Lock, Server, ShieldX, XCircle } from 'lucide-vue-next';
+import { computed } from 'vue';
+import { useRouter } from 'vue-router';
 
 const props = defineProps<{
   errorCode: string

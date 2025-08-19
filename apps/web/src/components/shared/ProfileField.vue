@@ -11,21 +11,12 @@
     </div>
     <div v-else class="space-y-2">
       <label class="text-sm text-muted-foreground">{{ label }}</label>
-      <Input
-        v-if="!multiline"
-        :model-value="value"
-        :type="type"
-        :disabled="isDisabled"
+      <Input v-if="!multiline" :model-value="value" :type="type" :disabled="isDisabled"
         :class="isDisabled ? 'bg-muted cursor-not-allowed' : ''"
-        @update:model-value="isDisabled ? undefined : $emit('update', $event)"
-      />
-      <Textarea
-        v-else
-        :model-value="value"
-        :disabled="isDisabled"
+        @update:model-value="isDisabled ? undefined : $emit('update', $event)" />
+      <Textarea v-else :model-value="value" :disabled="isDisabled"
         :class="isDisabled ? 'bg-muted cursor-not-allowed' : ''"
-        @update:model-value="isDisabled ? undefined : $emit('update', $event)"
-      />
+        @update:model-value="isDisabled ? undefined : $emit('update', $event)" />
     </div>
   </div>
 </template>

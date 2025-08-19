@@ -1,31 +1,22 @@
 <template>
   <div class="space-y-6">
-    <DocumentManager
-      v-if="projectId"
-      title="Project Documents"
-      description="Manage documents for Water Quality Analysis"
-      owner-type="projects"
-      :owner-id="projectId"
-      :initial-documents="projectDocuments"
-      :show-stats="true"
-      :available-types="['pdf', 'docx', 'xlsx', 'pptx', 'txt', 'csv', 'image', 'video', 'audio']"
-      display-mode="cards"
-      add-button-text="Add document"
-      empty-state-text="Start by adding your first document to the project."
+    <DocumentManager v-if="projectId" title="Project Documents"
+      description="Manage documents for Water Quality Analysis" owner-type="projects" :owner-id="projectId"
+      :initial-documents="projectDocuments" :show-stats="true"
+      :available-types="['pdf', 'docx', 'xlsx', 'pptx', 'txt', 'csv', 'image', 'video', 'audio']" display-mode="cards"
+      add-button-text="Add document" empty-state-text="Start by adding your first document to the project."
       upload-dialog-description="Upload a new document to the project. Accepted formats: PDF, DOCX, XLSX, PPTX."
-      @document-uploaded="handleDocumentUploaded"
-      @documents-updated="handleDocumentsUpdated"
-    />
+      @document-uploaded="handleDocumentUploaded" @documents-updated="handleDocumentsUpdated" />
     <div v-else class="text-sm text-muted-foreground">Loading project...</div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
-import { useRoute } from 'vue-router'
-import type { Document } from '@/types/documents'
 import DocumentManager from '@/components/shared/DocumentManager.vue'
 import { listDocuments } from '@/services/documents.service'
+import type { Document } from '@/types/documents'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const projectId = computed(() => {

@@ -1,11 +1,11 @@
-import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import './style/main.css'
+import { createApp } from 'vue'
+import { Toaster } from 'vue-sonner'
 import App from './App.vue'
 import router from './router'
 import { useAuthStore } from './stores/auth.store'
 import { useNotificationsStore } from './stores/notifications.store'
-import { Toaster } from 'vue-sonner'
+import './style/main.css'
 
 const app = createApp(App)
 const pinia = createPinia()

@@ -1,6 +1,7 @@
 <template>
   <div>
-    <NewTaskDialog :open="isNewTaskDialogOpen" @update:open="isNewTaskDialogOpen = $event" @task-added="handleTaskAdded" />
+    <NewTaskDialog :open="isNewTaskDialogOpen" @update:open="isNewTaskDialogOpen = $event"
+      @task-added="handleTaskAdded" />
     <div class="space-y-4">
       <div class="flex justify-between items-center">
         <h3 class="text-lg font-medium">
@@ -50,10 +51,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import {
   Table,
   TableBody,
@@ -62,7 +62,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Plus, MoreHorizontal } from 'lucide-vue-next';
+import { MoreHorizontal, Plus } from 'lucide-vue-next';
+import { ref } from 'vue';
 import NewTaskDialog from './NewTaskDialog.vue';
 
 const isNewTaskDialogOpen = ref(false);

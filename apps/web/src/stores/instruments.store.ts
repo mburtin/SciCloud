@@ -1,7 +1,7 @@
-import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
 import { instrumentsService } from '@/services/instruments.service'
-import type { Instrument, InstrumentStatus, InstrumentInsert, InstrumentUpdate } from '@/types/supabase'
+import type { Instrument, InstrumentInsert, InstrumentStatus, InstrumentUpdate } from '@/types/supabase'
+import { defineStore } from 'pinia'
+import { computed, ref } from 'vue'
 
 export const useInstrumentsStore = defineStore('instruments', () => {
   // State
@@ -9,7 +9,7 @@ export const useInstrumentsStore = defineStore('instruments', () => {
   const loading = ref(false)
   const error = ref<string | null>(null)
   const isInitialized = ref(false)
-  
+
   // Filters and search
   const searchQuery = ref('')
   const statusFilter = ref<InstrumentStatus | 'all'>('all')
@@ -24,7 +24,7 @@ export const useInstrumentsStore = defineStore('instruments', () => {
     // Search filter
     if (searchQuery.value.trim()) {
       const query = searchQuery.value.toLowerCase()
-      filtered = filtered.filter(instrument => 
+      filtered = filtered.filter(instrument =>
         instrument.name.toLowerCase().includes(query) ||
         instrument.model.toLowerCase().includes(query) ||
         instrument.manufacturer.toLowerCase().includes(query) ||
@@ -89,23 +89,23 @@ export const useInstrumentsStore = defineStore('instruments', () => {
     return Array.from(manufacturerSet).sort()
   })
 
-  const availableInstruments = computed(() => 
+  const availableInstruments = computed(() =>
     instruments.value.filter(instrument => instrument.status === 'available')
   )
 
-  const instrumentsInUse = computed(() => 
+  const instrumentsInUse = computed(() =>
     instruments.value.filter(instrument => instrument.status === 'in-use')
   )
 
-  const instrumentsInMaintenance = computed(() => 
+  const instrumentsInMaintenance = computed(() =>
     instruments.value.filter(instrument => instrument.status === 'maintenance')
   )
 
-  const brokenInstruments = computed(() => 
+  const brokenInstruments = computed(() =>
     instruments.value.filter(instrument => instrument.status === 'broken')
   )
 
-  const instrumentsRequiringMaintenance = computed(() => 
+  const instrumentsRequiringMaintenance = computed(() =>
     instruments.value.filter(instrument => instrument.maintenance_due && instrument.status !== 'maintenance')
   )
 
@@ -128,7 +128,7 @@ export const useInstrumentsStore = defineStore('instruments', () => {
     try {
       loading.value = true
       error.value = null
-      
+
       const fetchedInstruments = await instrumentsService.getInstruments()
       instruments.value = fetchedInstruments
       isInitialized.value = true
@@ -201,13 +201,13 @@ export const useInstrumentsStore = defineStore('instruments', () => {
   async function updateInstrument(id: string, updates: InstrumentUpdate): Promise<Instrument | null> {
     try {
       const updatedInstrument = await instrumentsService.updateInstrument(id, updates)
-      
+
       // Update in store
       const index = instruments.value.findIndex(i => i.id === id)
       if (index !== -1) {
         instruments.value[index] = updatedInstrument
       }
-      
+
       return updatedInstrument
     } catch {
       return null
@@ -217,13 +217,13 @@ export const useInstrumentsStore = defineStore('instruments', () => {
   async function deleteInstrument(id: string): Promise<boolean> {
     try {
       await instrumentsService.deleteInstrument(id)
-      
+
       // Remove from store
       const index = instruments.value.findIndex(i => i.id === id)
       if (index !== -1) {
         instruments.value.splice(index, 1)
       }
-      
+
       return true
     } catch {
       return false
@@ -234,13 +234,13 @@ export const useInstrumentsStore = defineStore('instruments', () => {
   async function updateInstrumentStatus(id: string, status: InstrumentStatus): Promise<boolean> {
     try {
       const updatedInstrument = await instrumentsService.updateInstrumentStatus(id, status)
-      
+
       // Update in store
       const index = instruments.value.findIndex(i => i.id === id)
       if (index !== -1) {
         instruments.value[index] = updatedInstrument
       }
-      
+
       return true
     } catch {
       return false
@@ -250,13 +250,13 @@ export const useInstrumentsStore = defineStore('instruments', () => {
   async function updateMaintenanceDue(id: string, maintenanceDue: boolean): Promise<boolean> {
     try {
       const updatedInstrument = await instrumentsService.updateMaintenanceDue(id, maintenanceDue)
-      
+
       // Update in store
       const index = instruments.value.findIndex(i => i.id === id)
       if (index !== -1) {
         instruments.value[index] = updatedInstrument
       }
-      
+
       return true
     } catch {
       return false

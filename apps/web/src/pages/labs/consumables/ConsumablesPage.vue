@@ -87,11 +87,7 @@
     <!-- Filters -->
     <div class="bg-card border rounded-lg p-4 flex items-center gap-4">
       <div class="relative w-full max-w-sm">
-        <Input
-          v-model="searchQuery"
-          placeholder="Search by name, brand, reference, supplier..."
-          class="pl-10"
-        />
+        <Input v-model="searchQuery" placeholder="Search by name, brand, reference, supplier..." class="pl-10" />
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <Search class="h-5 w-5 text-muted-foreground" />
         </div>
@@ -158,10 +154,7 @@
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow
-              v-for="consumable in filteredConsumables" 
-              :key="consumable.id"
-            >
+            <TableRow v-for="consumable in filteredConsumables" :key="consumable.id">
               <TableCell>{{ consumable.reference }}</TableCell>
               <TableCell>
                 <div class="font-medium">
@@ -174,21 +167,12 @@
               <TableCell>{{ consumable.category }}</TableCell>
               <TableCell>
                 <div class="flex items-center gap-2">
-                  <div 
-                    class="w-2 h-2 rounded-full" 
-                    :class="getStockIndicatorClass(consumable.stock_level)"
-                  />
+                  <div class="w-2 h-2 rounded-full" :class="getStockIndicatorClass(consumable.stock_level)" />
                   <span>{{ consumable.stock }} {{ consumable.unit }}</span>
-                  <Badge 
-                    v-if="consumable.stock_level === 'outofstock'" 
-                    variant="destructive"
-                  >
+                  <Badge v-if="consumable.stock_level === 'outofstock'" variant="destructive">
                     Out of Stock
                   </Badge>
-                  <Badge 
-                    v-else-if="consumable.stock_level === 'low'" 
-                    variant="secondary"
-                  >
+                  <Badge v-else-if="consumable.stock_level === 'low'" variant="secondary">
                     Low Stock
                   </Badge>
                 </div>
@@ -215,7 +199,8 @@
                     <DropdownMenuItem @click="openEditConsumableDialog(consumable)">
                       Edit
                     </DropdownMenuItem>
-                    <DropdownMenuItem :disabled="consumable.stock_level === 'outofstock'" @click="updateStock(consumable.id)">
+                    <DropdownMenuItem :disabled="consumable.stock_level === 'outofstock'"
+                      @click="updateStock(consumable.id)">
                       Use Stock
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
@@ -281,21 +266,11 @@
         </div>
         <div class="grid grid-cols-4 items-center gap-4">
           <Label for="stock" class="text-right">Current Stock</Label>
-          <Input
-            id="stock"
-            v-model.number="newConsumableForm.stock"
-            type="number"
-            class="col-span-3"
-          />
+          <Input id="stock" v-model.number="newConsumableForm.stock" type="number" class="col-span-3" />
         </div>
         <div class="grid grid-cols-4 items-center gap-4">
           <Label for="quantity" class="text-right">Package Size</Label>
-          <Input
-            id="quantity"
-            v-model.number="newConsumableForm.quantity"
-            type="number"
-            class="col-span-3"
-          />
+          <Input id="quantity" v-model.number="newConsumableForm.quantity" type="number" class="col-span-3" />
         </div>
         <div class="grid grid-cols-4 items-center gap-4">
           <Label for="unit" class="text-right">Unit</Label>
@@ -341,21 +316,11 @@
         </div>
         <div class="grid grid-cols-4 items-center gap-4">
           <Label for="edit-stock" class="text-right">Current Stock</Label>
-          <Input
-            id="edit-stock"
-            v-model.number="editingConsumable.stock"
-            type="number"
-            class="col-span-3"
-          />
+          <Input id="edit-stock" v-model.number="editingConsumable.stock" type="number" class="col-span-3" />
         </div>
         <div class="grid grid-cols-4 items-center gap-4">
           <Label for="edit-quantity" class="text-right">Package Size</Label>
-          <Input
-            id="edit-quantity"
-            v-model.number="editingConsumable.quantity"
-            type="number"
-            class="col-span-3"
-          />
+          <Input id="edit-quantity" v-model.number="editingConsumable.quantity" type="number" class="col-span-3" />
         </div>
         <div class="grid grid-cols-4 items-center gap-4">
           <Label for="edit-unit" class="text-right">Unit</Label>
@@ -394,12 +359,7 @@
             <Badge :variant="item.stock_level === 'outofstock' ? 'destructive' : 'secondary'">
               {{ item.stock_level }}
             </Badge>
-            <Input
-              v-model.number="orderQuantities[item.id]"
-              type="number"
-              placeholder="Quantity"
-              class="col-span-1"
-            />
+            <Input v-model.number="orderQuantities[item.id]" type="number" placeholder="Quantity" class="col-span-1" />
           </div>
         </div>
         <div v-else class="text-center text-muted-foreground py-8">
@@ -419,28 +379,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { 
-  Search, 
-  Plus, 
-  MoreHorizontal,
-  TrendingDown,
-  Clock,
-  Archive,
-  AlertTriangle
-} from 'lucide-vue-next';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -449,7 +390,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -458,10 +398,30 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { formatDate } from '@/lib/format.utils';
+import { useAuthStore } from '@/stores/auth.store';
 import { useConsumablesStore } from '@/stores/consumables.store';
 import type { StockLevel } from '@/types/supabase';
-import { useAuthStore } from '@/stores/auth.store';
-import { formatDate } from '@/lib/format.utils';
+import {
+  AlertTriangle,
+  Archive,
+  Clock,
+  MoreHorizontal,
+  Plus,
+  Search,
+  TrendingDown
+} from 'lucide-vue-next';
+import { computed, onMounted, ref } from 'vue';
 
 // Stores
 const consumablesStore = useConsumablesStore()
@@ -473,7 +433,7 @@ onMounted(() => {
 })
 
 // Reactive state from store
-const { 
+const {
   filteredConsumables
 } = consumablesStore
 
@@ -555,7 +515,7 @@ const handleCreateConsumable = async () => {
     created_by: authStore.user?.id || '',
     updated_by: authStore.user?.id || ''
   }
-  
+
   const success = await consumablesStore.createConsumable(consumableData)
   if (success) {
     isNewConsumableDialogOpen.value = false
@@ -573,12 +533,12 @@ const openEditConsumableDialog = (consumable: any) => {
 
 const handleUpdateConsumable = async () => {
   if (!editingConsumable.value) return
-  
+
   const updates = {
     ...editingConsumable.value,
     updated_by: authStore.user?.id || ''
   }
-  
+
   const success = await consumablesStore.updateConsumable(editingConsumable.value.id, updates)
   if (success) {
     isEditDialogOpen.value = false
@@ -617,7 +577,7 @@ const expiringSoonConsumables = computed(() => {
 const handlePlaceOrder = async () => {
   console.log('Placing order:', orderQuantities.value)
   const today = new Date().toISOString().split('T')[0]
-  
+
   for (const id of Object.keys(orderQuantities.value)) {
     const quantity = orderQuantities.value[id]
     if (quantity && quantity > 0) {
@@ -627,7 +587,7 @@ const handlePlaceOrder = async () => {
       })
     }
   }
-  
+
   isOrderDialogOpen.value = false
 }
 

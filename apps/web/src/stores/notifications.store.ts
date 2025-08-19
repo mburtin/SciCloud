@@ -3,8 +3,7 @@
  * Global state management for notifications system
  */
 
-import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { notificationsService } from '@/services/notifications.service'
 import type {
   Notification,
   NotificationSettings,
@@ -12,7 +11,8 @@ import type {
   NotificationTypeCategory,
   UUID
 } from '@/types/notifications'
-import { notificationsService } from '@/services/notifications.service'
+import { defineStore } from 'pinia'
+import { computed, ref } from 'vue'
 
 export const useNotificationsStore = defineStore('notifications', () => {
   // State
@@ -50,9 +50,9 @@ export const useNotificationsStore = defineStore('notifications', () => {
     try {
       loading.value = true
       lastError.value = null
-      
+
       const data = await notificationsService.getNotifications(limit, offset)
-      
+
       if (offset === 0) {
         notifications.value = data
       } else {
@@ -69,7 +69,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
     try {
       loading.value = true
       lastError.value = null
-      
+
       const data = await notificationsService.getSettings()
       settings.value = data
     } catch {
@@ -82,7 +82,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
   const markAsRead = async (id: UUID): Promise<void> => {
     try {
       await notificationsService.markAsRead(id)
-      
+
       // Update local state
       const notification = notifications.value.find(n => n.id === id)
       if (notification) {
@@ -97,7 +97,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
   const markAllAsRead = async (): Promise<void> => {
     try {
       await notificationsService.markAllAsRead()
-      
+
       // Update local state
       notifications.value.forEach(notification => {
         if (!notification.read) {
@@ -113,7 +113,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
   const deleteNotification = async (id: UUID): Promise<void> => {
     try {
       await notificationsService.deleteNotification(id)
-      
+
       // Update local state
       const index = notifications.value.findIndex(n => n.id === id)
       if (index !== -1) {
@@ -128,7 +128,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
     try {
       loading.value = true
       lastError.value = null
-      
+
       const updatedSettings = await notificationsService.updateSettings(updates)
       settings.value = updatedSettings
     } catch {
@@ -141,7 +141,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
   const addNotification = (notification: Notification): void => {
     // Add to beginning of array (newest first)
     notifications.value.unshift(notification)
-    
+
     // Optionally limit the number of notifications kept in memory
     const maxNotifications = 1000
     if (notifications.value.length > maxNotifications) {
@@ -184,7 +184,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
       // when notifications array changes, but this can be used
       // for server-side verification if needed
       const serverCount = await notificationsService.getUnreadCount()
-      
+
       // Log discrepancy for debugging
       if (serverCount !== unreadCount.value) {
         // Server count differs from client count

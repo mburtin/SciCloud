@@ -40,9 +40,9 @@ export async function listDocuments(ownerType: string, ownerId: string): Promise
   const prefix = `${ownerType}/${ownerId}`
   // list files under the owner folder
   const { data, error } = await storage.list(prefix, { limit: 100, sortBy: { column: 'updated_at', order: 'desc' } })
-  
+
   console.log('listDocuments debug:', { ownerType, ownerId, prefix, data, error })
-  
+
   if (error) throw error
 
   const docs: Document[] = (data || []).map((obj) => ({
@@ -74,19 +74,19 @@ export async function downloadDocument(ownerType: string, ownerId: string, pathO
   const path = normalizePath(ownerType, ownerId, pathOrId)
   const { data, error } = await storage.createSignedUrl(path, 60)
   if (error) throw error
-  
+
   // Use fetch to get the file as blob, then create object URL for reliable download
   const response = await fetch(data.signedUrl)
   const blob = await response.blob()
   const blobUrl = URL.createObjectURL(blob)
-  
+
   const a = document.createElement('a')
   a.href = blobUrl
   a.download = downloadAs || path.split('/').pop() || 'download'
   document.body.appendChild(a)
   a.click()
   document.body.removeChild(a)
-  
+
   // Clean up the blob URL
   URL.revokeObjectURL(blobUrl)
 }
@@ -124,9 +124,9 @@ function inferTypeFromName(name: string): string {
   if (['ppt', 'pptx'].includes(ext)) return 'pptx'
   if (ext === 'txt') return 'txt'
   if (ext === 'csv') return 'csv'
-  if (['png','jpg','jpeg','gif','webp','svg'].includes(ext)) return 'image'
-  if (['mp4','webm','mov','mkv'].includes(ext)) return 'video'
-  if (['mp3','wav','aac','flac','ogg'].includes(ext)) return 'audio'
+  if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'].includes(ext)) return 'image'
+  if (['mp4', 'webm', 'mov', 'mkv'].includes(ext)) return 'video'
+  if (['mp3', 'wav', 'aac', 'flac', 'ogg'].includes(ext)) return 'audio'
   return 'other'
 }
 

@@ -3,15 +3,15 @@
  * Handles Supabase Realtime WebSocket connections for notifications
  */
 
-import { ref, onUnmounted } from 'vue'
-import { useNotificationsStore } from '@/stores/notifications.store'
 import { useNotification } from '@/composables/useNotification'
 import { notificationsService } from '@/services/notifications.service'
-import type { 
+import { useNotificationsStore } from '@/stores/notifications.store'
+import type {
   Notification,
-  UUID,
-  RealtimeNotificationPayload 
+  RealtimeNotificationPayload,
+  UUID
 } from '@/types/notifications'
+import { onUnmounted, ref } from 'vue'
 
 export function useRealtimeNotifications() {
   const notificationsStore = useNotificationsStore()
@@ -19,7 +19,7 @@ export function useRealtimeNotifications() {
 
   // State
   const isConnected = ref(false)
-  
+
   // Keep track of unsubscribe function
   let unsubscribeFunction: (() => void) | null = null
 
@@ -35,7 +35,7 @@ export function useRealtimeNotifications() {
 
       // Subscribe to realtime notifications
       unsubscribeFunction = notificationsService.subscribeToNotifications(
-        userId, 
+        userId,
         handleRealtimeEvent
       )
 
@@ -52,10 +52,10 @@ export function useRealtimeNotifications() {
       unsubscribeFunction()
       unsubscribeFunction = null
     }
-    
+
     isConnected.value = false
     notificationsStore.setRealtimeConnected(false)
-    
+
   }
 
   const showNotificationToast = (notification: Notification): void => {
@@ -80,7 +80,7 @@ export function useRealtimeNotifications() {
           if (payload.new) {
             // Add to store
             notificationsStore.addNotification(payload.new)
-            
+
             // Show toast if appropriate (using store logic)
             if (await notificationsStore.shouldShowToast(payload.new)) {
               showNotificationToast(payload.new)

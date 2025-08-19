@@ -3,7 +3,7 @@
  */
 
 import { supabase } from '@/lib/supabase'
-import type { Instrument, InstrumentInsert, InstrumentUpdate, InstrumentStatus } from '@/types/supabase'
+import type { Instrument, InstrumentInsert, InstrumentStatus, InstrumentUpdate } from '@/types/supabase'
 
 export class InstrumentsService {
   /**

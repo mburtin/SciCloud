@@ -4,7 +4,8 @@
       <DialogHeader>
         <DialogTitle>{{ isEditing ? `Edit instrument ${instrument?.name}` : 'Add New Instrument' }}</DialogTitle>
         <DialogDescription>
-          {{ isEditing ? 'Edit the instrument information.' : 'Fill in the details for the new instrument.' }} Fields marked with an asterisk (*) are required.
+          {{ isEditing ? 'Edit the instrument information.' : 'Fill in the details for the new instrument.' }} Fields
+          marked with an asterisk (*) are required.
         </DialogDescription>
       </DialogHeader>
 
@@ -15,30 +16,15 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="space-y-2">
               <Label for="name">Name *</Label>
-              <Input
-                id="name"
-                v-model="formData.name"
-                placeholder="Confocal Microscope"
-                required
-              />
+              <Input id="name" v-model="formData.name" placeholder="Confocal Microscope" required />
             </div>
             <div class="space-y-2">
               <Label for="model">Model *</Label>
-              <Input
-                id="model"
-                v-model="formData.model"
-                placeholder="LSM 980"
-                required
-              />
+              <Input id="model" v-model="formData.model" placeholder="LSM 980" required />
             </div>
             <div class="space-y-2">
               <Label for="manufacturer">Manufacturer *</Label>
-              <Input
-                id="manufacturer"
-                v-model="formData.manufacturer"
-                placeholder="Zeiss"
-                required
-              />
+              <Input id="manufacturer" v-model="formData.manufacturer" placeholder="Zeiss" required />
             </div>
             <div class="space-y-2">
               <Label for="category">Category *</Label>
@@ -47,11 +33,7 @@
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem
-                    v-for="category in categoryOptions"
-                    :key="category"
-                    :value="category"
-                  >
+                  <SelectItem v-for="category in categoryOptions" :key="category" :value="category">
                     {{ category }}
                   </SelectItem>
                 </SelectContent>
@@ -59,19 +41,11 @@
             </div>
             <div class="space-y-2">
               <Label for="serialNumber">Serial Number</Label>
-              <Input
-                id="serialNumber"
-                v-model="formData.serial_number"
-                placeholder="MICR-001"
-              />
+              <Input id="serialNumber" v-model="formData.serial_number" placeholder="MICR-001" />
             </div>
             <div class="space-y-2">
               <Label for="location">Location</Label>
-              <Input
-                id="location"
-                v-model="formData.location"
-                placeholder="Room A-101"
-              />
+              <Input id="location" v-model="formData.location" placeholder="Room A-101" />
             </div>
           </div>
         </div>
@@ -87,23 +61,15 @@
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem
-                    v-for="option in statusOptions"
-                    :key="option.value"
-                    :value="option.value"
-                  >
+                  <SelectItem v-for="option in statusOptions" :key="option.value" :value="option.value">
                     {{ option.label }}
                   </SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div class="flex items-center space-x-2">
-              <input
-                id="maintenanceDue"
-                type="checkbox"
-                v-model="formData.maintenance_due"
-                class="rounded border-gray-300 text-primary focus:ring-primary"
-              />
+              <input id="maintenanceDue" type="checkbox" v-model="formData.maintenance_due"
+                class="rounded border-gray-300 text-primary focus:ring-primary" />
               <Label for="maintenanceDue">Maintenance due</Label>
             </div>
           </div>
@@ -123,9 +89,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch } from 'vue'
-import { toast } from 'vue-sonner'
-import type { Instrument, InstrumentInsert } from '@/types/supabase'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -134,6 +98,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -141,9 +107,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import type { Instrument, InstrumentInsert } from '@/types/supabase'
+import { computed, reactive, ref, watch } from 'vue'
+import { toast } from 'vue-sonner'
 
 interface Props {
   instrument?: Instrument | null

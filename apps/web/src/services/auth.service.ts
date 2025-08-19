@@ -22,7 +22,7 @@ export async function getCurrentSession(): Promise<AuthResult<{ session: Session
     const { data, error } = await supabase.auth.getSession()
 
     if (error) {
-    return { success: false, error: error.message }
+      return { success: false, error: error.message }
     }
 
     return { success: true, data }
@@ -39,7 +39,7 @@ export async function getCurrentUser(): Promise<AuthResult> {
     const { data, error } = await supabase.auth.getUser()
 
     if (error) {
-    return { success: false, error: error.message }
+      return { success: false, error: error.message }
     }
 
     return { success: true, data }
@@ -65,12 +65,12 @@ export function onAuthStateChange(
 export async function signInWithPassword(credentials: LoginCredentials): Promise<AuthResult> {
   try {
     const { data, error } = await supabase.auth.signInWithPassword({
-    email: credentials.email,
-    password: credentials.password
+      email: credentials.email,
+      password: credentials.password
     })
 
     if (error) {
-    return { success: false, error: error.message }
+      return { success: false, error: error.message }
     }
 
     return { success: true, data }
@@ -85,18 +85,18 @@ export async function signInWithPassword(credentials: LoginCredentials): Promise
 export async function signUpWithPassword(credentials: RegisterCredentials): Promise<AuthResult> {
   try {
     const { data, error } = await supabase.auth.signUp({
-    email: credentials.email,
-    password: credentials.password,
-    options: {
-      data: {
-        first_name: credentials.firstName,
-        last_name: credentials.lastName
+      email: credentials.email,
+      password: credentials.password,
+      options: {
+        data: {
+          first_name: credentials.firstName,
+          last_name: credentials.lastName
+        }
       }
-    }
     })
 
     if (error) {
-    return { success: false, error: error.message }
+      return { success: false, error: error.message }
     }
 
     return { success: true, data }
@@ -113,7 +113,7 @@ export async function signOut(): Promise<AuthResult> {
     const { error } = await supabase.auth.signOut()
 
     if (error) {
-    return { success: false, error: error.message }
+      return { success: false, error: error.message }
     }
 
     return { success: true }
@@ -130,7 +130,7 @@ export async function signOutEverywhere(): Promise<AuthResult> {
     const { error } = await supabase.auth.signOut({ scope: 'global' })
 
     if (error) {
-    return { success: false, error: error.message }
+      return { success: false, error: error.message }
     }
 
     return { success: true }
@@ -138,4 +138,3 @@ export async function signOutEverywhere(): Promise<AuthResult> {
     return { success: false, error: 'Failed to get session' }
   }
 }
-

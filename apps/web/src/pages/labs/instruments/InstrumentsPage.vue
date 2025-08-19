@@ -85,11 +85,8 @@
     <!-- Filters -->
     <div class="bg-card border rounded-lg p-4 flex items-center gap-4">
       <div class="relative w-full max-w-sm">
-        <Input
-          v-model="searchQuery"
-          placeholder="Search by name, brand, model, serial number or location..."
-          class="pl-10"
-        />
+        <Input v-model="searchQuery" placeholder="Search by name, brand, model, serial number or location..."
+          class="pl-10" />
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <Search class="h-5 w-5 text-muted-foreground" />
         </div>
@@ -124,11 +121,7 @@
           <SelectItem value="all">
             All Categories
           </SelectItem>
-          <SelectItem
-            v-for="category in categories"
-            :key="category"
-            :value="category"
-          >
+          <SelectItem v-for="category in categories" :key="category" :value="category">
             {{ category }}
           </SelectItem>
         </SelectContent>
@@ -150,12 +143,8 @@
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow
-              v-for="instrument in filteredInstruments"
-              :key="instrument.id"
-              class="cursor-pointer hover:bg-muted/50"
-              @click="navigateToInstrumentDetail(instrument.id)"
-            >
+            <TableRow v-for="instrument in filteredInstruments" :key="instrument.id"
+              class="cursor-pointer hover:bg-muted/50" @click="navigateToInstrumentDetail(instrument.id)">
               <TableCell>{{ instrument.serial_number || 'N/A' }}</TableCell>
               <TableCell>
                 <div class="font-medium">
@@ -185,10 +174,8 @@
                       Edit
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem 
-                      @click="handleDeleteInstrument(instrument.id)"
-                      class="text-red-600 focus:text-red-600"
-                    >
+                    <DropdownMenuItem @click="handleDeleteInstrument(instrument.id)"
+                      class="text-red-600 focus:text-red-600">
                       <Trash2 class="h-4 w-4 mr-2" />
                       Delete
                     </DropdownMenuItem>
@@ -202,31 +189,16 @@
     </Card>
 
     <!-- Instrument Dialog -->
-    <InstrumentDialog
-      :open="showInstrumentDialog"
-      :mode="dialogMode"
-      :instrument="selectedInstrument"
-      @update:open="showInstrumentDialog = $event"
-      @save="handleSaveInstrument"
-    />
+    <InstrumentDialog :open="showInstrumentDialog" :mode="dialogMode" :instrument="selectedInstrument"
+      @update:open="showInstrumentDialog = $event" @save="handleSaveInstrument" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import InstrumentDialog from '@/components/labs/InstrumentDialog.vue'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Plus, Search, Edit, Box, CheckCircle2, Wrench, AlertTriangle, MoreHorizontal, Trash2 } from 'lucide-vue-next'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -234,9 +206,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useInstrumentsStore } from '@/stores/instruments.store'
-import InstrumentDialog from '@/components/labs/InstrumentDialog.vue'
-import type { InstrumentStatus, Instrument, InstrumentInsert } from '@/types/supabase'
+import type { Instrument, InstrumentInsert, InstrumentStatus } from '@/types/supabase'
+import { AlertTriangle, Box, CheckCircle2, Edit, MoreHorizontal, Plus, Search, Trash2, Wrench } from 'lucide-vue-next'
+import { computed, onMounted, ref } from 'vue'
 
 // Store
 const instrumentsStore = useInstrumentsStore()

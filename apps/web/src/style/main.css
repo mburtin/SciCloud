@@ -32,7 +32,7 @@
   --chart-4: #10b981;
   --chart-5: #f59e0b;
   --radius: 0.5rem;
-  
+
   /* Header/Navbar harmonized with the sidebar */
   --header: #172554;
   --header-foreground: #cbd5e1;
@@ -43,7 +43,7 @@
   --header-nav-active-foreground: #172554;
   --header-nav-hover: #334155;
   --header-nav-hover-foreground: #f1f5f9;
-  
+
   /* Sidebar with a sophisticated dark blue theme */
   --sidebar: #172554;
   --sidebar-foreground: #cbd5e1;
@@ -59,20 +59,26 @@
   --sidebar-active-foreground: #ffffff;
   --sidebar-section: #64748b;
   --sidebar-section-foreground: #94a3b8;
-  
+
   /* Text sizes */
   --text-base: 1rem;
   --text-lg: 1.125rem;
   --text-xl: 1.25rem;
   --text-2xl: 1.5rem;
-  
+
   /* Layout dimensions */
-  --layout-sidebar-width: 18rem;        /* 288px - w-72 */
-  --layout-header-height: 4rem;         /* 64px */
-  --layout-content-padding: 1.5rem;     /* 24px - p-6 */
-  --layout-section-gap: 1.5rem;         /* 24px - gap-6 */
-  --layout-card-gap: 1rem;              /* 16px - gap-4 */
-  --layout-search-width: 16rem;         /* 256px - w-64 */
+  --layout-sidebar-width: 18rem;
+  /* 288px - w-72 */
+  --layout-header-height: 4rem;
+  /* 64px */
+  --layout-content-padding: 1.5rem;
+  /* 24px - p-6 */
+  --layout-section-gap: 1.5rem;
+  /* 24px - gap-6 */
+  --layout-card-gap: 1rem;
+  /* 16px - gap-4 */
+  --layout-search-width: 16rem;
+  /* 256px - w-64 */
 }
 
 @theme inline {
@@ -106,7 +112,7 @@
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 2px);
   --radius-xl: calc(var(--radius) + 4px);
-  
+
   /* Header colors */
   --color-header: var(--header);
   --color-header-foreground: var(--header-foreground);
@@ -117,7 +123,7 @@
   --color-header-nav-active-foreground: var(--header-nav-active-foreground);
   --color-header-nav-hover: var(--header-nav-hover);
   --color-header-nav-hover-foreground: var(--header-nav-hover-foreground);
-  
+
   /* Sidebar colors */
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
@@ -206,12 +212,15 @@ html {
 
 /* Hide scrollbars */
 .scrollbar-hide {
-  -ms-overflow-style: none;  /* Internet Explorer 10+ */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  /* Internet Explorer 10+ */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-  display: none;  /* Safari and Chrome */
+  display: none;
+  /* Safari and Chrome */
 }
 
 /* Custom utilities for themed components */
@@ -221,62 +230,62 @@ html {
     color: var(--header-foreground);
     border-bottom: 1px solid var(--header-border);
   }
-  
+
   .sidebar-bg {
     background-color: var(--sidebar);
     color: var(--sidebar-foreground);
     border-right: 1px solid var(--sidebar-border);
   }
-  
+
   .sidebar-section {
     color: var(--sidebar-section-foreground);
   }
-  
+
   .sidebar-hover {
     background-color: var(--sidebar-hover);
     color: var(--sidebar-hover-foreground);
   }
-  
+
   .sidebar-active {
     background-color: var(--sidebar-active);
     color: var(--sidebar-active-foreground);
   }
-  
+
   .nav-active {
     background-color: var(--header-nav-active);
     color: var(--header-nav-active-foreground);
   }
-  
+
   .nav-hover:hover {
     background-color: var(--header-nav-hover);
     color: var(--header-nav-hover-foreground);
   }
-  
+
   /* Layout utilities */
   .layout-sidebar {
     width: var(--layout-sidebar-width);
   }
-  
+
   .layout-content-padding {
     padding: var(--layout-content-padding);
   }
-  
+
   .layout-section-gap {
     gap: var(--layout-section-gap);
   }
-  
+
   .layout-card-gap {
     gap: var(--layout-card-gap);
   }
-  
+
   .layout-search-width {
     width: var(--layout-search-width);
   }
-  
+
   .layout-standard-grid {
     @apply grid-cols-1 md:grid-cols-2 lg:grid-cols-4;
   }
-  
+
   .layout-content-grid {
     @apply grid-cols-1 lg:grid-cols-3;
   }

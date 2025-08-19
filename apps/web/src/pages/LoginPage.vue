@@ -11,11 +11,7 @@
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" class="w-56">
-          <DropdownMenuItem 
-            v-for="error in errorPages" 
-            :key="error.code" 
-            @click="navigateTo(error.page)"
-          >
+          <DropdownMenuItem v-for="error in errorPages" :key="error.code" @click="navigateTo(error.page)">
             {{ error.label }}
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -24,15 +20,12 @@
 
     <!-- Left side - Illustration -->
     <div class="hidden lg:block lg:w-1/2 relative" style="background-color: #1e3a8a">
-      <img 
-        src="@/assets/login_background.jpg" 
-        alt="Laboratory illustration" 
-        class="w-full h-full object-cover"
-      >
+      <img src="@/assets/login_background.jpg" alt="Laboratory illustration" class="w-full h-full object-cover">
     </div>
 
     <!-- Right side - Login Form -->
-    <div v-if="!showRequestAccess && !showForgotPassword" class="flex-1 flex items-center justify-center bg-gray-50 p-8">
+    <div v-if="!showRequestAccess && !showForgotPassword"
+      class="flex-1 flex items-center justify-center bg-gray-50 p-8">
       <div class="w-full max-w-md">
         <div class="bg-white rounded-lg p-8 shadow-sm">
           <!-- Header -->
@@ -60,24 +53,12 @@
             <form class="space-y-4" @submit.prevent="handleLogin">
               <div>
                 <Label for="email" class="text-gray-700">Email</Label>
-                <Input
-                  id="email"
-                  v-model="email"
-                  type="email"
-                  placeholder="your.email@laboratory.com"
-                  class="mt-1"
-                />
+                <Input id="email" v-model="email" type="email" placeholder="your.email@laboratory.com" class="mt-1" />
               </div>
-              
+
               <div>
                 <Label for="password" class="text-gray-700">Password</Label>
-                <Input
-                  id="password"
-                  v-model="password"
-                  type="password"
-                  placeholder="••••••••"
-                  class="mt-1"
-                />
+                <Input id="password" v-model="password" type="password" placeholder="••••••••" class="mt-1" />
               </div>
 
               <Button type="submit" class="w-full mt-6">
@@ -86,11 +67,8 @@
             </form>
 
             <div class="text-center mt-4">
-              <button 
-                type="button" 
-                class="text-sm text-gray-500 hover:text-gray-700"
-                @click="showForgotPassword = true"
-              >
+              <button type="button" class="text-sm text-gray-500 hover:text-gray-700"
+                @click="showForgotPassword = true">
                 Forgot password?
               </button>
             </div>
@@ -100,11 +78,7 @@
           <div class="pt-4 border-t border-gray-100">
             <p class="text-sm text-gray-600 text-center">
               Don't have an account yet?
-              <button 
-                type="button"
-                class="text-primary hover:underline font-medium"
-                @click="showRequestAccess = true"
-              >
+              <button type="button" class="text-primary hover:underline font-medium" @click="showRequestAccess = true">
                 Request access
               </button>
             </p>
@@ -117,11 +91,7 @@
     <div v-if="showRequestAccess" class="flex-1 flex items-center justify-center bg-gray-50 p-8">
       <div class="w-full max-w-md">
         <div class="mb-6">
-          <Button
-            variant="ghost"
-            class="mb-4 p-0 h-auto hover:bg-transparent"
-            @click="showRequestAccess = false"
-          >
+          <Button variant="ghost" class="mb-4 p-0 h-auto hover:bg-transparent" @click="showRequestAccess = false">
             <ArrowLeft class="h-4 w-4 mr-2" />
             Back to login
           </Button>
@@ -145,38 +115,20 @@
           <form class="space-y-4" @submit.prevent="handleRequestAccess">
             <div>
               <Label for="firstName" class="text-gray-700">First name</Label>
-              <Input
-                id="firstName"
-                v-model="requestForm.firstName"
-                type="text"
-                required
-                placeholder="Your first name"
-                class="mt-1"
-              />
+              <Input id="firstName" v-model="requestForm.firstName" type="text" required placeholder="Your first name"
+                class="mt-1" />
             </div>
-            
+
             <div>
               <Label for="lastName" class="text-gray-700">Last name</Label>
-              <Input
-                id="lastName"
-                v-model="requestForm.lastName"
-                type="text"
-                required
-                placeholder="Your last name"
-                class="mt-1"
-              />
+              <Input id="lastName" v-model="requestForm.lastName" type="text" required placeholder="Your last name"
+                class="mt-1" />
             </div>
-            
+
             <div>
               <Label for="requestEmail" class="text-gray-700">Email</Label>
-              <Input
-                id="requestEmail"
-                v-model="requestForm.email"
-                type="email"
-                required
-                placeholder="your.email@example.com"
-                class="mt-1"
-              />
+              <Input id="requestEmail" v-model="requestForm.email" type="email" required
+                placeholder="your.email@example.com" class="mt-1" />
             </div>
 
             <Button type="submit" class="w-full mt-6">
@@ -197,11 +149,7 @@
     <div v-if="showForgotPassword" class="flex-1 flex items-center justify-center bg-gray-50 p-8">
       <div class="w-full max-w-md">
         <div class="mb-6">
-          <Button
-            variant="ghost"
-            class="mb-4 p-0 h-auto hover:bg-transparent"
-            @click="showForgotPassword = false"
-          >
+          <Button variant="ghost" class="mb-4 p-0 h-auto hover:bg-transparent" @click="showForgotPassword = false">
             <ArrowLeft class="h-4 w-4 mr-2" />
             Back to login
           </Button>
@@ -225,14 +173,8 @@
           <form class="space-y-4" @submit.prevent="handleForgotPassword">
             <div>
               <Label for="forgotEmail" class="text-gray-700">Email</Label>
-              <Input
-                id="forgotEmail"
-                v-model="forgotPasswordEmail"
-                type="email"
-                required
-                placeholder="your.email@laboratory.com"
-                class="mt-1"
-              />
+              <Input id="forgotEmail" v-model="forgotPasswordEmail" type="email" required
+                placeholder="your.email@laboratory.com" class="mt-1" />
               <p class="text-sm text-gray-500 mt-2">
                 We will send you a link to reset your password.
               </p>
@@ -255,19 +197,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger 
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { ArrowLeft, Beaker, Settings, ChevronDown } from 'lucide-vue-next';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useAuthStore } from '@/stores/auth.store';
+import { ArrowLeft, Beaker, ChevronDown, Settings } from 'lucide-vue-next';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 // Composables
 const router = useRouter();

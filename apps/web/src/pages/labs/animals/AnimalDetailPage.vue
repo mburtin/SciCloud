@@ -12,7 +12,8 @@
           <PawPrint class="h-8 w-8 text-primary" />
           <div>
             <h1 class="flex items-center gap-2">
-              {{ animal.identifier }} - {{ speciesLabels[animal.species as keyof typeof speciesLabels] || animal.species }}
+              {{ animal.identifier }} - {{ speciesLabels[animal.species as keyof typeof speciesLabels] || animal.species
+              }}
               <Badge variant="outline" class="ml-2">
                 {{ animal.sex === 'male' ? '♂' : '♀' }}
               </Badge>
@@ -107,7 +108,8 @@
                 <div class="grid grid-cols-2 gap-4">
                   <div>
                     <Label class="text-sm text-muted-foreground">Species</Label>
-                    <p class="font-medium">{{ speciesLabels[animal.species as keyof typeof speciesLabels] || animal.species }}</p>
+                    <p class="font-medium">{{ speciesLabels[animal.species as keyof typeof speciesLabels] ||
+                      animal.species }}</p>
                   </div>
                   <div>
                     <Label class="text-sm text-muted-foreground">Strain</Label>
@@ -218,8 +220,8 @@
                   <div>
                     <Label class="text-sm text-muted-foreground">Housing type</Label>
                     <p class="font-medium">
-                      {{ animal.housing_type === 'individual' ? 'Individual' : 
-                         animal.housing_type === 'pair' ? 'Pair' : 'Group' }}
+                      {{ animal.housing_type === 'individual' ? 'Individual' :
+                        animal.housing_type === 'pair' ? 'Pair' : 'Group' }}
                     </p>
                   </div>
                   <div v-if="animal.group_size">
@@ -250,7 +252,7 @@
               New examination
             </Button>
           </div>
-          
+
           <div class="space-y-4">
             <Card v-for="record in animal.medical_history" :key="record.id">
               <CardContent class="p-4">
@@ -294,13 +296,10 @@
               New measurement
             </Button>
           </div>
-          
+
           <div class="space-y-4">
-            <Card 
-              v-for="measurement in sortedMeasurements" 
-              :key="measurement.id" 
-              class="transition-all hover:shadow-md"
-            >
+            <Card v-for="measurement in sortedMeasurements" :key="measurement.id"
+              class="transition-all hover:shadow-md">
               <CardContent class="p-4">
                 <div class="flex items-start justify-between">
                   <div class="flex items-start gap-3">
@@ -336,7 +335,7 @@
                 </div>
               </CardContent>
             </Card>
-            
+
             <div v-if="animal.measurements.length === 0" class="text-center py-8">
               <Scale class="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 class="font-medium mb-2">No measurements recorded</h3>
@@ -359,7 +358,7 @@
               Link protocol
             </Button>
           </div>
-          
+
           <div class="space-y-4">
             <Card v-for="protocol in animal.protocols" :key="protocol">
               <CardContent class="p-4">
@@ -374,7 +373,7 @@
                 </div>
               </CardContent>
             </Card>
-            
+
             <div v-if="animal.protocols.length === 0" class="text-center py-8">
               <ClipboardList class="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <p class="text-muted-foreground">No protocol linked</p>
@@ -383,81 +382,65 @@
         </TabsContent>
 
         <TabsContent value="documents" class="space-y-4">
-          <DocumentManager
-            title="Animal Documents"
+          <DocumentManager title="Animal Documents"
             :description="`Manage documents for ${animal.identifier} - ${speciesLabels[animal.species as keyof typeof speciesLabels] || animal.species}`"
-            owner-type="animals"
-            :owner-id="animalId"
-            :initial-documents="convertAnimalDocuments(animal.documents)"
+            owner-type="animals" :owner-id="animalId" :initial-documents="convertAnimalDocuments(animal.documents)"
             :show-stats="true"
             :available-types="['health-certificate', 'protocol', 'report', 'photo', 'analysis', 'authorization', 'other']"
-            display-mode="cards"
-            @document-uploaded="handleDocumentUploaded"
-            @documents-updated="handleDocumentsUpdated"
-          />
+            display-mode="cards" @document-uploaded="handleDocumentUploaded"
+            @documents-updated="handleDocumentsUpdated" />
         </TabsContent>
       </Tabs>
     </div>
 
     <!-- Edit dialog -->
-    <AnimalFormDialog
-      v-if="animal"
-      :animal="animal"
-      v-model:open="editDialogOpen"
-      mode="edit"
-      @save="handleSaveAnimal"
-    />
+    <AnimalFormDialog v-if="animal" :animal="animal" v-model:open="editDialogOpen" mode="edit"
+      @save="handleSaveAnimal" />
 
     <!-- New measurement dialog -->
-    <NewMeasurementDialog
-      v-model:open="newMeasurementDialogOpen"
-      @save="handleAddMeasurement"
-    />
+    <NewMeasurementDialog v-model:open="newMeasurementDialogOpen" @save="handleAddMeasurement" />
 
     <!-- New medical examination dialog -->
-    <NewMedicalExamDialog
-      v-model:open="newMedicalExamDialogOpen"
-      :animal-identifier="animal?.identifier"
-      @save="handleAddMedicalRecord"
-    />
+    <NewMedicalExamDialog v-model:open="newMedicalExamDialogOpen" :animal-identifier="animal?.identifier"
+      @save="handleAddMedicalRecord" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import {
+  Activity,
+  AlertCircle,
+  AlertTriangle,
+  ArrowLeft,
+  Building,
+  CheckCircle,
+  ClipboardList,
+  Edit3,
+  Eye,
+  FileText,
+  FlaskConical,
+  Heart,
+  PawPrint,
+  Plus,
+  Scale,
+  Stethoscope,
+  Thermometer,
+  Trash2,
+  UserCheck
+} from 'lucide-vue-next'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { toast } from 'vue-sonner'
-import { 
-  ArrowLeft,
-  Edit3, 
-  AlertTriangle,
-  CheckCircle,
-  Eye,
-  Activity,
-  Building,
-  PawPrint,
-  Stethoscope,
-  ClipboardList,
-  UserCheck,
-  AlertCircle,
-  Scale,
-  Thermometer,
-  Heart,
-  FlaskConical,
-  FileText,
-  Plus,
-  Trash2
-} from 'lucide-vue-next'
 
-import type { Animal } from '@/types/supabase'
-import type { Measurement, MedicalRecord, AnimalDocument } from '@/types/lab'
-import type { Document } from '@/types/documents'
-import { speciesLabels } from '@/types/lab'
 import { useAnimalsStore } from '@/stores/animals.store'
+import type { Document } from '@/types/documents'
+import type { AnimalDocument, Measurement, MedicalRecord } from '@/types/lab'
+import { speciesLabels } from '@/types/lab'
+import type { Animal } from '@/types/supabase'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
@@ -490,7 +473,7 @@ const animal = computed(() => animalsStore.animals.find(a => a.id === animalId))
 
 const sortedMeasurements = computed(() => {
   if (!animal.value) return []
-  return [...animal.value.measurements].sort((a, b) => 
+  return [...animal.value.measurements].sort((a, b) =>
     new Date(b.date).getTime() - new Date(a.date).getTime()
   )
 })
@@ -530,7 +513,7 @@ const calculateAge = (birthDate: string) => {
   const birth = new Date(birthDate)
   const today = new Date()
   const diffInDays = Math.floor((today.getTime() - birth.getTime()) / (1000 * 3600 * 24))
-  
+
   if (diffInDays < 30) {
     return `${diffInDays} days`
   } else if (diffInDays < 365) {
@@ -654,16 +637,16 @@ const handleAddMedicalRecord = async (newRecord: Omit<MedicalRecord, 'id'>) => {
   const result = await animalsStore.addMedicalRecord(animalId, recordWithId)
   if (result) {
     // Also update last exam date and health status
-    const healthStatusUpdate = 
+    const healthStatusUpdate =
       newRecord.severity === 'severe' ? 'critical' :
-      newRecord.severity === 'moderate' ? 'concerning' :
-      newRecord.severity === 'minor' ? 'good' : 'excellent'
-    
+        newRecord.severity === 'moderate' ? 'concerning' :
+          newRecord.severity === 'minor' ? 'good' : 'excellent'
+
     await animalsStore.updateAnimal(animalId, {
       last_exam_date: newRecord.date,
       health_status: healthStatusUpdate as any
     })
-    
+
     toast.success('Medical record successfully added')
   }
 }

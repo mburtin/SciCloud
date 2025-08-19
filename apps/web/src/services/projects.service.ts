@@ -3,7 +3,7 @@
  */
 
 import { supabase } from '@/lib/supabase'
-import type { Project, ProjectInsert, ProjectUpdate, ProjectMemberRole, UserFavoriteProjectInsert } from '@/types/supabase'
+import type { Project, ProjectInsert, ProjectMemberRole, ProjectUpdate, UserFavoriteProjectInsert } from '@/types/supabase'
 
 // Type for favorite project from Supabase
 interface FavoriteProject {
@@ -28,7 +28,7 @@ export class ProjectsService {
    */
   async getProjects(): Promise<Project[]> {
     const { data: { user } } = await supabase.auth.getUser()
-    
+
     const { data, error } = await supabase
       .from('projects')
       .select(`
@@ -62,7 +62,7 @@ export class ProjectsService {
    */
   async getProjectById(id: string): Promise<Project | null> {
     const { data: { user } } = await supabase.auth.getUser()
-    
+
     const { data, error } = await supabase
       .from('projects')
       .select(`
@@ -362,9 +362,9 @@ export class ProjectsService {
   async toggleArchive(id: string): Promise<Project> {
     const project = await this.getProjectById(id)
     if (!project) throw new Error('Project not found')
-    
-    return this.updateProject(id, { 
-    status: project.status === 'archived' ? 'active' : 'archived' 
+
+    return this.updateProject(id, {
+      status: project.status === 'archived' ? 'active' : 'archived'
     })
   }
 

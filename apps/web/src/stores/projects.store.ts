@@ -1,7 +1,7 @@
-import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
 import { projectsService } from '@/services/projects.service'
-import type { Project, ProjectStatus, ProjectMemberRole, ProjectInsert, ProjectUpdate } from '@/types/supabase'
+import type { Project, ProjectInsert, ProjectMemberRole, ProjectStatus, ProjectUpdate } from '@/types/supabase'
+import { defineStore } from 'pinia'
+import { computed, ref } from 'vue'
 
 export const useProjectsStore = defineStore('projects', () => {
   // State
@@ -9,7 +9,7 @@ export const useProjectsStore = defineStore('projects', () => {
   const loading = ref(false)
   const error = ref<string | null>(null)
   const isInitialized = ref(false)
-  
+
   // Filters and search
   const searchQuery = ref('')
   const statusFilter = ref<ProjectStatus | 'all'>('all')
@@ -24,7 +24,7 @@ export const useProjectsStore = defineStore('projects', () => {
     // Search filter
     if (searchQuery.value.trim()) {
       const query = searchQuery.value.toLowerCase()
-      filtered = filtered.filter(project => 
+      filtered = filtered.filter(project =>
         project.name.toLowerCase().includes(query) ||
         project.description?.toLowerCase().includes(query) ||
         project.category.toLowerCase().includes(query)
@@ -96,7 +96,7 @@ export const useProjectsStore = defineStore('projects', () => {
     try {
       loading.value = true
       error.value = null
-      
+
       const fetchedProjects = await projectsService.getProjects()
       projects.value = fetchedProjects
       isInitialized.value = true
@@ -147,13 +147,13 @@ export const useProjectsStore = defineStore('projects', () => {
   async function updateProject(id: string, updates: ProjectUpdate): Promise<Project | null> {
     try {
       const updatedProject = await projectsService.updateProject(id, updates)
-      
+
       // Update in store
       const index = projects.value.findIndex(p => p.id === id)
       if (index !== -1) {
         projects.value[index] = updatedProject
       }
-      
+
       return updatedProject
     } catch {
       return null
@@ -163,13 +163,13 @@ export const useProjectsStore = defineStore('projects', () => {
   async function deleteProject(id: string): Promise<boolean> {
     try {
       await projectsService.deleteProject(id)
-      
+
       // Remove from store
       const index = projects.value.findIndex(p => p.id === id)
       if (index !== -1) {
         projects.value.splice(index, 1)
       }
-      
+
       return true
     } catch {
       return false
@@ -179,13 +179,13 @@ export const useProjectsStore = defineStore('projects', () => {
   async function toggleFavorite(id: string): Promise<boolean> {
     try {
       const updatedProject = await projectsService.toggleFavorite(id)
-      
+
       // Update in store
       const index = projects.value.findIndex(p => p.id === id)
       if (index !== -1) {
         projects.value[index] = updatedProject
       }
-      
+
       return true
     } catch {
       return false
@@ -195,13 +195,13 @@ export const useProjectsStore = defineStore('projects', () => {
   async function toggleArchive(id: string): Promise<boolean> {
     try {
       const updatedProject = await projectsService.toggleArchive(id)
-      
+
       // Update in store
       const index = projects.value.findIndex(p => p.id === id)
       if (index !== -1) {
         projects.value[index] = updatedProject
       }
-      
+
       return true
     } catch {
       return false
@@ -212,10 +212,10 @@ export const useProjectsStore = defineStore('projects', () => {
   async function addProjectMember(projectId: string, userId: string, role: ProjectMemberRole = 'member'): Promise<boolean> {
     try {
       await projectsService.addProjectMember(projectId, userId, role)
-      
+
       // Refresh the specific project to get updated members
       await getProjectById(projectId)
-      
+
       return true
     } catch {
       return false
@@ -225,10 +225,10 @@ export const useProjectsStore = defineStore('projects', () => {
   async function removeProjectMember(projectId: string, userId: string): Promise<boolean> {
     try {
       await projectsService.removeProjectMember(projectId, userId)
-      
+
       // Refresh the specific project to get updated members
       await getProjectById(projectId)
-      
+
       return true
     } catch {
       return false
@@ -238,10 +238,10 @@ export const useProjectsStore = defineStore('projects', () => {
   async function updateProjectMemberRole(projectId: string, userId: string, role: ProjectMemberRole): Promise<boolean> {
     try {
       await projectsService.updateProjectMemberRole(projectId, userId, role)
-      
+
       // Refresh the specific project to get updated members
       await getProjectById(projectId)
-      
+
       return true
     } catch {
       return false

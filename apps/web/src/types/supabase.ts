@@ -3,7 +3,7 @@
  * Generated types that match the database schema
  */
 
-import type { AnimalDocument, MedicalRecord, Measurement } from './lab'
+import type { AnimalDocument, Measurement, MedicalRecord } from './lab'
 
 export interface Database {
   public: {

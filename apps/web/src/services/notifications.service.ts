@@ -3,17 +3,17 @@
  * Handles all notification CRUD operations and Supabase Realtime integration
  */
 
-import { createClient } from '@supabase/supabase-js'
 import type {
   Notification,
   NotificationInsert,
-  NotificationUpdate,
   NotificationSettings,
   NotificationSettingsUpdate,
   NotificationsService,
+  NotificationUpdate,
   RealtimeNotificationPayload,
   UUID
 } from '@/types/notifications'
+import { createClient } from '@supabase/supabase-js'
 
 class NotificationsServiceImpl implements NotificationsService {
   private supabase = createClient(
@@ -177,38 +177,38 @@ class NotificationsServiceImpl implements NotificationsService {
    */
   private async createDefaultSettings(): Promise<NotificationSettings> {
     try {
-    const { data: user } = await this.supabase.auth.getUser()
-    if (!user.user) {
-      throw new Error('User not authenticated')
-    }
+      const { data: user } = await this.supabase.auth.getUser()
+      if (!user.user) {
+        throw new Error('User not authenticated')
+      }
 
-    const defaultSettings: Omit<NotificationSettings, 'created_at' | 'updated_at'> = {
-      user_id: user.user.id,
-      email_enabled: true,
-      push_enabled: true,
-      in_app_enabled: true,
-      types_config: {
-        project: { enabled: true, email: true, push: true },
-        collaboration: { enabled: true, email: true, push: true },
-        system: { enabled: true, email: false, push: true },
-        document: { enabled: true, email: false, push: false }
-      },
-      quiet_hours_enabled: false,
-      quiet_hours_start: '22:00:00',
-      quiet_hours_end: '08:00:00'
-    }
+      const defaultSettings: Omit<NotificationSettings, 'created_at' | 'updated_at'> = {
+        user_id: user.user.id,
+        email_enabled: true,
+        push_enabled: true,
+        in_app_enabled: true,
+        types_config: {
+          project: { enabled: true, email: true, push: true },
+          collaboration: { enabled: true, email: true, push: true },
+          system: { enabled: true, email: false, push: true },
+          document: { enabled: true, email: false, push: false }
+        },
+        quiet_hours_enabled: false,
+        quiet_hours_start: '22:00:00',
+        quiet_hours_end: '08:00:00'
+      }
 
-    const { data, error } = await this.supabase
-      .from('notification_settings')
-      .insert(defaultSettings)
-      .select()
-      .single()
+      const { data, error } = await this.supabase
+        .from('notification_settings')
+        .insert(defaultSettings)
+        .select()
+        .single()
 
-    if (error) {
-      throw new Error(error.message)
-    }
+      if (error) {
+        throw new Error(error.message)
+      }
 
-    return data
+      return data
     } catch {
       throw new Error('Failed to create default notification settings')
     }
@@ -223,28 +223,28 @@ class NotificationsServiceImpl implements NotificationsService {
     callback: (payload: RealtimeNotificationPayload) => void
   ): () => void {
     const channel = this.supabase
-    .channel(`notifications:${userId}`)
-    .on(
-      'postgres_changes',
-      {
-        event: '*',
-        schema: 'public',
-        table: 'notifications',
-        filter: `user_id=eq.${userId}`
-      },
-      (payload) => {
-        callback({
-          eventType: payload.eventType as 'INSERT' | 'UPDATE' | 'DELETE',
-          new: payload.new as Notification,
-          old: payload.old as Notification
-        })
-      }
-    )
-    .subscribe()
+      .channel(`notifications:${userId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${userId}`
+        },
+        (payload) => {
+          callback({
+            eventType: payload.eventType as 'INSERT' | 'UPDATE' | 'DELETE',
+            new: payload.new as Notification,
+            old: payload.old as Notification
+          })
+        }
+      )
+      .subscribe()
 
     // Return unsubscribe function
     return () => {
-    channel.unsubscribe()
+      channel.unsubscribe()
     }
   }
 
@@ -278,7 +278,7 @@ class NotificationsServiceImpl implements NotificationsService {
 
     const now = new Date()
     const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:00`
-    
+
     const start = settings.quiet_hours_start
     const end = settings.quiet_hours_end
 

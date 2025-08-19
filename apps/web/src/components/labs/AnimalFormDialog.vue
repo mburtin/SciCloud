@@ -4,7 +4,8 @@
       <DialogHeader>
         <DialogTitle>{{ isEditing ? `Edit animal ${animal?.identifier}` : 'Add New Animal' }}</DialogTitle>
         <DialogDescription>
-          {{ isEditing ? 'Edit the animal information.' : 'Fill in the details for the new animal.' }} Fields marked with an asterisk (*) are required.
+          {{ isEditing ? 'Edit the animal information.' : 'Fill in the details for the new animal.' }} Fields marked
+          with an asterisk (*) are required.
         </DialogDescription>
       </DialogHeader>
 
@@ -15,11 +16,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="space-y-2">
               <Label for="identifier">Identifier *</Label>
-              <Input
-                id="identifier"
-                v-model="formData.identifier"
-                placeholder="M001-2024"
-              />
+              <Input id="identifier" v-model="formData.identifier" placeholder="M001-2024" />
             </div>
             <div class="space-y-2">
               <Label for="sex">Sex *</Label>
@@ -40,11 +37,7 @@
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem
-                    v-for="option in speciesOptions"
-                    :key="option.value"
-                    :value="option.value"
-                  >
+                  <SelectItem v-for="option in speciesOptions" :key="option.value" :value="option.value">
                     {{ option.label }}
                   </SelectItem>
                 </SelectContent>
@@ -52,27 +45,15 @@
             </div>
             <div class="space-y-2">
               <Label for="strain">Strain *</Label>
-              <Input
-                id="strain"
-                v-model="formData.strain"
-                placeholder="C57BL/6J"
-              />
+              <Input id="strain" v-model="formData.strain" placeholder="C57BL/6J" />
             </div>
             <div class="space-y-2">
               <Label for="line">Line</Label>
-              <Input
-                id="line"
-                v-model="formData.line"
-                placeholder="Wild Type"
-              />
+              <Input id="line" v-model="formData.line" placeholder="Wild Type" />
             </div>
             <div class="space-y-2">
               <Label for="supplier">Supplier *</Label>
-              <Input
-                id="supplier"
-                v-model="formData.supplier"
-                placeholder="Charles River Laboratories"
-              />
+              <Input id="supplier" v-model="formData.supplier" placeholder="Charles River Laboratories" />
             </div>
           </div>
         </div>
@@ -83,29 +64,16 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="space-y-2">
               <Label for="birthDate">Birth date *</Label>
-              <Input
-                id="birthDate"
-                type="date"
-                v-model="formData.birth_date"
-              />
+              <Input id="birthDate" type="date" v-model="formData.birth_date" />
             </div>
             <div class="space-y-2">
               <Label for="arrivalDate">Arrival date *</Label>
-              <Input
-                id="arrivalDate"
-                type="date"
-                v-model="formData.arrival_date"
-              />
+              <Input id="arrivalDate" type="date" v-model="formData.arrival_date" />
             </div>
             <div class="space-y-2">
               <Label for="currentWeight">Current weight (g) *</Label>
-              <Input
-                id="currentWeight"
-                type="number"
-                step="0.1"
-                v-model.number="formData.current_weight"
-                placeholder="28.5"
-              />
+              <Input id="currentWeight" type="number" step="0.1" v-model.number="formData.current_weight"
+                placeholder="28.5" />
             </div>
           </div>
         </div>
@@ -121,11 +89,7 @@
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem
-                    v-for="option in statusOptions"
-                    :key="option.value"
-                    :value="option.value"
-                  >
+                  <SelectItem v-for="option in statusOptions" :key="option.value" :value="option.value">
                     {{ option.label }}
                   </SelectItem>
                 </SelectContent>
@@ -138,11 +102,7 @@
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem
-                    v-for="option in healthStatusOptions"
-                    :key="option.value"
-                    :value="option.value"
-                  >
+                  <SelectItem v-for="option in healthStatusOptions" :key="option.value" :value="option.value">
                     {{ option.label }}
                   </SelectItem>
                 </SelectContent>
@@ -155,11 +115,7 @@
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem
-                    v-for="vet in veterinarians"
-                    :key="vet"
-                    :value="vet"
-                  >
+                  <SelectItem v-for="vet in veterinarians" :key="vet" :value="vet">
                     {{ vet }}
                   </SelectItem>
                 </SelectContent>
@@ -179,11 +135,7 @@
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem
-                    v-for="facility in facilities"
-                    :key="facility"
-                    :value="facility"
-                  >
+                  <SelectItem v-for="facility in facilities" :key="facility" :value="facility">
                     {{ facility }}
                   </SelectItem>
                 </SelectContent>
@@ -191,30 +143,18 @@
             </div>
             <div class="space-y-2">
               <Label for="room">Room *</Label>
-              <Input
-                id="room"
-                v-model="formData.location.room"
-                placeholder="Room 205"
-              />
+              <Input id="room" v-model="formData.location.room" placeholder="Room 205" />
             </div>
             <div class="space-y-2">
               <Label for="rack">Rack *</Label>
-              <Input
-                id="rack"
-                v-model="formData.location.rack"
-                placeholder="R-12"
-              />
+              <Input id="rack" v-model="formData.location.rack" placeholder="R-12" />
             </div>
             <div class="space-y-2">
               <Label for="cage">Cage *</Label>
-              <Input
-                id="cage"
-                v-model="formData.location.cage"
-                placeholder="C-034"
-              />
+              <Input id="cage" v-model="formData.location.cage" placeholder="C-034" />
             </div>
           </div>
-          
+
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="space-y-2">
               <Label for="housingType">Housing type *</Label>
@@ -223,11 +163,7 @@
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem
-                    v-for="option in housingTypeOptions"
-                    :key="option.value"
-                    :value="option.value"
-                  >
+                  <SelectItem v-for="option in housingTypeOptions" :key="option.value" :value="option.value">
                     {{ option.label }}
                   </SelectItem>
                 </SelectContent>
@@ -235,13 +171,7 @@
             </div>
             <div v-if="formData.housing_type === 'pair' || formData.housing_type === 'group'" class="space-y-2">
               <Label for="groupSize">Group size</Label>
-              <Input
-                id="groupSize"
-                type="number"
-                min="2"
-                v-model.number="formData.group_size"
-                placeholder="4"
-              />
+              <Input id="groupSize" type="number" min="2" v-model.number="formData.group_size" placeholder="4" />
             </div>
           </div>
         </div>
@@ -252,19 +182,11 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="space-y-2">
               <Label for="ethicsApproval">Ethics approval *</Label>
-              <Input
-                id="ethicsApproval"
-                v-model="formData.ethics_approval"
-                placeholder="CE-2024-008"
-              />
+              <Input id="ethicsApproval" v-model="formData.ethics_approval" placeholder="CE-2024-008" />
             </div>
             <div class="space-y-2">
               <Label for="experimentalGroup">Experimental group</Label>
-              <Input
-                id="experimentalGroup"
-                v-model="formData.experimental_group"
-                placeholder="Control group"
-              />
+              <Input id="experimentalGroup" v-model="formData.experimental_group" placeholder="Control group" />
             </div>
           </div>
         </div>
@@ -275,19 +197,11 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="space-y-2">
               <Label for="lastExamDate">Last exam</Label>
-              <Input
-                id="lastExamDate"
-                type="date"
-                v-model="formData.last_exam_date"
-              />
+              <Input id="lastExamDate" type="date" v-model="formData.last_exam_date" />
             </div>
             <div class="space-y-2">
               <Label for="nextExamDate">Next exam</Label>
-              <Input
-                id="nextExamDate"
-                type="date"
-                v-model="formData.next_exam_date"
-              />
+              <Input id="nextExamDate" type="date" v-model="formData.next_exam_date" />
             </div>
           </div>
         </div>
@@ -297,12 +211,8 @@
           <h3 class="text-lg font-medium">Notes and observations</h3>
           <div class="space-y-2">
             <Label for="notes">Notes</Label>
-            <Textarea
-              id="notes"
-              v-model="formData.notes"
-              placeholder="Notes and observations about the animal..."
-              :rows="4"
-            />
+            <Textarea id="notes" v-model="formData.notes" placeholder="Notes and observations about the animal..."
+              :rows="4" />
           </div>
         </div>
 
@@ -320,9 +230,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch } from 'vue'
-import { toast } from 'vue-sonner'
-import type { Animal, AnimalInsert } from '@/types/supabase'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -331,6 +239,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -338,10 +248,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import type { Animal, AnimalInsert } from '@/types/supabase'
+import { computed, reactive, ref, watch } from 'vue'
+import { toast } from 'vue-sonner'
 
 interface Props {
   animal?: Animal | null

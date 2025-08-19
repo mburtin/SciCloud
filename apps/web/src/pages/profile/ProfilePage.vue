@@ -46,26 +46,14 @@
           </div>
           <div class="flex-1 space-y-4" v-if="user">
             <div class="grid grid-cols-1 sm:grid-cols-2 layout-card-gap">
-              <ProfileField 
-                label="First name" 
-                :value="isEditing ? (editedUser.first_name || '') : (user.first_name || '')" 
-                :is-editable="isEditing"
-                @update="editedUser.first_name = $event" 
-              />
-              <ProfileField 
-                label="Last name" 
-                :value="isEditing ? (editedUser.last_name || '') : (user.last_name || '')" 
-                :is-editable="isEditing"
-                @update="editedUser.last_name = $event" 
-              />
+              <ProfileField label="First name"
+                :value="isEditing ? (editedUser.first_name || '') : (user.first_name || '')" :is-editable="isEditing"
+                @update="editedUser.first_name = $event" />
+              <ProfileField label="Last name" :value="isEditing ? (editedUser.last_name || '') : (user.last_name || '')"
+                :is-editable="isEditing" @update="editedUser.last_name = $event" />
             </div>
-            <ProfileField
-              label="Biography"
-              :value="isEditing ? editedUser.biography || '' : user.biography || ''"
-              :is-editable="isEditing"
-              multiline
-              @update="editedUser.biography = $event"
-            />
+            <ProfileField label="Biography" :value="isEditing ? editedUser.biography || '' : user.biography || ''"
+              :is-editable="isEditing" multiline @update="editedUser.biography = $event" />
           </div>
         </div>
       </CardContent>
@@ -89,47 +77,29 @@
         <CardTitle>Contact Information</CardTitle>
       </CardHeader>
       <CardContent class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6" v-if="user">
-        <ProfileField
-          label="Email"
-          :value="user.email || ''"
-          :is-editable="isEditing"
-          :is-disabled="true"
-          type="email"
-        />
-        <ProfileField
-          label="Phone"
-          :value="isEditing ? editedUser.phone || '' : user.phone || ''"
-          :is-editable="isEditing"
-          type="tel"
-          @update="editedUser.phone = $event"
-        />
-        <ProfileField 
-          label="Location" 
-          :value="isEditing ? editedUser.location || '' : user.location || ''" 
-          :is-editable="isEditing"
-          @update="editedUser.location = $event" 
-        />
-        <ProfileField 
-          label="Full address" 
-          :value="isEditing ? editedUser.full_address || '' : user.full_address || ''" 
-          :is-editable="isEditing"
-          @update="editedUser.full_address = $event" 
-        />
+        <ProfileField label="Email" :value="user.email || ''" :is-editable="isEditing" :is-disabled="true"
+          type="email" />
+        <ProfileField label="Phone" :value="isEditing ? editedUser.phone || '' : user.phone || ''"
+          :is-editable="isEditing" type="tel" @update="editedUser.phone = $event" />
+        <ProfileField label="Location" :value="isEditing ? editedUser.location || '' : user.location || ''"
+          :is-editable="isEditing" @update="editedUser.location = $event" />
+        <ProfileField label="Full address" :value="isEditing ? editedUser.full_address || '' : user.full_address || ''"
+          :is-editable="isEditing" @update="editedUser.full_address = $event" />
       </CardContent>
     </Card>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import ProfileField from '@/components/shared/ProfileField.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import ProfileField from '@/components/shared/ProfileField.vue';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { computed, onMounted, ref } from 'vue';
 // import StatCard from '@/components/shared/StatCard.vue';
-import { Camera, Pencil, Check, X } from 'lucide-vue-next';
 import { useUserStore } from '@/stores/user.store';
 import type { User } from '@/types/supabase';
+import { Camera, Check, Pencil, X } from 'lucide-vue-next';
 
 const userStore = useUserStore();
 
@@ -155,7 +125,7 @@ const userInitials = computed(() => {
 // Edit functions
 const startEditing = () => {
   if (!user.value) return;
-  
+
   editedUser.value = {
     first_name: user.value.first_name,
     last_name: user.value.last_name,
@@ -174,21 +144,21 @@ const cancelEditing = () => {
 
 const saveProfile = async () => {
   if (!user.value || !editedUser.value) return;
-  
+
   try {
     isSaving.value = true;
-    
+
     // Separate phone update (auth.users table) from profile update (user_profiles table)
     const { email, phone, ...profileData } = editedUser.value;
-    
+
     // Update profile data first
     const profileResult = await userStore.updateProfile(user.value.id, profileData);
-    
+
     if (!profileResult.success) {
       console.error('Failed to update profile:', profileResult.error);
       return;
     }
-    
+
     // Update phone number if it changed
     if (phone !== user.value.phone) {
       const phoneResult = await userStore.updatePhone(phone || '');
@@ -197,14 +167,14 @@ const saveProfile = async () => {
         return;
       }
     }
-    
+
     // If both operations succeeded
     isEditing.value = false;
     editedUser.value = {};
-    
+
     // Reload profile to get updated data
     await userStore.loadCurrentUserProfile();
-    
+
   } catch (error) {
     console.error('Error saving profile:', error);
   } finally {

@@ -1,7 +1,7 @@
-import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
 import { consumablesService } from '@/services/consumables.service'
 import type { Consumable, ConsumableInsert, ConsumableUpdate, StockLevel } from '@/types/supabase'
+import { defineStore } from 'pinia'
+import { computed, ref } from 'vue'
 
 export const useConsumablesStore = defineStore('consumables', () => {
   // State
@@ -9,7 +9,7 @@ export const useConsumablesStore = defineStore('consumables', () => {
   const loading = ref(false)
   const error = ref<string | null>(null)
   const isInitialized = ref(false)
-  
+
   // Filters and search
   const searchQuery = ref('')
   const stockLevelFilter = ref<StockLevel | 'all'>('all')
@@ -24,7 +24,7 @@ export const useConsumablesStore = defineStore('consumables', () => {
     // Search filter
     if (searchQuery.value.trim()) {
       const query = searchQuery.value.toLowerCase()
-      filtered = filtered.filter(consumable => 
+      filtered = filtered.filter(consumable =>
         consumable.name.toLowerCase().includes(query) ||
         consumable.reference.toLowerCase().includes(query) ||
         consumable.supplier.toLowerCase().includes(query) ||
@@ -94,25 +94,25 @@ export const useConsumablesStore = defineStore('consumables', () => {
     return Array.from(unitSet).sort()
   })
 
-  const lowStockConsumables = computed(() => 
+  const lowStockConsumables = computed(() =>
     consumables.value.filter(consumable => consumable.stock_level === 'low')
   )
 
-  const outOfStockConsumables = computed(() => 
+  const outOfStockConsumables = computed(() =>
     consumables.value.filter(consumable => consumable.stock_level === 'outofstock')
   )
 
-  const highStockConsumables = computed(() => 
+  const highStockConsumables = computed(() =>
     consumables.value.filter(consumable => consumable.stock_level === 'high')
   )
 
-  const normalStockConsumables = computed(() => 
+  const normalStockConsumables = computed(() =>
     consumables.value.filter(consumable => consumable.stock_level === 'normal')
   )
 
   const expiredConsumables = computed(() => {
     const today = new Date().toISOString().split('T')[0]
-    return consumables.value.filter(consumable => 
+    return consumables.value.filter(consumable =>
       consumable.expiry_date !== '9999-12-31' && consumable.expiry_date < today
     )
   })
@@ -122,10 +122,10 @@ export const useConsumablesStore = defineStore('consumables', () => {
     const thirtyDaysFromNow = new Date(today.getTime() + (30 * 24 * 60 * 60 * 1000))
     const todayStr = today.toISOString().split('T')[0]
     const futureStr = thirtyDaysFromNow.toISOString().split('T')[0]
-    
-    return consumables.value.filter(consumable => 
-      consumable.expiry_date !== '9999-12-31' && 
-      consumable.expiry_date >= todayStr && 
+
+    return consumables.value.filter(consumable =>
+      consumable.expiry_date !== '9999-12-31' &&
+      consumable.expiry_date >= todayStr &&
       consumable.expiry_date <= futureStr
     )
   })
@@ -151,7 +151,7 @@ export const useConsumablesStore = defineStore('consumables', () => {
     try {
       loading.value = true
       error.value = null
-      
+
       const fetchedConsumables = await consumablesService.getConsumables()
       consumables.value = fetchedConsumables
       isInitialized.value = true
@@ -224,13 +224,13 @@ export const useConsumablesStore = defineStore('consumables', () => {
   async function updateConsumable(id: string, updates: ConsumableUpdate): Promise<Consumable | null> {
     try {
       const updatedConsumable = await consumablesService.updateConsumable(id, updates)
-      
+
       // Update in store
       const index = consumables.value.findIndex(c => c.id === id)
       if (index !== -1) {
         consumables.value[index] = updatedConsumable
       }
-      
+
       return updatedConsumable
     } catch {
       return null
@@ -240,13 +240,13 @@ export const useConsumablesStore = defineStore('consumables', () => {
   async function deleteConsumable(id: string): Promise<boolean> {
     try {
       await consumablesService.deleteConsumable(id)
-      
+
       // Remove from store
       const index = consumables.value.findIndex(c => c.id === id)
       if (index !== -1) {
         consumables.value.splice(index, 1)
       }
-      
+
       return true
     } catch {
       return false
@@ -257,13 +257,13 @@ export const useConsumablesStore = defineStore('consumables', () => {
   async function updateConsumableStock(id: string, newStock: number): Promise<boolean> {
     try {
       const updatedConsumable = await consumablesService.updateConsumableStock(id, newStock)
-      
+
       // Update in store
       const index = consumables.value.findIndex(c => c.id === id)
       if (index !== -1) {
         consumables.value[index] = updatedConsumable
       }
-      
+
       return true
     } catch {
       return false

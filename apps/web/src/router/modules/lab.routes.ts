@@ -1,4 +1,4 @@
-import type { RouteRecordRaw } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router';
 
 // Lazy-loaded components for lab pages
 const AnimalsPage = () => import('@/pages/labs/animals/AnimalsPage.vue');

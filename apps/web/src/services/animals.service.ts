@@ -3,8 +3,8 @@
  */
 
 import { supabase } from '@/lib/supabase'
+import type { AnimalDocument, Measurement, MedicalRecord } from '@/types/lab'
 import type { Animal, AnimalInsert, AnimalUpdate } from '@/types/supabase'
-import type { AnimalDocument, MedicalRecord, Measurement } from '@/types/lab'
 
 export class AnimalsService {
   /**

@@ -15,7 +15,7 @@ export const getUserStatus = (user: User): 'active' | 'inactive' => {
   if (biographyStatus) {
     return biographyStatus[1] as 'active' | 'inactive'
   }
-  
+
   // Fallback to last sign-in logic
   const lastSignIn = user.updated_at ? new Date(user.updated_at) : null
   const thirtyDaysAgo = new Date()

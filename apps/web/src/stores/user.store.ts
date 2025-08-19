@@ -1,7 +1,7 @@
-import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
-import type { User, ProfileUpdate, UserRole } from '@/types/supabase'
 import { UserService } from '@/services/user.service'
+import type { ProfileUpdate, User, UserRole } from '@/types/supabase'
+import { defineStore } from 'pinia'
+import { computed, ref } from 'vue'
 import { useAuthStore } from './auth.store'
 
 export const useUserStore = defineStore('user', () => {
@@ -12,22 +12,22 @@ export const useUserStore = defineStore('user', () => {
   const error = ref<string | null>(null)
 
   // Computed properties
-  const allUsers = computed(() => users.value.sort((a, b) => 
+  const allUsers = computed(() => users.value.sort((a, b) =>
     new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime()
   ))
 
   const userCount = computed(() => users.value.length)
 
-  const adminUsers = computed(() => 
+  const adminUsers = computed(() =>
     users.value.filter(user => user.role === 'admin')
   )
 
-  const regularUsers = computed(() => 
+  const regularUsers = computed(() =>
     users.value.filter(user => user.role === 'user')
   )
 
   // Actions - all delegate to UserService
-  
+
   // Get single user by ID
   async function getUser(userId: string): Promise<User | null> {
     try {
@@ -35,7 +35,7 @@ export const useUserStore = defineStore('user', () => {
       error.value = null
 
       const user = await UserService.fetchUser(userId)
-      
+
       if (user) {
         // Update cache if user exists
         const existingIndex = users.value.findIndex(u => u.id === userId)
@@ -271,7 +271,7 @@ export const useUserStore = defineStore('user', () => {
   // Load current user profile based on auth state
   async function loadCurrentUserProfile(): Promise<void> {
     const authStore = useAuthStore()
-    
+
     if (authStore.user?.id) {
       const profile = await getUser(authStore.user.id)
       if (profile) {

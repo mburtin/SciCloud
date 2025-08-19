@@ -25,10 +25,7 @@
     <!-- Error State -->
     <div v-else-if="error" class="text-center py-8">
       <p class="text-destructive">{{ error }}</p>
-      <button 
-        @click="projectsStore.fetchProjects"
-        class="mt-2 text-sm text-primary hover:underline"
-      >
+      <button @click="projectsStore.fetchProjects" class="mt-2 text-sm text-primary hover:underline">
         Try again
       </button>
     </div>
@@ -39,11 +36,7 @@
         <div class="flex items-center gap-4">
           <div class="relative">
             <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              v-model="searchQuery" 
-              placeholder="Search projects..."
-              class="w-64 pl-10"
-            />
+            <Input v-model="searchQuery" placeholder="Search projects..." class="w-64 pl-10" />
           </div>
         </div>
         <Button v-if="pageInfo.showCreateButton" @click="handleNewProject">
@@ -179,12 +172,8 @@
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow
-                v-for="project in filteredProjects"
-                :key="project.id"
-                class="cursor-pointer hover:bg-muted/50"
-                @click="handleProjectClick(project.id)"
-              >
+              <TableRow v-for="project in filteredProjects" :key="project.id" class="cursor-pointer hover:bg-muted/50"
+                @click="handleProjectClick(project.id)">
                 <TableCell>
                   <div class="flex items-center gap-3">
                     <Star v-if="project.is_favorite" class="h-4 w-4 text-yellow-500 fill-current" />
@@ -222,9 +211,9 @@
                 </TableCell>
                 <TableCell>
                   <span class="text-sm">
-                    {{ project.responsible_profile 
-                      ? `${project.responsible_profile.first_name} ${project.responsible_profile.last_name}` 
-                      : 'Unknown' 
+                    {{ project.responsible_profile
+                      ? `${project.responsible_profile.first_name} ${project.responsible_profile.last_name}`
+                      : 'Unknown'
                     }}
                   </span>
                 </TableCell>
@@ -267,30 +256,18 @@
         <div class="grid gap-4 py-4">
           <div class="grid gap-2">
             <Label for="name">Project Name *</Label>
-            <Input
-              id="name"
-              v-model="newProjectForm.name"
-              placeholder="Enter project name"
-              :disabled="isCreatingProject"
-            />
+            <Input id="name" v-model="newProjectForm.name" placeholder="Enter project name"
+              :disabled="isCreatingProject" />
           </div>
           <div class="grid gap-2">
             <Label for="category">Category *</Label>
-            <Input
-              id="category"
-              v-model="newProjectForm.category"
-              placeholder="e.g., Research, Development, Analysis"
-              :disabled="isCreatingProject"
-            />
+            <Input id="category" v-model="newProjectForm.category" placeholder="e.g., Research, Development, Analysis"
+              :disabled="isCreatingProject" />
           </div>
           <div class="grid gap-2">
             <Label for="description">Description</Label>
-            <Textarea
-              id="description"
-              v-model="newProjectForm.description"
-              placeholder="Optional project description"
-              :disabled="isCreatingProject"
-            />
+            <Textarea id="description" v-model="newProjectForm.description" placeholder="Optional project description"
+              :disabled="isCreatingProject" />
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div class="grid gap-2">
@@ -308,30 +285,17 @@
             </div>
             <div class="grid gap-2">
               <Label for="budget">Budget ($)</Label>
-              <Input
-                id="budget"
-                v-model.number="newProjectForm.budget"
-                type="number"
-                min="0"
-                step="100"
-                placeholder="0"
-                :disabled="isCreatingProject"
-              />
+              <Input id="budget" v-model.number="newProjectForm.budget" type="number" min="0" step="100" placeholder="0"
+                :disabled="isCreatingProject" />
             </div>
           </div>
         </div>
         <DialogFooter>
-          <Button 
-            variant="outline" 
-            @click="showNewProjectDialog = false"
-            :disabled="isCreatingProject"
-          >
+          <Button variant="outline" @click="showNewProjectDialog = false" :disabled="isCreatingProject">
             Cancel
           </Button>
-          <Button 
-            @click="handleCreateProject"
-            :disabled="isCreatingProject || !newProjectForm.name.trim() || !newProjectForm.category.trim()"
-          >
+          <Button @click="handleCreateProject"
+            :disabled="isCreatingProject || !newProjectForm.name.trim() || !newProjectForm.category.trim()">
             <Plus v-if="!isCreatingProject" class="h-4 w-4 mr-2" />
             {{ isCreatingProject ? 'Creating...' : 'Create Project' }}
           </Button>
@@ -342,50 +306,50 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { 
-  Search, 
-  Plus, 
-  Calendar, 
-  MoreHorizontal,
-  Star,
-  Archive,
-  Folder
-} from 'lucide-vue-next';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from '@/components/ui/dropdown-menu';
-import { Progress } from '@/components/ui/progress';
-import { 
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { 
+} from '@/components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { useProjectsStore } from '@/stores/projects.store'
-import { storeToRefs } from 'pinia'
-import { supabase } from '@/lib/supabase'
-import { formatDate } from '@/lib/format.utils'
+} from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Textarea } from '@/components/ui/textarea';
+import { formatDate } from '@/lib/format.utils';
+import { supabase } from '@/lib/supabase';
+import { useProjectsStore } from '@/stores/projects.store';
+import {
+  Archive,
+  Calendar,
+  Folder,
+  MoreHorizontal,
+  Plus,
+  Search,
+  Star
+} from 'lucide-vue-next';
+import { storeToRefs } from 'pinia';
+import { computed, onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 // Reactive state
 const router = useRouter();
@@ -439,7 +403,7 @@ const pageInfo = computed(() => {
       }
     case 'projects-archived':
       return {
-        title: 'Archived Projects', 
+        title: 'Archived Projects',
         description: 'Completed or archived projects',
         icon: Archive,
         emptyTitle: 'No archived projects',
@@ -478,7 +442,7 @@ const filteredProjects = computed(() => {
   // Apply search filter
   if (searchQuery.value.trim()) {
     const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(project => 
+    filtered = filtered.filter(project =>
       project.name.toLowerCase().includes(query) ||
       project.description?.toLowerCase().includes(query) ||
       project.category.toLowerCase().includes(query)
@@ -492,12 +456,12 @@ const filteredProjects = computed(() => {
 const projectStats = computed(() => {
   const total = projects.value.length
   const active = projects.value.filter(p => p.status === 'active').length
-  const planning = projects.value.filter(p => p.status === 'planning').length  
+  const planning = projects.value.filter(p => p.status === 'planning').length
   const completed = projects.value.filter(p => p.status === 'completed').length
   const paused = projects.value.filter(p => p.status === 'paused').length
   const favorites = projects.value.filter(p => p.is_favorite).length
   const archived = projects.value.filter(p => p.status === 'archived').length
-  
+
   return { total, active, planning, completed, paused, favorites, archived }
 })
 
@@ -535,7 +499,7 @@ const handleCreateProject = async () => {
 
   try {
     isCreatingProject.value = true
-    
+
     // Get current user for responsible field
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -554,7 +518,7 @@ const handleCreateProject = async () => {
     }
 
     const newProject = await projectsStore.createProject(projectData)
-    
+
     if (newProject) {
       showNewProjectDialog.value = false
       resetNewProjectForm()

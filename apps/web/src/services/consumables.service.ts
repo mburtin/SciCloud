@@ -165,7 +165,7 @@ export class ConsumablesService {
    */
   async getExpiredConsumables(): Promise<Consumable[]> {
     const today = new Date().toISOString().split('T')[0]
-    
+
     const { data, error } = await supabase
       .from('consumables')
       .select('*')
@@ -187,7 +187,7 @@ export class ConsumablesService {
     const futureDate = new Date(today.getTime() + (days * 24 * 60 * 60 * 1000))
     const todayStr = today.toISOString().split('T')[0]
     const futureDateStr = futureDate.toISOString().split('T')[0]
-    
+
     const { data, error } = await supabase
       .from('consumables')
       .select('*')

@@ -25,10 +25,7 @@
     <!-- Error State -->
     <div v-else-if="error" class="text-center py-8">
       <p class="text-destructive">{{ error }}</p>
-      <button 
-        @click="userStore.getAllUsers()"
-        class="mt-2 text-sm text-primary hover:underline"
-      >
+      <button @click="userStore.getAllUsers()" class="mt-2 text-sm text-primary hover:underline">
         Try again
       </button>
     </div>
@@ -39,11 +36,7 @@
         <div class="flex items-center gap-4">
           <div class="relative">
             <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              v-model="searchQuery" 
-              placeholder="Search users..."
-              class="w-64 pl-10"
-            />
+            <Input v-model="searchQuery" placeholder="Search users..." class="w-64 pl-10" />
           </div>
           <Select v-model="roleFilter">
             <SelectTrigger class="w-40">
@@ -181,15 +174,12 @@
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow
-                v-for="user in filteredUsers"
-                :key="user.id"
-                class="cursor-pointer hover:bg-muted/50"
-              >
+              <TableRow v-for="user in filteredUsers" :key="user.id" class="cursor-pointer hover:bg-muted/50">
                 <TableCell>
                   <div class="flex items-center gap-3">
                     <Avatar class="h-8 w-8">
-                      <AvatarImage v-if="user.avatar_url" :src="user.avatar_url" :alt="`${user.first_name} ${user.last_name}`" />
+                      <AvatarImage v-if="user.avatar_url" :src="user.avatar_url"
+                        :alt="`${user.first_name} ${user.last_name}`" />
                       <AvatarFallback>{{ `${user.first_name[0]}${user.last_name[0]}` }}</AvatarFallback>
                     </Avatar>
                     <div>
@@ -269,52 +259,45 @@
     </div>
 
     <!-- Create User Dialog -->
-    <CreateUserDialog 
-      :open="showCreateUserDialog" 
-      @close="showCreateUserDialog = false"
-      @user-created="handleUserCreated"
-    />
+    <CreateUserDialog :open="showCreateUserDialog" @close="showCreateUserDialog = false"
+      @user-created="handleUserCreated" />
 
     <!-- Edit User Role Dialog -->
-    <EditUserRoleDialog 
-      :open="showEditRoleDialog"
-      :user="selectedUser" 
-      @close="showEditRoleDialog = false"
-      @role-updated="handleRoleUpdated"
-    />
+    <EditUserRoleDialog :open="showEditRoleDialog" :user="selectedUser" @close="showEditRoleDialog = false"
+      @role-updated="handleRoleUpdated" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem,
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
-} from '@/components/ui/dropdown-menu'
-import { 
-  Search, 
-  Users,
-  UserPlus,
-  MoreHorizontal,
-  Shield,
-  User
-} from 'lucide-vue-next'
 import CreateUserDialog from '@/components/admin/CreateUserDialog.vue'
 import EditUserRoleDialog from '@/components/admin/EditUserRoleDialog.vue'
-import type { User as UserType } from '@/types/supabase'
-import { getUserStatus, formatDate, getRoleLabel, getRoleVariant, getStatusVariant, calculateUserStats } from '@/lib/user.utils'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { calculateUserStats, formatDate, getRoleLabel, getRoleVariant, getStatusVariant, getUserStatus } from '@/lib/user.utils'
 import { useUserStore } from '@/stores/user.store'
+import type { User as UserType } from '@/types/supabase'
+import {
+  MoreHorizontal,
+  Search,
+  Shield,
+  User,
+  UserPlus,
+  Users
+} from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
+import { computed, onMounted, ref } from 'vue'
 
 // Store initialization
 const userStore = useUserStore()
@@ -337,7 +320,7 @@ const filteredUsers = computed(() => {
   // Filter by search query (name, email)
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(user => 
+    filtered = filtered.filter(user =>
       `${user.first_name} ${user.last_name}`.toLowerCase().includes(query) ||
       (user.email && user.email.toLowerCase().includes(query))
     )

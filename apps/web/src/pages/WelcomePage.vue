@@ -2,11 +2,7 @@
   <div class="min-h-screen bg-background flex">
     <!-- Left side - Illustration -->
     <div class="hidden lg:block lg:w-1/2 relative" style="background-color: #1e3a8a">
-      <img 
-        src="@/assets/login_background.jpg" 
-        alt="Laboratory illustration" 
-        class="w-full h-full object-cover"
-      >
+      <img src="@/assets/login_background.jpg" alt="Laboratory illustration" class="w-full h-full object-cover">
     </div>
 
     <!-- Right side - Content -->
@@ -34,7 +30,8 @@
         <div v-else-if="!hasUsers && !showCreateAdmin" class="bg-white rounded-lg p-8 shadow-sm">
           <!-- Header -->
           <div class="text-center mb-8">
-            <div class="w-16 h-16 bg-gradient-to-br from-primary to-blue-600 rounded-lg flex items-center justify-center mx-auto mb-6">
+            <div
+              class="w-16 h-16 bg-gradient-to-br from-primary to-blue-600 rounded-lg flex items-center justify-center mx-auto mb-6">
               <Beaker class="h-8 w-8 text-white" />
             </div>
             <h1 class="text-3xl font-bold text-gray-900 mb-4">
@@ -77,10 +74,8 @@
           </div>
 
           <!-- Get Started Button -->
-          <Button 
-            @click="showCreateAdmin = true" 
-            class="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-lg py-3"
-          >
+          <Button @click="showCreateAdmin = true"
+            class="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-lg py-3">
             Get Started
             <ArrowRight class="h-5 w-5 ml-2" />
           </Button>
@@ -97,10 +92,8 @@
           <p class="text-gray-600 mb-8">
             Your administrator account has been successfully created. You can now log in to access LabManager Pro.
           </p>
-          <Button 
-            @click="goToLogin"
-            class="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
-          >
+          <Button @click="goToLogin"
+            class="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90">
             Go to Login
             <ArrowRight class="h-4 w-4 ml-2" />
           </Button>
@@ -110,11 +103,7 @@
         <div v-else-if="showCreateAdmin" class="bg-white rounded-lg p-8 shadow-sm">
           <!-- Back Button -->
           <div class="mb-6">
-            <Button
-              variant="ghost"
-              class="mb-4 p-0 h-auto hover:bg-transparent"
-              @click="showCreateAdmin = false"
-            >
+            <Button variant="ghost" class="mb-4 p-0 h-auto hover:bg-transparent" @click="showCreateAdmin = false">
               <ArrowLeft class="h-4 w-4 mr-2" />
               Back
             </Button>
@@ -138,50 +127,25 @@
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <Label for="firstName" class="text-gray-700">First name</Label>
-                <Input
-                  id="firstName"
-                  v-model="adminForm.firstName"
-                  type="text"
-                  required
-                  placeholder="John"
-                  class="mt-1"
-                />
+                <Input id="firstName" v-model="adminForm.firstName" type="text" required placeholder="John"
+                  class="mt-1" />
               </div>
               <div>
                 <Label for="lastName" class="text-gray-700">Last name</Label>
-                <Input
-                  id="lastName"
-                  v-model="adminForm.lastName"
-                  type="text"
-                  required
-                  placeholder="Doe"
-                  class="mt-1"
-                />
+                <Input id="lastName" v-model="adminForm.lastName" type="text" required placeholder="Doe" class="mt-1" />
               </div>
             </div>
-            
+
             <div>
               <Label for="email" class="text-gray-700">Email</Label>
-              <Input
-                id="email"
-                v-model="adminForm.email"
-                type="email"
-                required
-                placeholder="admin@laboratory.com"
-                class="mt-1"
-              />
+              <Input id="email" v-model="adminForm.email" type="email" required placeholder="admin@laboratory.com"
+                class="mt-1" />
             </div>
-            
+
             <div>
               <Label for="password" class="text-gray-700">Password</Label>
-              <Input
-                id="password"
-                v-model="adminForm.password"
-                type="password"
-                required
-                placeholder="••••••••"
-                class="mt-1"
-              />
+              <Input id="password" v-model="adminForm.password" type="password" required placeholder="••••••••"
+                class="mt-1" />
               <p class="text-xs text-gray-500 mt-1">
                 Minimum 8 characters required
               </p>
@@ -189,21 +153,11 @@
 
             <div>
               <Label for="confirmPassword" class="text-gray-700">Confirm password</Label>
-              <Input
-                id="confirmPassword"
-                v-model="adminForm.confirmPassword"
-                type="password"
-                required
-                placeholder="••••••••"
-                class="mt-1"
-              />
+              <Input id="confirmPassword" v-model="adminForm.confirmPassword" type="password" required
+                placeholder="••••••••" class="mt-1" />
             </div>
 
-            <Button 
-              type="submit" 
-              class="w-full mt-6"
-              :disabled="isCreatingAdmin"
-            >
+            <Button type="submit" class="w-full mt-6" :disabled="isCreatingAdmin">
               <span v-if="isCreatingAdmin" class="flex items-center">
                 <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                 Creating account...
@@ -229,13 +183,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
-import { useRouter } from 'vue-router';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, ArrowRight, Beaker, Check, UserPlus } from 'lucide-vue-next';
 import { useUserStore } from '@/stores/user.store';
+import { ArrowLeft, ArrowRight, Beaker, Check, UserPlus } from 'lucide-vue-next';
+import { onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 
 // Composables
 const router = useRouter();
@@ -263,10 +217,10 @@ const checkUsersExist = async () => {
   try {
     isLoading.value = true;
     error.value = null;
-    
+
     const usersExist = await userStore.checkUsersExist();
     hasUsers.value = usersExist;
-    
+
     // If users exist, redirect to login (but not if we're showing success message or should skip check)
     if (hasUsers.value && !showSuccess.value && !skipUserCheck.value) {
       router.push('/login');
