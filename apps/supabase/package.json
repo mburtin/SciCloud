@@ -1,0 +1,23 @@
+{
+  "name": "@scicloud/supabase",
+  "version": "1.0.0",
+  "description": "Supabase backend for SciCloud",
+  "private": true,
+  "scripts": {
+    "db:start": "pnpx supabase start",
+    "db:stop": "pnpx supabase stop",
+    "db:status": "pnpx supabase status",
+    "db:reset": "pnpx supabase db reset",
+    "db:push": "pnpx supabase db push",
+    "db:pull": "pnpx supabase db pull",
+    "db:migrate": "pnpx supabase migration new",
+    "db:diff": "pnpx supabase db diff",
+    "db:seed": "pnpx supabase db seed",
+    "db:link": "pnpx supabase link",
+    "functions:serve": "pnpx supabase functions serve",
+    "functions:deploy": "pnpx supabase functions deploy"
+  },
+  "devDependencies": {
+    "supabase": "^2.34.3"
+  }
+}

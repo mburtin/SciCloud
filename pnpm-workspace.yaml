@@ -1,4 +1,7 @@
 packages:
-  - "apps/web/"
-  - "apps/supabase/"
-  - "apps/shared/"
+  - apps/web/
+  - apps/supabase/
+  - apps/shared/
+
+onlyBuiltDependencies:
+  - supabase

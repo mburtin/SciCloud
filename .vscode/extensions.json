@@ -9,6 +9,7 @@
     "usernamehw.errorlens",
     "bungcip.better-toml",
     "ms-playwright.playwright",
-    "antfu.iconify"
+    "antfu.iconify",
+    "denoland.vscode-deno"
   ]
 }
