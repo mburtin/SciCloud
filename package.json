@@ -4,7 +4,7 @@
   "type": "module",
   "description": "SciCloud - Cloud services for scientific research",
   "scripts": {
-    "dev": "concurrently \"pnpm db:start\" \"pnpm db:functions\" \"pnpm web:dev\"",
+    "dev": "concurrently \"pnpm db:start\" \"pnpm db:functions\" \"pnpm --filter @scicloud/web-app dev\"",
     "db:start": "cd apps/supabase && pnpx supabase start",
     "db:stop": "cd apps/supabase && pnpx supabase stop",
     "db:reset": "cd apps/supabase && pnpx supabase db reset",
@@ -12,7 +12,7 @@
     "db:functions": "sleep 5 && cd apps/supabase && pnpx supabase functions serve",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "type-check": "pnpm --filter web type-check",
+    "type-check": "pnpm --filter @scicloud/web-app type-check",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
@@ -27,9 +27,9 @@
     "project management",
     "cloud services"
   ],
-  "author": "",
+  "author": "Michael BURTIN",
   "license": "MIT",
-  "packageManager": "pnpm@10.14.0",
+  "packageManager": "pnpm@10.15.0",
   "devEngines": {
     "runtime": {
       "name": "node",
