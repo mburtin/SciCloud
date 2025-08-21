@@ -2,6 +2,7 @@ packages:
   - apps/web/
   - apps/supabase/
   - apps/shared/
+  - tests/
 
 onlyBuiltDependencies:
   - supabase

@@ -8,8 +8,8 @@ export default defineConfig({
 
   resolve: {
     alias: {
-      '@': resolve(__dirname, './apps/web/src'),
-      '@/test': resolve(__dirname, './tests/web'),
+      '@': resolve(__dirname, '../apps/web/src'),
+      '@/test': resolve(__dirname, './web'),
     },
   },
 
@@ -17,13 +17,13 @@ export default defineConfig({
     // Global configuration
     globals: true,
     environment: 'jsdom',
-    setupFiles: ['./tests/web/setup.ts'],
+    setupFiles: ['./web/setup.ts'],
 
     // Coverage v8
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      reportsDirectory: './coverage',
+      reportsDirectory: '../coverage',
       exclude: [
         'node_modules/',
         'dist/',
@@ -42,7 +42,7 @@ export default defineConfig({
     },
 
     include: [
-      './tests/web/**/*.{test,spec}.{js,ts,tsx}',
+      './web/**/*.{test,spec}.{js,ts,tsx}',
     ],
 
     exclude: [
