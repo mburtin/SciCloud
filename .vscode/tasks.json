@@ -5,7 +5,9 @@
       "label": "Start Development Server",
       "type": "shell",
       "command": "pnpm",
-      "args": ["dev"],
+      "args": [
+        "dev"
+      ],
       "group": "build",
       "presentation": {
         "echo": true,
@@ -14,16 +16,15 @@
         "panel": "new"
       },
       "isBackground": true,
-      "problemMatcher": [],
-      "runOptions": {
-        "runOn": "folderOpen"
-      }
+      "problemMatcher": []
     },
     {
       "label": "Build Web App",
       "type": "shell",
       "command": "pnpm",
-      "args": ["web:build"],
+      "args": [
+        "web:build"
+      ],
       "group": {
         "kind": "build",
         "isDefault": true
@@ -34,13 +35,17 @@
         "focus": false,
         "panel": "shared"
       },
-      "problemMatcher": ["$tsc"]
+      "problemMatcher": [
+        "$tsc"
+      ]
     },
     {
       "label": "Type Check",
       "type": "shell",
       "command": "pnpm",
-      "args": ["type-check"],
+      "args": [
+        "type-check"
+      ],
       "group": "build",
       "presentation": {
         "echo": true,
@@ -48,13 +53,17 @@
         "focus": false,
         "panel": "shared"
       },
-      "problemMatcher": ["$tsc"]
+      "problemMatcher": [
+        "$tsc"
+      ]
     },
     {
       "label": "Lint",
       "type": "shell",
       "command": "pnpm",
-      "args": ["lint"],
+      "args": [
+        "lint"
+      ],
       "group": "test",
       "presentation": {
         "echo": true,
@@ -62,13 +71,17 @@
         "focus": false,
         "panel": "shared"
       },
-      "problemMatcher": ["$eslint-stylish"]
+      "problemMatcher": [
+        "$eslint-stylish"
+      ]
     },
     {
       "label": "Lint Fix",
       "type": "shell",
       "command": "pnpm",
-      "args": ["lint:fix"],
+      "args": [
+        "lint:fix"
+      ],
       "group": "test",
       "presentation": {
         "echo": true,
@@ -76,13 +89,17 @@
         "focus": false,
         "panel": "shared"
       },
-      "problemMatcher": ["$eslint-stylish"]
+      "problemMatcher": [
+        "$eslint-stylish"
+      ]
     },
     {
       "label": "Run Tests",
       "type": "shell",
       "command": "pnpm",
-      "args": ["test"],
+      "args": [
+        "test"
+      ],
       "group": {
         "kind": "test",
         "isDefault": true
@@ -99,7 +116,9 @@
       "label": "Run Tests with UI",
       "type": "shell",
       "command": "pnpm",
-      "args": ["test:ui"],
+      "args": [
+        "test:ui"
+      ],
       "group": "test",
       "presentation": {
         "echo": true,
@@ -114,7 +133,9 @@
       "label": "Run E2E Tests",
       "type": "shell",
       "command": "pnpm",
-      "args": ["test:e2e"],
+      "args": [
+        "test:e2e"
+      ],
       "group": "test",
       "presentation": {
         "echo": true,
@@ -128,7 +149,9 @@
       "label": "Run E2E Tests with UI",
       "type": "shell",
       "command": "pnpm",
-      "args": ["test:e2e:ui"],
+      "args": [
+        "test:e2e:ui"
+      ],
       "group": "test",
       "presentation": {
         "echo": true,
@@ -143,7 +166,9 @@
       "label": "Start Supabase",
       "type": "shell",
       "command": "pnpm",
-      "args": ["supabase:start"],
+      "args": [
+        "supabase:start"
+      ],
       "group": "build",
       "presentation": {
         "echo": true,
@@ -158,7 +183,9 @@
       "label": "Stop Supabase",
       "type": "shell",
       "command": "pnpm",
-      "args": ["supabase:stop"],
+      "args": [
+        "supabase:stop"
+      ],
       "group": "build",
       "presentation": {
         "echo": true,
@@ -172,7 +199,9 @@
       "label": "Reset Supabase DB",
       "type": "shell",
       "command": "pnpm",
-      "args": ["supabase:reset"],
+      "args": [
+        "supabase:reset"
+      ],
       "group": "build",
       "presentation": {
         "echo": true,
@@ -186,7 +215,9 @@
       "label": "Install Dependencies",
       "type": "shell",
       "command": "pnpm",
-      "args": ["install"],
+      "args": [
+        "install"
+      ],
       "group": "build",
       "presentation": {
         "echo": true,
