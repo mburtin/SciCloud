@@ -5,10 +5,10 @@
       <div class="flex items-center justify-between">
         <div>
           <h1 class="text-2xl font-semibold text-foreground">
-            Dashboard
+            {{ t('dashboard.title') }}
           </h1>
           <p class="text-muted-foreground mt-1">
-            Overview of your laboratory activity
+            {{ t('dashboard.overview') }}
           </p>
         </div>
       </div>
@@ -16,14 +16,14 @@
 
     <!-- Loading State -->
     <div v-if="isLoading" class="text-center py-8">
-      <p class="text-muted-foreground">Loading dashboard data...</p>
+      <p class="text-muted-foreground">{{ t('dashboard.loading') }}</p>
     </div>
 
     <!-- Error State -->
     <div v-else-if="error" class="text-center py-8">
       <p class="text-destructive">{{ error }}</p>
       <button @click="fetchDashboardData" class="mt-2 text-sm text-primary hover:underline">
-        Try again
+        {{ t('common.actions.refresh') }}
       </button>
     </div>
 
@@ -31,7 +31,7 @@
     <div v-else class="space-y-6">
       <!-- Stat Cards -->
       <div class="grid layout-standard-grid layout-section-gap">
-        <Card class="flex flex-col gap-2 h-40" v-for="stat in statCards" :key="stat.title">
+        <Card class="flex flex-col gap-2 h-40" v-for="stat in translatedStatCards" :key="stat.title">
           <CardHeader class="flex flex-row items-center justify-between pb-2">
             <CardTitle class="text-sm font-medium">
               {{ stat.title }}
@@ -59,7 +59,7 @@
           <CardHeader>
             <CardTitle class="flex items-center gap-2">
               <FolderOpen class="h-5 w-5" />
-              Recent projects
+              {{ t('dashboard.recentProjects') }}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -90,7 +90,7 @@
           <CardHeader>
             <CardTitle class="flex items-center gap-2">
               <Calendar class="h-5 w-5" />
-              Upcoming deadlines
+              {{ t('dashboard.upcomingDeadlines') }}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -127,7 +127,8 @@ import {
   Calendar,
   FolderOpen
 } from 'lucide-vue-next'
-import { onMounted, ref } from 'vue'
+import { useTranslation } from '@/composables/useLocale'
+import { computed, onMounted, ref } from 'vue'
 
 // Local state
 import type { Deadline, RecentProject } from '@/types/projects'
@@ -138,6 +139,21 @@ const recentProjects = ref<RecentProject[]>([])
 const upcomingDeadlines = ref<Deadline[]>([])
 const isLoading = ref(false)
 const error = ref<string | null>(null)
+const { t } = useTranslation()
+
+// Computed for translated stat cards
+const translatedStatCards = computed(() => {
+  return statCards.value.map(stat => ({
+    ...stat,
+    title: t(stat.title),
+    trendText: stat.trendText.includes('|') 
+      ? (() => {
+          const [key, count] = stat.trendText.split('|')
+          return t(key, { count: parseInt(count) })
+        })()
+      : t(stat.trendText)
+  }))
+})
 
 // Fetch method
 const fetchDashboardData = async () => {
@@ -154,7 +170,7 @@ const fetchDashboardData = async () => {
     recentProjects.value = projectsData
     upcomingDeadlines.value = deadlinesData
   } catch (e) {
-    error.value = 'Failed to fetch dashboard data'
+    error.value = t('dashboard.fetchError')
   } finally {
     isLoading.value = false
   }

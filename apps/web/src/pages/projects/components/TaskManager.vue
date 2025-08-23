@@ -5,11 +5,11 @@
     <div class="space-y-4">
       <div class="flex justify-between items-center">
         <h3 class="text-lg font-medium">
-          Project Tasks
+          {{ t('projects.tasks.title') }}
         </h3>
         <Button size="sm" @click="isNewTaskDialogOpen = true">
           <Plus class="h-4 w-4 mr-2" />
-          New Task
+          {{ t('projects.tasks.add') }}
         </Button>
       </div>
       <Card>
@@ -17,10 +17,10 @@
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Task</TableHead>
-                <TableHead>Assignee</TableHead>
-                <TableHead>Due Date</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>{{ t('projects.tasks.title') }}</TableHead>
+                <TableHead>{{ t('projects.tasks.assignee') }}</TableHead>
+                <TableHead>{{ t('projects.tasks.dueDate') }}</TableHead>
+                <TableHead>{{ t('common.labels.status') }}</TableHead>
                 <TableHead class="w-[50px]" />
               </TableRow>
             </TableHeader>
@@ -33,7 +33,7 @@
                 <TableCell>{{ task.dueDate }}</TableCell>
                 <TableCell>
                   <Badge :variant="task.status === 'Completed' ? 'default' : 'secondary'">
-                    {{ task.status }}
+                    {{ getTaskStatusLabel(task.status) }}
                   </Badge>
                 </TableCell>
                 <TableCell>
@@ -62,14 +62,25 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { useTranslation } from '@/composables/useLocale';
 import { MoreHorizontal, Plus } from 'lucide-vue-next';
 import { ref } from 'vue';
 import NewTaskDialog from './NewTaskDialog.vue';
 
 const isNewTaskDialogOpen = ref(false);
+const { t } = useTranslation();
 
 const handleTaskAdded = (newTask: any) => {
   tasks.value.unshift(newTask);
+};
+
+const getTaskStatusLabel = (status: string) => {
+  const labels: Record<string, string> = {
+    'Not Started': t('projects.tasks.notStarted'),
+    'In Progress': t('projects.tasks.inProgress'),
+    'Completed': t('projects.tasks.completed')
+  };
+  return labels[status] || status;
 };
 
 const tasks = ref([

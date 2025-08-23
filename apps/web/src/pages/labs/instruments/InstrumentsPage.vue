@@ -5,15 +5,15 @@
       <div class="flex items-center justify-between">
         <div>
           <h1 class="text-2xl font-semibold text-foreground">
-            Instruments
+            {{ t('labs.instruments.title') }}
           </h1>
           <p class="text-muted-foreground mt-1">
-            Manage and reserve lab instruments
+            {{ t('labs.instruments.subtitle') }}
           </p>
         </div>
         <Button @click="openNewInstrumentDialog">
           <Plus class="h-4 w-4 mr-2" />
-          New Instrument
+          {{ t('labs.instruments.newInstrument') }}
         </Button>
       </div>
     </div>
@@ -27,7 +27,7 @@
           </div>
           <div>
             <p class="text-sm text-muted-foreground">
-              Total instruments
+              {{ t('labs.instruments.totalInstruments') }}
             </p>
             <p class="text-xl font-bold">
               {{ totalInstruments }}
@@ -42,7 +42,7 @@
           </div>
           <div>
             <p class="text-sm text-muted-foreground">
-              Operational
+              {{ t('labs.instruments.available') }}
             </p>
             <p class="text-xl font-bold">
               {{ operationalInstruments }}
@@ -57,7 +57,7 @@
           </div>
           <div>
             <p class="text-sm text-muted-foreground">
-              Under maintenance
+              {{ t('labs.instruments.maintenance') }}
             </p>
             <p class="text-xl font-bold">
               {{ maintenanceInstruments }}
@@ -72,7 +72,7 @@
           </div>
           <div>
             <p class="text-sm text-muted-foreground">
-              Maintenance due
+              {{ t('labs.instruments.broken') }}
             </p>
             <p class="text-xl font-bold">
               {{ maintenanceDueInstruments }}
@@ -85,7 +85,7 @@
     <!-- Filters -->
     <div class="bg-card border rounded-lg p-4 flex items-center gap-4">
       <div class="relative w-full max-w-sm">
-        <Input v-model="searchQuery" placeholder="Search by name, brand, model, serial number or location..."
+        <Input v-model="searchQuery" :placeholder="t('labs.animals.searchPlaceholder')"
           class="pl-10" />
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <Search class="h-5 w-5 text-muted-foreground" />
@@ -93,33 +93,33 @@
       </div>
       <Select v-model="filterStatus">
         <SelectTrigger class="w-48">
-          <SelectValue placeholder="All statuses" />
+          <SelectValue :placeholder="t('labs.animals.allStatuses')" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">
-            All Statuses
+            {{ t('labs.animals.allStatuses') }}
           </SelectItem>
           <SelectItem value="available">
-            Available
+            {{ t('labs.instruments.available') }}
           </SelectItem>
           <SelectItem value="in-use">
-            In Use
+            {{ t('labs.instruments.inUse') }}
           </SelectItem>
           <SelectItem value="maintenance">
-            In Maintenance
+            {{ t('labs.instruments.maintenance') }}
           </SelectItem>
           <SelectItem value="broken">
-            Broken
+            {{ t('labs.instruments.broken') }}
           </SelectItem>
         </SelectContent>
       </Select>
       <Select v-model="filterCategory">
         <SelectTrigger class="w-48">
-          <SelectValue placeholder="All categories" />
+          <SelectValue :placeholder="t('common.labels.category')" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">
-            All Categories
+            {{ t('common.labels.category') }}
           </SelectItem>
           <SelectItem v-for="category in categories" :key="category" :value="category">
             {{ category }}
@@ -134,11 +134,11 @@
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>ID</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Location</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>{{ t('labs.instruments.serialNumber') }}</TableHead>
+              <TableHead>{{ t('common.labels.name') }}</TableHead>
+              <TableHead>{{ t('common.labels.category') }}</TableHead>
+              <TableHead>{{ t('common.labels.location') }}</TableHead>
+              <TableHead>{{ t('common.labels.status') }}</TableHead>
               <TableHead />
             </TableRow>
           </TableHeader>
@@ -171,13 +171,13 @@
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem @click="openEditInstrumentDialog(instrument.id)">
                       <Edit class="h-4 w-4 mr-2" />
-                      Edit
+                      {{ t('common.actions.edit') }}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem @click="handleDeleteInstrument(instrument.id)"
                       class="text-red-600 focus:text-red-600">
                       <Trash2 class="h-4 w-4 mr-2" />
-                      Delete
+                      {{ t('common.actions.delete') }}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -215,10 +215,14 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { useTranslation } from '@/composables/useLocale'
 import { useInstrumentsStore } from '@/stores/instruments.store'
 import type { Instrument, InstrumentInsert, InstrumentStatus } from '@/types/supabase'
 import { AlertTriangle, Box, CheckCircle2, Edit, MoreHorizontal, Plus, Search, Trash2, Wrench } from 'lucide-vue-next'
 import { computed, onMounted, ref } from 'vue'
+
+// Translation
+const { t } = useTranslation()
 
 // Store
 const instrumentsStore = useInstrumentsStore()
@@ -265,10 +269,10 @@ onMounted(() => {
 // Methods
 const getStatusLabel = (status: string) => {
   const labels: Record<string, string> = {
-    'available': 'Available',
-    'in-use': 'In Use',
-    'maintenance': 'In Maintenance',
-    'broken': 'Broken'
+    'available': t('labs.instruments.available'),
+    'in-use': t('labs.instruments.inUse'),
+    'maintenance': t('labs.instruments.maintenance'),
+    'broken': t('labs.instruments.broken')
   }
   return labels[status] || status
 }
@@ -319,7 +323,7 @@ const handleDeleteInstrument = async (instrumentId: string) => {
   const instrument = filteredInstruments.value.find(i => i.id === instrumentId)
   if (!instrument) return
 
-  const confirmDelete = confirm(`Are you sure you want to delete "${instrument.name}"? This action cannot be undone.`)
+  const confirmDelete = confirm(t('labs.animals.confirmDelete'))
   if (!confirmDelete) return
 
   try {

@@ -1,108 +1,79 @@
 /**
  * Format utility functions
  * Centralized formatting logic for consistent data display
+ * Enhanced with i18n support while maintaining backward compatibility
  */
+
+import { 
+  formatDateLocalized, 
+  formatNumberLocalized, 
+  formatCurrencyLocalized,
+  formatPercentageLocalized,
+  formatFileSizeLocalized,
+  formatTimeAgoLocalized
+} from '@/i18n/utils'
 
 /**
  * Format date for display with robust null/undefined handling
+ * @deprecated Use useLocaleFormat().formatDate() for locale-aware formatting
  */
 export const formatDate = (dateString: string | null | undefined): string => {
-  if (!dateString) return ''
-
-  try {
-    const date = new Date(dateString)
-
-    // Check for invalid date
-    if (isNaN(date.getTime())) return ''
-
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    })
-  } catch {
-    return ''
-  }
+  // Maintain backward compatibility with default English locale
+  return formatDateLocalized(dateString, 'en', 'short')
 }
 
 /**
  * Format date with simplified format (no year abbreviations)
+ * @deprecated Use useLocaleFormat().formatDate() for locale-aware formatting
  */
 export const formatDateSimple = (dateString: string | null | undefined): string => {
-  if (!dateString) return ''
-
-  try {
-    const date = new Date(dateString)
-
-    // Check for invalid date
-    if (isNaN(date.getTime())) return ''
-
-    return date.toLocaleDateString('en-US')
-  } catch {
-    return ''
-  }
+  // Maintain backward compatibility with default English locale
+  return formatDateLocalized(dateString, 'en', 'short')
 }
 
 /**
  * Format file size from bytes to human-readable format
+ * @deprecated Use useLocaleFormat().formatFileSize() for locale-aware formatting
  */
 export const formatFileSize = (bytes: number): string => {
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+  // Maintain backward compatibility with default English locale
+  return formatFileSizeLocalized(bytes, 'en')
 }
 
 /**
  * Format number with locale-specific formatting
+ * @deprecated Use useLocaleFormat().formatNumber() for locale-aware formatting
  */
 export const formatNumber = (value: number, options?: Intl.NumberFormatOptions): string => {
-  return new Intl.NumberFormat('en-US', options).format(value)
+  // Maintain backward compatibility with default English locale
+  return formatNumberLocalized(value, 'en', options)
 }
 
 /**
  * Format currency value
+ * @deprecated Use useLocaleFormat().formatCurrency() for locale-aware formatting
  */
 export const formatCurrency = (value: number, currency = 'USD'): string => {
-  return formatNumber(value, {
-    style: 'currency',
-    currency,
-  })
+  // Maintain backward compatibility with default English locale
+  return formatCurrencyLocalized(value, 'en', currency)
 }
 
 /**
  * Format percentage value
+ * @deprecated Use useLocaleFormat().formatPercentage() for locale-aware formatting
  */
 export const formatPercentage = (value: number, decimals = 1): string => {
-  return formatNumber(value, {
-    style: 'percent',
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  })
+  // Maintain backward compatibility with default English locale
+  return formatPercentageLocalized(value, 'en', decimals)
 }
 
 /**
  * Format timestamp as relative time (e.g., "5m ago", "2h ago")
+ * @deprecated Use useLocaleFormat().formatTimeAgo() for locale-aware formatting
  */
 export const formatTimeAgo = (timestamp: string | Date): string => {
-  try {
-    const date = new Date(timestamp)
-    const now = new Date()
-    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60))
-
-    if (diffInMinutes < 1) {
-      return 'Just now'
-    } else if (diffInMinutes < 60) {
-      return `${diffInMinutes}m ago`
-    } else if (diffInMinutes < 1440) {
-      const hours = Math.floor(diffInMinutes / 60)
-      return `${hours}h ago`
-    } else {
-      const days = Math.floor(diffInMinutes / 1440)
-      return `${days}d ago`
-    }
-  } catch {
-    return 'Unknown time'
-  }
+  // Maintain backward compatibility with default English locale
+  return formatTimeAgoLocalized(timestamp, 'en')
 }
 
 /**

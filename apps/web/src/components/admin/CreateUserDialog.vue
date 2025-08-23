@@ -2,55 +2,55 @@
   <Dialog :open="open" @update:open="$emit('close')">
     <DialogContent class="sm:max-w-[425px]">
       <DialogHeader>
-        <DialogTitle>Create New User</DialogTitle>
+        <DialogTitle>{{ t('admin.createUserDialog.title') }}</DialogTitle>
         <DialogDescription>
-          Add a new user to the system. They will receive an email with login instructions.
+          {{ t('admin.createUserDialog.description') }}
         </DialogDescription>
       </DialogHeader>
 
       <form @submit.prevent="handleSubmit" class="space-y-4">
         <div class="grid grid-cols-2 gap-4">
           <div class="space-y-2">
-            <Label for="first_name">First Name</Label>
-            <Input id="first_name" v-model="formData.first_name" placeholder="John" required />
+            <Label for="first_name">{{ t('admin.createUserDialog.firstName') }}</Label>
+            <Input id="first_name" v-model="formData.first_name" :placeholder="t('admin.createUserDialog.firstNamePlaceholder')" required />
           </div>
           <div class="space-y-2">
-            <Label for="last_name">Last Name</Label>
-            <Input id="last_name" v-model="formData.last_name" placeholder="Doe" required />
+            <Label for="last_name">{{ t('admin.createUserDialog.lastName') }}</Label>
+            <Input id="last_name" v-model="formData.last_name" :placeholder="t('admin.createUserDialog.lastNamePlaceholder')" required />
           </div>
         </div>
 
         <div class="space-y-2">
-          <Label for="email">Email</Label>
-          <Input id="email" v-model="formData.email" type="email" placeholder="john.doe@example.com" required />
+          <Label for="email">{{ t('admin.createUserDialog.email') }}</Label>
+          <Input id="email" v-model="formData.email" type="email" :placeholder="t('admin.createUserDialog.emailPlaceholder')" required />
         </div>
 
         <div class="space-y-2">
-          <Label for="password">Temporary Password</Label>
-          <Input id="password" v-model="formData.password" type="password" placeholder="Enter a temporary password"
+          <Label for="password">{{ t('admin.createUserDialog.temporaryPassword') }}</Label>
+          <Input id="password" v-model="formData.password" type="password" :placeholder="t('admin.createUserDialog.passwordPlaceholder')"
             required />
         </div>
 
         <div class="space-y-2">
-          <Label for="role">Role</Label>
+          <Label for="role">{{ t('admin.createUserDialog.role') }}</Label>
           <Select v-model="formData.role">
             <SelectTrigger>
-              <SelectValue placeholder="Select a role" />
+              <SelectValue :placeholder="t('admin.createUserDialog.selectRole')" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="user">User</SelectItem>
-              <SelectItem value="admin">Administrator</SelectItem>
+              <SelectItem value="user">{{ t('admin.createUserDialog.user') }}</SelectItem>
+              <SelectItem value="admin">{{ t('admin.createUserDialog.administrator') }}</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <DialogFooter>
           <Button type="button" variant="outline" @click="$emit('close')">
-            Cancel
+            {{ t('admin.createUserDialog.cancel') }}
           </Button>
           <Button type="submit" :disabled="isSubmitting">
             <UserPlus class="h-4 w-4 mr-2" />
-            {{ isSubmitting ? 'Creating...' : 'Create User' }}
+            {{ isSubmitting ? t('admin.createUserDialog.creating') : t('admin.createUserDialog.createUser') }}
           </Button>
         </DialogFooter>
       </form>
@@ -71,6 +71,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useTranslation } from '@/composables/useLocale'
 import { useUserStore } from '@/stores/user.store'
 import type { UserRole } from '@/types/supabase'
 import { UserPlus } from 'lucide-vue-next'
@@ -88,6 +89,7 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 const userStore = useUserStore()
+const { t } = useTranslation()
 
 const isSubmitting = ref(false)
 

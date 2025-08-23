@@ -4,13 +4,13 @@
       <DialogHeader>
         <DialogTitle class="flex items-center gap-2">
           <Stethoscope class="h-5 w-5" />
-          New medical exam
+          {{ t('labs.animals.medical.newExam') }}
           <span v-if="animalIdentifier" class="text-sm font-normal text-muted-foreground">
             - {{ animalIdentifier }}
           </span>
         </DialogTitle>
         <DialogDescription>
-          Record a new veterinary examination or intervention. All fields marked with an asterisk (*) are required.
+          {{ t('labs.animals.medical.newExamDescription') }}
         </DialogDescription>
       </DialogHeader>
 
@@ -18,15 +18,15 @@
         <!-- Date et Type -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="space-y-2">
-            <Label for="date">Exam date *</Label>
+            <Label for="date">{{ t('labs.animals.medical.examDate') }} *</Label>
             <Input id="date" type="date" v-model="formData.date" :max="today" />
           </div>
 
           <div class="space-y-2">
-            <Label for="type">Exam type *</Label>
+            <Label for="type">{{ t('labs.animals.medical.examType') }} *</Label>
             <Select v-model="formData.type">
               <SelectTrigger>
-                <SelectValue placeholder="Select a type" />
+                <SelectValue :placeholder="t('labs.animals.medical.selectType')" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem v-for="type in examTypes" :key="type.value" :value="type.value">
@@ -45,10 +45,10 @@
 
         <!-- Veterinarian -->
         <div class="space-y-2">
-          <Label for="veterinarian">Attending veterinarian *</Label>
+          <Label for="veterinarian">{{ t('labs.animals.form.veterinarian') }} *</Label>
           <Select v-model="formData.veterinarian">
             <SelectTrigger>
-              <SelectValue placeholder="Select a veterinarian" />
+              <SelectValue :placeholder="t('labs.animals.medical.selectVeterinarian')" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem v-for="vet in veterinarians" :key="vet" :value="vet">
@@ -60,39 +60,39 @@
 
         <!-- Description -->
         <div class="space-y-2">
-          <Label for="description">Exam description *</Label>
+          <Label for="description">{{ t('labs.animals.medical.examDescription') }} *</Label>
           <Textarea id="description" v-model="formData.description"
-            placeholder="Describe the purpose and context of the exam..." :rows="3" />
+            :placeholder="t('labs.animals.medical.examDescriptionPlaceholder')" :rows="3" />
         </div>
 
         <!-- Observations cliniques -->
         <div class="space-y-2">
-          <Label for="findings">Clinical findings</Label>
+          <Label for="findings">{{ t('labs.animals.medical.clinicalFindings') }}</Label>
           <Textarea id="findings" v-model="formData.findings"
-            placeholder="Describe clinical findings, results, and observations..." :rows="3" />
+            :placeholder="t('labs.animals.medical.clinicalFindingsPlaceholder')" :rows="3" />
         </div>
 
         <!-- Traitement et Suivi -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="space-y-2">
-            <Label for="treatment">Treatment administered</Label>
+            <Label for="treatment">{{ t('labs.animals.medical.treatmentAdministered') }}</Label>
             <Textarea id="treatment" v-model="formData.treatment"
-              placeholder="Medications, procedures, interventions..." :rows="3" />
+              :placeholder="t('labs.animals.medical.treatmentPlaceholder')" :rows="3" />
           </div>
 
           <div class="space-y-2">
-            <Label for="followUp">Follow-up required</Label>
-            <Textarea id="followUp" v-model="formData.followUp" placeholder="Follow-up instructions, next exam..."
+            <Label for="followUp">{{ t('labs.animals.medical.followUpRequired') }}</Label>
+            <Textarea id="followUp" v-model="formData.followUp" :placeholder="t('labs.animals.medical.followUpPlaceholder')"
               :rows="3" />
           </div>
         </div>
 
         <!-- Niveau de gravité -->
         <div class="space-y-2">
-          <Label for="severity">Severity level *</Label>
+          <Label for="severity">{{ t('labs.animals.medical.severityLevel') }} *</Label>
           <Select v-model="formData.severity">
             <SelectTrigger>
-              <SelectValue placeholder="Assess severity" />
+              <SelectValue :placeholder="t('labs.animals.medical.assessSeverity')" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem v-for="level in severityLevels" :key="level.value" :value="level.value">
@@ -112,7 +112,7 @@
         <div v-if="formData.type && formData.description && formData.veterinarian" class="bg-muted p-4 rounded-lg">
           <h4 class="font-medium mb-3 flex items-center gap-2">
             <Eye class="h-4 w-4" />
-            Exam preview
+            {{ t('labs.animals.medical.examPreview') }}
           </h4>
           <div class="space-y-2 text-sm">
             <div class="flex items-center gap-2">
@@ -125,22 +125,22 @@
             </div>
 
             <div class="flex items-center gap-2">
-              <span class="font-medium">Veterinarian:</span>
+              <span class="font-medium">{{ t('labs.animals.form.veterinarian') }}:</span>
               <span>{{ formData.veterinarian }}</span>
             </div>
 
             <div>
-              <span class="font-medium">Description:</span>
+              <span class="font-medium">{{ t('labs.animals.medical.examDescription') }}:</span>
               <p class="text-muted-foreground mt-1">"{{ formData.description }}"</p>
             </div>
 
             <div v-if="formData.findings">
-              <span class="font-medium">Observations:</span>
+              <span class="font-medium">{{ t('labs.animals.medical.observations') }}:</span>
               <p class="text-muted-foreground mt-1">"{{ formData.findings }}"</p>
             </div>
 
             <div class="flex items-center gap-2 pt-2">
-              <span class="font-medium">Severity:</span>
+              <span class="font-medium">{{ t('labs.animals.medical.severity') }}:</span>
               <div class="flex items-center gap-1">
                 <component v-if="selectedSeverity?.icon" :is="selectedSeverity.icon" class="h-4 w-4" />
                 <span :class="`px-2 py-1 rounded text-xs font-medium ${selectedSeverity?.color}`">
@@ -153,10 +153,10 @@
 
         <DialogFooter>
           <Button type="button" variant="outline" @click="$emit('update:open', false)">
-            Cancel
+            {{ t('common.cancel') }}
           </Button>
           <Button type="submit" :disabled="isSubmitting">
-            {{ isSubmitting ? 'Saving...' : 'Save exam' }}
+            {{ isSubmitting ? t('common.saving') : t('labs.animals.medical.saveExam') }}
           </Button>
         </DialogFooter>
       </form>
@@ -184,6 +184,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { useTranslation } from '@/composables/useLocale'
 import { formatDateSimple } from '@/lib/format.utils'
 import type { MedicalRecord } from '@/types/lab'
 import {
@@ -213,78 +214,79 @@ const emit = defineEmits<{
   'save': [medicalRecord: Omit<MedicalRecord, 'id'>]
 }>()
 
+const { t } = useTranslation()
 const isSubmitting = ref(false)
 const today = new Date().toISOString().split('T')[0]
 
-const examTypes = [
+const examTypes = computed(() => [
   {
     value: 'examination',
-    label: 'Routine examination',
+    label: t('labs.animals.medical.types.examination'),
     icon: Stethoscope,
-    description: 'General medical examination'
+    description: t('labs.animals.medical.types.examinationDesc')
   },
   {
     value: 'vaccination',
-    label: 'Vaccination',
+    label: t('labs.animals.medical.types.vaccination'),
     icon: Syringe,
-    description: 'Vaccine administration'
+    description: t('labs.animals.medical.types.vaccinationDesc')
   },
   {
     value: 'treatment',
-    label: 'Medical treatment',
+    label: t('labs.animals.medical.types.treatment'),
     icon: ClipboardList,
-    description: 'Administration of a treatment'
+    description: t('labs.animals.medical.types.treatmentDesc')
   },
   {
     value: 'surgery',
-    label: 'Surgical procedure',
+    label: t('labs.animals.medical.types.surgery'),
     icon: Scissors,
-    description: 'Surgical procedure'
+    description: t('labs.animals.medical.types.surgeryDesc')
   },
   {
     value: 'sampling',
-    label: 'Sampling',
+    label: t('labs.animals.medical.types.sampling'),
     icon: FlaskConical,
-    description: 'Sample collection'
+    description: t('labs.animals.medical.types.samplingDesc')
   },
   {
     value: 'observation',
-    label: 'Behavioral observation',
+    label: t('labs.animals.medical.types.observation'),
     icon: Eye,
-    description: 'Behavioral observation'
+    description: t('labs.animals.medical.types.observationDesc')
   }
-] as const
+])
 
-const severityLevels = [
+const severityLevels = computed(() => [
   {
     value: 'normal',
-    label: 'Normal',
+    label: t('labs.animals.medical.severity.normal'),
     icon: CheckCircle,
     color: 'bg-green-100 text-green-800',
-    description: 'Normal result, no intervention needed'
+    description: t('labs.animals.medical.severity.normalDesc')
   },
   {
     value: 'minor',
-    label: 'Minor',
+    label: t('labs.animals.medical.severity.minor'),
     icon: Info,
     color: 'bg-blue-100 text-blue-800',
-    description: 'Minor anomaly, monitoring recommended'
+    description: t('labs.animals.medical.severity.minorDesc')
   },
   {
     value: 'moderate',
-    label: 'Moderate',
+    label: t('labs.animals.medical.severity.moderate'),
     icon: AlertTriangle,
     color: 'bg-orange-100 text-orange-800',
-    description: 'Moderate problem, intervention needed'
+    description: t('labs.animals.medical.severity.moderateDesc')
   },
   {
     value: 'severe',
-    label: 'Severe',
+    label: t('labs.animals.medical.severity.severe'),
     icon: AlertCircle,
     color: 'bg-red-100 text-red-800',
-    description: 'Severe problem, urgent intervention required'
+    description: t('labs.animals.medical.severity.severeDesc')
   }
-] as const
+])
 
 const veterinarians = [
   'Dr. Marie Dubois',
@@ -307,11 +309,11 @@ const formData = reactive({
 })
 
 const selectedExamType = computed(() =>
-  examTypes.find(t => t.value === formData.type)
+  examTypes.value.find(type => type.value === formData.type)
 )
 
 const selectedSeverity = computed(() =>
-  severityLevels.find(s => s.value === formData.severity)
+  severityLevels.value.find(s => s.value === formData.severity)
 )
 
 
@@ -321,15 +323,15 @@ const handleSubmit = async () => {
   try {
     // Validation
     if (!formData.type) {
-      toast.error('Please select an exam type')
+      toast.error(t('labs.animals.medical.validation.typeRequired'))
       return
     }
     if (!formData.veterinarian.trim()) {
-      toast.error('Please select a veterinarian')
+      toast.error(t('labs.animals.medical.validation.veterinarianRequired'))
       return
     }
     if (!formData.description.trim()) {
-      toast.error('Please enter a description')
+      toast.error(t('labs.animals.medical.validation.descriptionRequired'))
       return
     }
 
@@ -362,9 +364,9 @@ const handleSubmit = async () => {
       severity: 'normal' as MedicalRecord['severity']
     })
 
-    toast.success('Medical exam successfully added')
+    toast.success(t('labs.animals.medical.examAdded'))
   } catch (error) {
-    toast.error('Error adding medical exam')
+    toast.error(t('labs.animals.medical.examError'))
   } finally {
     isSubmitting.value = false
   }

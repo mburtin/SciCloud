@@ -5,10 +5,10 @@
       <div class="flex items-center justify-between">
         <div>
           <h1 class="text-2xl font-semibold text-foreground">
-            Calendar
+            {{ t('calendar.title') }}
           </h1>
           <p class="text-muted-foreground mt-1">
-            Detailed Schedule - 3-Day View ({{ dateRange }})
+            {{ t('calendar.subtitle') }} ({{ dateRange }})
           </p>
         </div>
         <div class="flex items-center gap-2">
@@ -20,7 +20,7 @@
           </Button>
           <Button>
             <Plus class="h-4 w-4 mr-2" />
-            New Event
+            {{ t('calendar.newEvent') }}
           </Button>
         </div>
       </div>
@@ -39,7 +39,7 @@
               {{ day.name }}
             </p>
             <p class="text-sm text-muted-foreground">
-              {{ day.eventCount }} event(s)
+              {{ day.eventCount }} {{ t('calendar.events') }}
             </p>
           </div>
         </div>
@@ -86,9 +86,13 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { useTranslation } from '@/composables/useLocale';
 import { addDays, format, subDays } from 'date-fns';
 import { ChevronLeft, ChevronRight, Clock, Plus } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
+
+// Translation
+const { t } = useTranslation();
 
 // --- Types --- //
 interface CalendarEvent {

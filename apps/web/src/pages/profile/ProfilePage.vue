@@ -2,10 +2,10 @@
   <div class="p-4 sm:p-6 lg:p-8 space-y-6">
     <div>
       <h1 class="text-2xl font-bold text-foreground">
-        User Profile
+        {{ t('profile.title') }}
       </h1>
       <p class="text-muted-foreground">
-        Manage your personal information and preferences
+        {{ t('profile.personalInfo') }}
       </p>
     </div>
 
@@ -13,20 +13,20 @@
     <Card>
       <CardHeader>
         <div class="flex justify-between items-center">
-          <CardTitle>General Information</CardTitle>
+          <CardTitle>{{ t('profile.personalInfo') }}</CardTitle>
           <div class="flex gap-2">
             <Button v-if="!isEditing" @click="startEditing" variant="outline" size="sm">
               <Pencil class="h-4 w-4 mr-2" />
-              Edit
+              {{ t('common.actions.edit') }}
             </Button>
             <template v-else>
               <Button @click="saveProfile" :disabled="isSaving" size="sm">
                 <Check class="h-4 w-4 mr-2" />
-                {{ isSaving ? 'Saving...' : 'Save' }}
+                {{ isSaving ? t('common.status.saving') : t('common.actions.save') }}
               </Button>
               <Button @click="cancelEditing" variant="outline" size="sm">
                 <X class="h-4 w-4 mr-2" />
-                Cancel
+                {{ t('common.actions.cancel') }}
               </Button>
             </template>
           </div>
@@ -41,18 +41,18 @@
             </Avatar>
             <Button size="icon" variant="outline" class="absolute bottom-0 right-0 rounded-full h-8 w-8">
               <Camera class="h-4 w-4" />
-              <span class="sr-only">Change photo</span>
+              <span class="sr-only">{{ t('profile.changeAvatar') }}</span>
             </Button>
           </div>
           <div class="flex-1 space-y-4" v-if="user">
             <div class="grid grid-cols-1 sm:grid-cols-2 layout-card-gap">
-              <ProfileField label="First name"
+              <ProfileField :label="t('profile.firstName')"
                 :value="isEditing ? (editedUser.first_name || '') : (user.first_name || '')" :is-editable="isEditing"
                 @update="editedUser.first_name = $event" />
-              <ProfileField label="Last name" :value="isEditing ? (editedUser.last_name || '') : (user.last_name || '')"
+              <ProfileField :label="t('profile.lastName')" :value="isEditing ? (editedUser.last_name || '') : (user.last_name || '')"
                 :is-editable="isEditing" @update="editedUser.last_name = $event" />
             </div>
-            <ProfileField label="Biography" :value="isEditing ? editedUser.biography || '' : user.biography || ''"
+            <ProfileField :label="t('profile.bio')" :value="isEditing ? editedUser.biography || '' : user.biography || ''"
               :is-editable="isEditing" multiline @update="editedUser.biography = $event" />
           </div>
         </div>
@@ -74,27 +74,58 @@
     <!-- Contact Information -->
     <Card>
       <CardHeader>
-        <CardTitle>Contact Information</CardTitle>
+        <CardTitle>{{ t('common.labels.contact') }}</CardTitle>
       </CardHeader>
       <CardContent class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6" v-if="user">
-        <ProfileField label="Email" :value="user.email || ''" :is-editable="isEditing" :is-disabled="true"
+        <ProfileField :label="t('profile.email')" :value="user.email || ''" :is-editable="isEditing" :is-disabled="true"
           type="email" />
-        <ProfileField label="Phone" :value="isEditing ? editedUser.phone || '' : user.phone || ''"
+        <ProfileField :label="t('profile.phone')" :value="isEditing ? editedUser.phone || '' : user.phone || ''"
           :is-editable="isEditing" type="tel" @update="editedUser.phone = $event" />
-        <ProfileField label="Location" :value="isEditing ? editedUser.location || '' : user.location || ''"
+        <ProfileField :label="t('profile.location')" :value="isEditing ? editedUser.location || '' : user.location || ''"
           :is-editable="isEditing" @update="editedUser.location = $event" />
-        <ProfileField label="Full address" :value="isEditing ? editedUser.full_address || '' : user.full_address || ''"
+        <ProfileField :label="t('profile.fullAddress')" :value="isEditing ? editedUser.full_address || '' : user.full_address || ''"
           :is-editable="isEditing" @update="editedUser.full_address = $event" />
+      </CardContent>
+    </Card>
+
+    <!-- Language Preferences -->
+    <Card>
+      <CardHeader>
+        <CardTitle>{{ t('settings.language') }}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div class="space-y-4">
+          <div>
+            <div v-if="!isEditing" class="text-base font-medium">
+              {{ localeName }}
+            </div>
+            <Select v-else :model-value="currentLocale" @update:model-value="setLocale">
+              <SelectTrigger class="w-48">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem v-for="locale in availableLocales" :key="locale.code" :value="locale.code">
+                  <div class="flex items-center gap-3">
+                    <span class="text-lg leading-none">{{ locale.flag }}</span>
+                    <span>{{ locale.name }}</span>
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
       </CardContent>
     </Card>
   </div>
 </template>
 
 <script setup lang="ts">
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import ProfileField from '@/components/shared/ProfileField.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTranslation, useLocale } from '@/composables/useLocale';
 import { computed, onMounted, ref } from 'vue';
 // import StatCard from '@/components/shared/StatCard.vue';
 import { useUserStore } from '@/stores/user.store';
@@ -102,6 +133,8 @@ import type { User } from '@/types/supabase';
 import { Camera, Check, Pencil, X } from 'lucide-vue-next';
 
 const userStore = useUserStore();
+const { t } = useTranslation();
+const { currentLocale, availableLocales, setLocale, localeName } = useLocale();
 
 // Edit state
 const isEditing = ref(false);

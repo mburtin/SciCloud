@@ -29,22 +29,3 @@ export interface Document {
   icon?: string
 }
 
-// Document type labels mapping
-export const documentTypeLabels: Record<string, string> = {
-  'health-certificate': 'Health Certificate',
-  'protocol': 'Protocol',
-  'report': 'Report',
-  'photo': 'Photo',
-  'analysis': 'Analysis',
-  'authorization': 'Authorization',
-  'other': 'Other',
-  'pdf': 'PDF',
-  'docx': 'Word Document',
-  'xlsx': 'Excel Spreadsheet',
-  'pptx': 'PowerPoint Presentation',
-  'txt': 'Text File',
-  'csv': 'CSV File',
-  'image': 'Image',
-  'video': 'Video',
-  'audio': 'Audio'
-}

@@ -1,24 +1,26 @@
 <template>
   <div class="space-y-6">
-    <DocumentManager v-if="projectId" title="Project Documents"
-      description="Manage documents for Water Quality Analysis" owner-type="projects" :owner-id="projectId"
+    <DocumentManager v-if="projectId" :title="t('projects.documents.title')"
+      :description="t('projects.documents.description')" owner-type="projects" :owner-id="projectId"
       :initial-documents="projectDocuments" :show-stats="true"
       :available-types="['pdf', 'docx', 'xlsx', 'pptx', 'txt', 'csv', 'image', 'video', 'audio']" display-mode="cards"
-      add-button-text="Add document" empty-state-text="Start by adding your first document to the project."
-      upload-dialog-description="Upload a new document to the project. Accepted formats: PDF, DOCX, XLSX, PPTX."
+      :add-button-text="t('projects.documents.addDocument')" :empty-state-text="t('projects.documents.emptyState')"
+      :upload-dialog-description="t('projects.documents.uploadDescription')"
       @document-uploaded="handleDocumentUploaded" @documents-updated="handleDocumentsUpdated" />
-    <div v-else class="text-sm text-muted-foreground">Loading project...</div>
+    <div v-else class="text-sm text-muted-foreground">{{ t('projects.documents.loadingProject') }}</div>
   </div>
 </template>
 
 <script setup lang="ts">
 import DocumentManager from '@/components/shared/DocumentManager.vue'
+import { useTranslation } from '@/composables/useLocale'
 import { listDocuments } from '@/services/documents.service'
 import type { Document } from '@/types/documents'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
+const { t } = useTranslation()
 const projectId = computed(() => {
   const id = (route.params.id as string) || ''
   console.log('ProjectDocumentsPage - route.params:', route.params, 'extracted projectId:', id)

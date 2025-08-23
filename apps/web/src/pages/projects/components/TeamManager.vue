@@ -5,11 +5,11 @@
     <div class="space-y-4">
       <div class="flex justify-between items-center">
         <h3 class="text-lg font-medium">
-          Project Team
+          {{ t('projects.members.title') }}
         </h3>
         <Button size="sm" @click="isNewMemberDialogOpen = true">
           <UserPlus class="h-4 w-4 mr-2" />
-          Add Member
+          {{ t('projects.members.add') }}
         </Button>
       </div>
       <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -42,11 +42,13 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTranslation } from '@/composables/useLocale';
 import { Mail, UserPlus } from 'lucide-vue-next';
 import { ref } from 'vue';
 import NewMemberDialog from './NewMemberDialog.vue';
 
 const isNewMemberDialogOpen = ref(false);
+const { t } = useTranslation();
 
 const handleMemberAdded = (newMember: any) => {
   team.value.unshift(newMember);

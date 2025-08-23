@@ -2,21 +2,21 @@
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
     <DialogContent class="sm:max-w-[480px]">
       <DialogHeader>
-        <DialogTitle>Create New Task</DialogTitle>
+        <DialogTitle>{{ t('projects.tasks.add') }}</DialogTitle>
         <DialogDescription>
-          Fill in the details below to add a new task to the project.
+          {{ t('projects.tasks.addDescription') }}
         </DialogDescription>
       </DialogHeader>
       <div class="grid gap-4 py-4">
         <div class="grid gap-2">
-          <Label for="task-name">Task Name</Label>
-          <Input id="task-name" v-model="taskName" placeholder="e.g., Analyze experiment results" />
+          <Label for="task-name">{{ t('projects.tasks.name') }}</Label>
+          <Input id="task-name" v-model="taskName" :placeholder="t('projects.tasks.namePlaceholder')" />
         </div>
         <div class="grid gap-2">
-          <Label for="assignee">Assign To</Label>
+          <Label for="assignee">{{ t('projects.tasks.assignee') }}</Label>
           <Select v-model="assignee">
             <SelectTrigger>
-              <SelectValue placeholder="Select a team member" />
+              <SelectValue :placeholder="t('projects.tasks.selectMember')" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="e.reed@scicloud.dev">
@@ -35,16 +35,16 @@
           </Select>
         </div>
         <div class="grid gap-2">
-          <Label for="due-date">Due Date</Label>
+          <Label for="due-date">{{ t('projects.tasks.dueDate') }}</Label>
           <Input id="due-date" v-model="dueDate" type="date" />
         </div>
       </div>
       <DialogFooter>
         <Button type="button" variant="outline" @click="$emit('update:open', false)">
-          Cancel
+          {{ t('common.actions.cancel') }}
         </Button>
         <Button type="button" :disabled="!taskName || !assignee || !dueDate" @click="handleSubmit">
-          Add Task
+          {{ t('projects.tasks.add') }}
         </Button>
       </DialogFooter>
     </DialogContent>
@@ -70,10 +70,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useTranslation } from '@/composables/useLocale';
 import { ref } from 'vue';
 
 defineProps<{ open: boolean }>();
 const emit = defineEmits(['update:open', 'task-added']);
+
+const { t } = useTranslation();
 
 const taskName = ref('');
 const assignee = ref('');
@@ -94,7 +97,7 @@ const handleSubmit = () => {
       name: taskName.value,
       assignee: selectedMember ? selectedMember.name : 'Unassigned',
       dueDate: dueDate.value,
-      status: 'Not Started',
+      status: t('projects.tasks.notStarted'),
     };
     emit('task-added', newTask);
     emit('update:open', false);

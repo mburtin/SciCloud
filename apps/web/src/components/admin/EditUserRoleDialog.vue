@@ -2,9 +2,9 @@
   <Dialog :open="open" @update:open="$emit('close')">
     <DialogContent class="sm:max-w-[425px]">
       <DialogHeader>
-        <DialogTitle>Edit User Role</DialogTitle>
+        <DialogTitle>{{ t('admin.editRoleDialog.title') }}</DialogTitle>
         <DialogDescription v-if="user">
-          Change the role for {{ user.first_name }} {{ user.last_name }}
+          {{ t('admin.editRoleDialog.description', { firstName: user.first_name, lastName: user.last_name }) }}
         </DialogDescription>
       </DialogHeader>
 
@@ -26,7 +26,7 @@
 
         <!-- Role Selection -->
         <div class="space-y-4">
-          <Label>New Role</Label>
+          <Label>{{ t('admin.editRoleDialog.newRole') }}</Label>
           <div class="space-y-3">
             <div v-for="role in availableRoles" :key="role.value" class="flex items-start space-x-3">
               <input :id="role.value" v-model="selectedRole" :value="role.value" type="radio" class="mt-1" />
@@ -51,9 +51,9 @@
           <div class="flex items-start gap-2">
             <AlertTriangle class="h-4 w-4 text-yellow-600 mt-0.5" />
             <div class="text-sm">
-              <p class="font-medium text-yellow-800">Role Change Warning</p>
+              <p class="font-medium text-yellow-800">{{ t('admin.editRoleDialog.roleChangeWarning') }}</p>
               <p class="text-yellow-700 mt-1">
-                This will change the user's permissions immediately. Make sure this is intended.
+                {{ t('admin.editRoleDialog.roleChangeDescription') }}
               </p>
             </div>
           </div>
@@ -62,11 +62,11 @@
 
       <DialogFooter>
         <Button type="button" variant="outline" @click="$emit('close')">
-          Cancel
+          {{ t('admin.editRoleDialog.cancel') }}
         </Button>
         <Button @click="handleSubmit" :disabled="isSubmitting || !selectedRole || selectedRole === user?.role">
           <Shield class="h-4 w-4 mr-2" />
-          {{ isSubmitting ? 'Updating...' : 'Update Role' }}
+          {{ isSubmitting ? t('admin.editRoleDialog.updating') : t('admin.editRoleDialog.updateRole') }}
         </Button>
       </DialogFooter>
     </DialogContent>
@@ -86,6 +86,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
+import { useTranslation } from '@/composables/useLocale'
 import { getRoleLabel, getRoleVariant } from '@/lib/user.utils'
 import { useUserStore } from '@/stores/user.store'
 import type { UserRole, User as UserType } from '@/types/supabase'
@@ -106,6 +107,7 @@ const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 const userStore = useUserStore()
+const { t } = useTranslation()
 
 const isSubmitting = ref(false)
 const selectedRole = ref<UserRole>('user')
@@ -113,15 +115,15 @@ const selectedRole = ref<UserRole>('user')
 const availableRoles = [
   {
     value: 'user' as UserRole,
-    label: 'User',
+    label: t('admin.editRoleDialog.user'),
     icon: User,
-    description: 'Can create and manage their own projects and data'
+    description: t('admin.editRoleDialog.userDescription')
   },
   {
     value: 'admin' as UserRole,
-    label: 'Administrator',
+    label: t('admin.editRoleDialog.administrator'),
     icon: Shield,
-    description: 'Full access to all features including user management'
+    description: t('admin.editRoleDialog.adminDescription')
   }
 ]
 

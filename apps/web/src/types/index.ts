@@ -9,7 +9,7 @@ export type { ApiResponse, AuditableRecord, CreateInput, PaginatedResponse, Prio
 // Feature modules
 export * from './auth'
 export * from './documents'
-export type { AnimalDocument, documentTypeLabels, healthStatusLabels, Measurement, MedicalRecord, speciesLabels, statusLabels, StockLevel } from './lab'
+export type { AnimalDocument, healthStatusLabels, Measurement, MedicalRecord, speciesLabels, statusLabels, StockLevel } from './lab'
 export * from './notifications'
 export * from './projects'
 export * from './supabase'

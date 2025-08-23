@@ -9,7 +9,7 @@
               <FileText class="h-4 w-4 text-blue-600" />
             </div>
             <div>
-              <p class="text-sm text-muted-foreground">Total documents</p>
+              <p class="text-sm text-muted-foreground">{{ t('common.labels.totalDocuments') }}</p>
               <p class="text-xl font-semibold">{{ stats.total }}</p>
             </div>
           </div>
@@ -23,7 +23,7 @@
               <TrendingUp class="h-4 w-4 text-green-600" />
             </div>
             <div>
-              <p class="text-sm text-muted-foreground">Total size</p>
+              <p class="text-sm text-muted-foreground">{{ t('common.labels.totalSize') }}</p>
               <p class="text-xl font-semibold">{{ formatFileSize(stats.totalSize) }}</p>
             </div>
           </div>
@@ -37,7 +37,7 @@
               <FileText class="h-4 w-4 text-purple-600" />
             </div>
             <div>
-              <p class="text-sm text-muted-foreground">Recent (7d)</p>
+              <p class="text-sm text-muted-foreground">{{ t('common.labels.recentDocuments') }}</p>
               <p class="text-xl font-semibold">{{ stats.recentCount }}</p>
             </div>
           </div>
@@ -47,7 +47,7 @@
       <Card>
         <CardContent class="p-4">
           <div class="space-y-2">
-            <p class="text-sm text-muted-foreground">Popular types</p>
+            <p class="text-sm text-muted-foreground">{{ t('common.labels.documentTypes') }}</p>
             <div class="flex flex-wrap gap-1">
               <Badge v-for="[type, count] in topTypes" :key="type" variant="secondary" class="text-xs">
                 {{ type }}: {{ count }}
@@ -63,12 +63,12 @@
       <div>
         <h3 class="text-lg font-semibold">{{ title }}</h3>
         <p class="text-sm text-muted-foreground">
-          {{ description }}
+          {{ computedDescription }}
         </p>
       </div>
       <Button :disabled="!ownerInfo" @click="uploadDialogOpen = true">
         <Plus class="h-4 w-4 mr-2" />
-        {{ addButtonText }}
+        {{ computedAddButtonText }}
       </Button>
     </div>
 
@@ -89,7 +89,7 @@
                   </Badge>
                 </div>
                 <div class="text-sm text-muted-foreground">
-                  {{ document.size }} • Uploaded {{ formatDate(document.uploadDate) }} by {{ document.uploadedBy }}
+                  {{ document.size }} • {{ t('common.documents.uploadedBy', { date: formatDate(document.uploadDate), user: document.uploadedBy }) }}
                 </div>
               </div>
             </div>
@@ -115,10 +115,10 @@
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Size</TableHead>
-                <TableHead>Uploaded On</TableHead>
+                <TableHead>{{ t('common.documents.tableHeaders.name') }}</TableHead>
+                <TableHead>{{ t('common.documents.tableHeaders.type') }}</TableHead>
+                <TableHead>{{ t('common.documents.tableHeaders.size') }}</TableHead>
+                <TableHead>{{ t('common.documents.tableHeaders.uploadedOn') }}</TableHead>
                 <TableHead />
               </TableRow>
             </TableHeader>
@@ -153,13 +153,13 @@
     <!-- Empty state -->
     <div v-if="documents.length === 0" class="text-center py-8">
       <FileText class="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-      <h3 class="font-medium mb-2">No documents uploaded</h3>
+      <h3 class="font-medium mb-2">{{ t('common.documents.noDocuments') }}</h3>
       <p class="text-sm text-muted-foreground mb-4">
-        {{ emptyStateText }}
+        {{ computedEmptyStateText }}
       </p>
       <Button :disabled="!ownerInfo" @click="uploadDialogOpen = true">
         <Plus class="h-4 w-4 mr-2" />
-        {{ addButtonText }}
+        {{ computedAddButtonText }}
       </Button>
     </div>
 
@@ -167,24 +167,23 @@
     <Dialog v-model:open="uploadDialogOpen">
       <DialogContent class="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Upload Document</DialogTitle>
+          <DialogTitle>{{ t('common.documents.uploadDocument') }}</DialogTitle>
           <DialogDescription>
-            {{ uploadDialogDescription }}
+            {{ computedUploadDialogDescription }}
           </DialogDescription>
         </DialogHeader>
         <div class="space-y-4">
           <!-- File dropzone -->
           <div class="space-y-2">
-            <Label>Document File</Label>
+            <Label>{{ t('common.documents.documentFile') }}</Label>
             <div class="flex items-center justify-center w-full p-4 border-2 border-dashed rounded-lg transition-colors"
               :class="{ 'border-primary bg-primary/10': isDragging }" @dragover.prevent="isDragging = true"
               @dragleave.prevent="isDragging = false" @drop.prevent="handleFileDrop">
               <label for="file-upload" class="flex flex-col items-center justify-center w-full cursor-pointer">
                 <div v-if="!selectedFile" class="text-center">
                   <UploadCloud class="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                  <p class="mb-1 text-sm text-muted-foreground"><span class="font-semibold">Click to upload</span> or
-                    drag and drop</p>
-                  <p class="text-xs text-muted-foreground">Max file size: 25MB</p>
+                  <p class="mb-1 text-sm text-muted-foreground"><span class="font-semibold">{{ t('common.documents.clickToUpload') }}</span> {{ t('common.documents.dragAndDrop') }}</p>
+                  <p class="text-xs text-muted-foreground">{{ t('common.documents.maxFileSize', { size: maxFileSize }) }}</p>
                 </div>
                 <div v-else class="text-center">
                   <FileText class="w-8 h-8 mx-auto mb-2 text-primary" />
@@ -198,10 +197,10 @@
 
           <!-- Document type selector (if types provided) -->
           <div v-if="availableTypes.length > 0" class="space-y-2">
-            <Label>Document Type</Label>
+            <Label>{{ t('common.documents.documentType') }}</Label>
             <Select v-model="newDocumentType">
               <SelectTrigger>
-                <SelectValue placeholder="Select document type" />
+                <SelectValue :placeholder="t('common.documents.selectDocumentType')" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem v-for="type in availableTypes" :key="type" :value="type">
@@ -212,8 +211,8 @@
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" @click="uploadDialogOpen = false">Cancel</Button>
-          <Button :disabled="!selectedFile || !ownerInfo" @click="handleUpload">Upload</Button>
+          <Button variant="outline" @click="uploadDialogOpen = false">{{ t('common.actions.cancel') }}</Button>
+          <Button :disabled="!selectedFile || !ownerInfo" @click="handleUpload">{{ t('common.actions.upload') }}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -226,7 +225,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { deleteDocument as deleteFromStorage, downloadDocument as downloadFromStorage, uploadDocument as uploadToStorage, viewDocument as viewFromStorage } from '@/services/documents.service'
 import type { Document } from '@/types/documents'
-import { documentTypeLabels } from '@/types/documents'
 import {
   Download,
   Eye,
@@ -264,6 +262,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { formatDate, formatFileSize } from '@/lib/format.utils'
+import { useTranslation } from '@/composables/useLocale'
 
 interface Props {
   // Generic ownership (new)
@@ -290,10 +289,10 @@ const props = withDefaults(defineProps<Props>(), {
   ownerType: undefined,
   ownerId: undefined,
   title: 'Documents',
-  description: 'Manage your documents',
-  addButtonText: 'Add document',
-  emptyStateText: 'Start by adding your first document.',
-  uploadDialogDescription: 'Upload a new document. Accepted formats: PDF, DOCX, XLSX, PPTX.',
+  description: '',
+  addButtonText: '',
+  emptyStateText: '',
+  uploadDialogDescription: '',
   initialDocuments: () => [],
   displayMode: 'cards',
   showStats: true,
@@ -329,10 +328,28 @@ watch(() => props.initialDocuments, (newDocs) => {
   documents.value = [...newDocs]
 }, { deep: true })
 
+const { t } = useTranslation()
 const uploadDialogOpen = ref(false)
 const selectedFile = ref<File | null>(null)
 const isDragging = ref(false)
 const newDocumentType = ref('')
+
+// Computed properties for translatable text with fallbacks
+const computedDescription = computed(() => 
+  props.description || t('common.documents.manageDocuments')
+)
+
+const computedAddButtonText = computed(() => 
+  props.addButtonText || t('common.documents.addDocument')
+)
+
+const computedEmptyStateText = computed(() => 
+  props.emptyStateText || t('common.documents.emptyStateText')
+)
+
+const computedUploadDialogDescription = computed(() => 
+  props.uploadDialogDescription || t('common.documents.uploadDialogDescription')
+)
 
 // Computed
 const stats = computed(() => {
@@ -367,12 +384,15 @@ const topTypes = computed(() =>
 
 // Methods
 const getTypeLabel = (type: string): string => {
-  return documentTypeLabels[type] || type
+  const translationKey = `common.documents.types.${type}`
+  const translated = t(translationKey)
+  // Fallback to original type if translation doesn't exist
+  return translated !== translationKey ? translated : type
 }
 
 const viewDocument = async (document: Document) => {
   if (!ownerInfo.value) {
-    toast.error('View not available for this document type')
+    toast.error(t('common.documents.viewNotAvailable'))
     return
   }
   try {
@@ -384,12 +404,12 @@ const viewDocument = async (document: Document) => {
 
 const downloadDocument = async (document: Document) => {
   if (!ownerInfo.value) {
-    toast.error('Download not available for this document type')
+    toast.error(t('common.documents.downloadNotAvailable'))
     return
   }
   try {
     await downloadFromStorage(ownerInfo.value.type, ownerInfo.value.id, document.id, document.name)
-    toast.success(`${document.name} downloaded`)
+    toast.success(t('common.documents.documentDownloaded', { name: document.name }))
   } catch (e: any) {
     toast.error(`Download failed: ${e?.message || e}`)
   }
@@ -397,7 +417,7 @@ const downloadDocument = async (document: Document) => {
 
 const deleteDocument = async (documentId: string) => {
   if (!ownerInfo.value) {
-    toast.error('Delete not available for this document type')
+    toast.error(t('common.documents.deleteNotAvailable'))
     return
   }
   try {
@@ -408,7 +428,7 @@ const deleteDocument = async (documentId: string) => {
       documents.value.splice(index, 1)
       emit('document-deleted', documentId)
       emit('documents-updated', documents.value)
-      toast.success(`${deletedDoc.name} deleted`)
+      toast.success(t('common.documents.documentDeleted', { name: deletedDoc.name }))
     }
   } catch (e: any) {
     toast.error(`Delete failed: ${e?.message || e}`)
@@ -453,18 +473,18 @@ const detectFileType = (file: File): string => {
 
 const handleUpload = async () => {
   if (!selectedFile.value) {
-    toast.error('Please select a file')
+    toast.error(t('common.documents.pleaseSelectFile'))
     return
   }
 
   if (!ownerInfo.value) {
-    toast.error('Upload not available for this document type')
+    toast.error(t('common.documents.uploadNotAvailable'))
     return
   }
 
   // File size validation
   if (selectedFile.value.size > props.maxFileSize * 1024 * 1024) {
-    toast.error(`File size must be less than ${props.maxFileSize}MB`)
+    toast.error(t('common.documents.fileSizeError', { size: props.maxFileSize }))
     return
   }
 
@@ -472,7 +492,7 @@ const handleUpload = async () => {
   if (props.allowedFileTypes.length > 0) {
     const fileType = detectFileType(selectedFile.value)
     if (!props.allowedFileTypes.includes(fileType)) {
-      toast.error(`File type not allowed. Accepted types: ${props.allowedFileTypes.join(', ')}`)
+      toast.error(t('common.documents.fileTypeError', { types: props.allowedFileTypes.join(', ') }))
       return
     }
   }
@@ -489,7 +509,7 @@ const handleUpload = async () => {
       type: fileType,
       uploadDate: new Date().toISOString(),
       size: `${(selectedFile.value.size / 1024 / 1024).toFixed(2)} MB`,
-      uploadedBy: 'You'
+      uploadedBy: t('common.you')
     }
     documents.value.unshift(newDocument)
     emit('document-uploaded', newDocument)
@@ -500,7 +520,7 @@ const handleUpload = async () => {
     selectedFile.value = null
     newDocumentType.value = ''
 
-    toast.success('Document uploaded')
+    toast.success(t('common.documents.documentUploaded'))
   } catch (e: any) {
     toast.error(`Upload failed: ${e?.message || e}`)
   }

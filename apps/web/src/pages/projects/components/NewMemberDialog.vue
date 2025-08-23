@@ -2,34 +2,34 @@
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
     <DialogContent class="sm:max-w-[425px]">
       <DialogHeader>
-        <DialogTitle>Add Team Member</DialogTitle>
+        <DialogTitle>{{ t('projects.members.add') }}</DialogTitle>
         <DialogDescription>
-          Enter the email of the person you want to add to this project.
+          {{ t('projects.members.addDescription') }}
         </DialogDescription>
       </DialogHeader>
       <div class="grid gap-4 py-4">
         <div class="grid gap-2">
-          <Label for="email">Email</Label>
-          <Input id="email" v-model="email" type="email" placeholder="m@example.com" />
+          <Label for="email">{{ t('common.labels.email') }}</Label>
+          <Input id="email" v-model="email" type="email" :placeholder="t('projects.members.emailPlaceholder')" />
         </div>
         <div class="grid gap-2">
-          <Label for="role">Role</Label>
+          <Label for="role">{{ t('projects.members.role') }}</Label>
           <Select v-model="role">
             <SelectTrigger>
-              <SelectValue placeholder="Select a role" />
+              <SelectValue :placeholder="t('projects.members.selectRole')" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="Co-Investigator">
-                Co-Investigator
+                {{ t('projects.roles.coInvestigator') }}
               </SelectItem>
               <SelectItem value="Lab Technician">
-                Lab Technician
+                {{ t('projects.roles.labTechnician') }}
               </SelectItem>
               <SelectItem value="PhD Student">
-                PhD Student
+                {{ t('projects.roles.phdStudent') }}
               </SelectItem>
               <SelectItem value="Collaborator">
-                Collaborator
+                {{ t('projects.roles.collaborator') }}
               </SelectItem>
             </SelectContent>
           </Select>
@@ -37,10 +37,10 @@
       </div>
       <DialogFooter>
         <Button type="button" variant="outline" @click="$emit('update:open', false)">
-          Cancel
+          {{ t('common.actions.cancel') }}
         </Button>
         <Button type="button" :disabled="!email || !role" @click="handleSubmit">
-          Add Member
+          {{ t('projects.members.add') }}
         </Button>
       </DialogFooter>
     </DialogContent>
@@ -66,10 +66,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useTranslation } from '@/composables/useLocale';
 import { ref } from 'vue';
 
 defineProps<{ open: boolean }>();
 const emit = defineEmits(['update:open', 'member-added']);
+
+const { t } = useTranslation();
 
 const email = ref('');
 const role = ref('');

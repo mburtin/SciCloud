@@ -1,12 +1,16 @@
 <template>
   <div>
     <h1 class="text-2xl font-bold">
-      Laboratory Notebook
+      {{ t('projects.notebook.title') }}
     </h1>
     <p class="text-muted-foreground">
-      Your digital lab notebook for this project.
+      {{ t('projects.notebook.description') }}
     </p>
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useTranslation } from '@/composables/useLocale'
+
+const { t } = useTranslation()
+</script>

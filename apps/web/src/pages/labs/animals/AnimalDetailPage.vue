@@ -5,7 +5,7 @@
       <div class="flex items-center gap-3">
         <Button variant="ghost" @click="$router.push('/lab/animals')">
           <ArrowLeft class="h-4 w-4 mr-2" />
-          Back to animals
+          {{ t('labs.animals.backToAnimals') }}
         </Button>
         <div class="h-6 w-px bg-border" />
         <div v-if="animal" class="flex items-center gap-3">
@@ -27,7 +27,7 @@
       <div v-if="animal" class="flex items-center gap-2">
         <Button variant="outline" @click="editDialogOpen = true">
           <Edit3 class="h-4 w-4 mr-2" />
-          Edit
+          {{ t('common.actions.edit') }}
         </Button>
       </div>
     </div>
@@ -35,9 +35,9 @@
     <!-- Error state -->
     <div v-if="!animal" class="text-center py-12">
       <AlertTriangle class="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-      <h3 class="font-medium mb-2">Animal not found</h3>
+      <h3 class="font-medium mb-2">{{ t('labs.animals.animalNotFound') }}</h3>
       <p class="text-sm text-muted-foreground">
-        The animal with ID "{{ animalId }}" does not exist or has been deleted.
+        {{ t('labs.animals.animalNotFoundDescription', { id: animalId }) }}
       </p>
     </div>
 
@@ -67,23 +67,23 @@
         <TabsList class="grid grid-cols-5 w-full">
           <TabsTrigger value="overview" class="flex items-center gap-2">
             <Eye class="h-4 w-4" />
-            Overview
+            {{ t('labs.animals.detail.overview') }}
           </TabsTrigger>
           <TabsTrigger value="medical" class="flex items-center gap-2">
             <Stethoscope class="h-4 w-4" />
-            Medical history
+            {{ t('labs.animals.detail.medicalHistory') }}
           </TabsTrigger>
           <TabsTrigger value="measurements" class="flex items-center gap-2">
             <Activity class="h-4 w-4" />
-            Measurements
+            {{ t('labs.animals.detail.measurements') }}
           </TabsTrigger>
           <TabsTrigger value="protocols" class="flex items-center gap-2">
             <ClipboardList class="h-4 w-4" />
-            Protocols
+            {{ t('labs.animals.detail.protocols') }}
           </TabsTrigger>
           <TabsTrigger value="documents" class="flex items-center gap-2">
             <FileText class="h-4 w-4" />
-            Documents
+            {{ t('labs.animals.detail.documents') }}
           </TabsTrigger>
         </TabsList>
 
@@ -92,56 +92,56 @@
             <!-- General information -->
             <Card>
               <CardHeader>
-                <CardTitle class="text-lg">General information</CardTitle>
+                <CardTitle class="text-lg">{{ t('labs.animals.detail.generalInformation') }}</CardTitle>
               </CardHeader>
               <CardContent class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <Label class="text-sm text-muted-foreground">Identifier</Label>
+                    <Label class="text-sm text-muted-foreground">{{ t('labs.animals.form.identifier') }}</Label>
                     <p class="font-medium">{{ animal.identifier }}</p>
                   </div>
                   <div>
-                    <Label class="text-sm text-muted-foreground">Sex</Label>
-                    <p class="font-medium">{{ animal.sex === 'male' ? 'Male ♂' : 'Female ♀' }}</p>
+                    <Label class="text-sm text-muted-foreground">{{ t('labs.animals.form.sex') }}</Label>
+                    <p class="font-medium">{{ animal.sex === 'male' ? t('labs.animals.form.male') + ' ♂' : t('labs.animals.form.female') + ' ♀' }}</p>
                   </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <Label class="text-sm text-muted-foreground">Species</Label>
+                    <Label class="text-sm text-muted-foreground">{{ t('labs.animals.species') }}</Label>
                     <p class="font-medium">{{ speciesLabels[animal.species as keyof typeof speciesLabels] ||
                       animal.species }}</p>
                   </div>
                   <div>
-                    <Label class="text-sm text-muted-foreground">Strain</Label>
+                    <Label class="text-sm text-muted-foreground">{{ t('labs.animals.strain') }}</Label>
                     <p class="font-medium">{{ animal.strain }}</p>
                   </div>
                 </div>
                 <div v-if="animal.line">
-                  <Label class="text-sm text-muted-foreground">Line</Label>
+                  <Label class="text-sm text-muted-foreground">{{ t('labs.animals.form.line') }}</Label>
                   <p class="font-medium">{{ animal.line }}</p>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <Label class="text-sm text-muted-foreground">Birth date</Label>
+                    <Label class="text-sm text-muted-foreground">{{ t('labs.animals.birthDate') }}</Label>
                     <p class="font-medium">{{ formatDate(animal.birth_date) }}</p>
                   </div>
                   <div>
-                    <Label class="text-sm text-muted-foreground">Age</Label>
+                    <Label class="text-sm text-muted-foreground">{{ t('labs.animals.detail.age') }}</Label>
                     <p class="font-medium">{{ calculateAge(animal.birth_date) }}</p>
                   </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <Label class="text-sm text-muted-foreground">Arrival date</Label>
+                    <Label class="text-sm text-muted-foreground">{{ t('labs.animals.form.arrivalDate') }}</Label>
                     <p class="font-medium">{{ formatDate(animal.arrival_date) }}</p>
                   </div>
                   <div>
-                    <Label class="text-sm text-muted-foreground">Supplier</Label>
+                    <Label class="text-sm text-muted-foreground">{{ t('labs.animals.form.supplier') }}</Label>
                     <p class="font-medium">{{ animal.supplier }}</p>
                   </div>
                 </div>
                 <div>
-                  <Label class="text-sm text-muted-foreground">Current weight</Label>
+                  <Label class="text-sm text-muted-foreground">{{ t('labs.animals.form.currentWeight') }}</Label>
                   <p class="font-medium">{{ animal.current_weight }} g</p>
                 </div>
               </CardContent>
@@ -150,43 +150,43 @@
             <!-- Status and health -->
             <Card>
               <CardHeader>
-                <CardTitle class="text-lg">Status and health</CardTitle>
+                <CardTitle class="text-lg">{{ t('labs.animals.detail.statusAndHealth') }}</CardTitle>
               </CardHeader>
               <CardContent class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <Label class="text-sm text-muted-foreground">Status</Label>
+                    <Label class="text-sm text-muted-foreground">{{ t('common.labels.status') }}</Label>
                     <Badge :class="getStatusInfo(animal.status).color">
                       {{ getStatusInfo(animal.status).label }}
                     </Badge>
                   </div>
                   <div>
-                    <Label class="text-sm text-muted-foreground">Health status</Label>
+                    <Label class="text-sm text-muted-foreground">{{ t('labs.animals.detail.healthStatus') }}</Label>
                     <Badge :class="getHealthStatusInfo(animal.health_status).color">
                       {{ getHealthStatusInfo(animal.health_status).label }}
                     </Badge>
                   </div>
                 </div>
                 <div>
-                  <Label class="text-sm text-muted-foreground">Attending veterinarian</Label>
+                  <Label class="text-sm text-muted-foreground">{{ t('labs.animals.form.veterinarian') }}</Label>
                   <p class="font-medium">{{ animal.veterinarian }}</p>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <Label class="text-sm text-muted-foreground">Last examination</Label>
+                    <Label class="text-sm text-muted-foreground">{{ t('labs.animals.detail.lastExamination') }}</Label>
                     <p class="font-medium">
-                      {{ animal.last_exam_date ? formatDate(animal.last_exam_date) : 'None' }}
+                      {{ animal.last_exam_date ? formatDate(animal.last_exam_date) : t('common.labels.none') }}
                     </p>
                   </div>
                   <div>
-                    <Label class="text-sm text-muted-foreground">Next examination</Label>
+                    <Label class="text-sm text-muted-foreground">{{ t('labs.animals.detail.nextExamination') }}</Label>
                     <p class="font-medium">
-                      {{ animal.next_exam_date ? formatDate(animal.next_exam_date) : 'Not scheduled' }}
+                      {{ animal.next_exam_date ? formatDate(animal.next_exam_date) : t('labs.animals.detail.notScheduled') }}
                     </p>
                   </div>
                 </div>
                 <div>
-                  <Label class="text-sm text-muted-foreground">Ethics approval</Label>
+                  <Label class="text-sm text-muted-foreground">{{ t('labs.animals.form.ethicsApproval') }}</Label>
                   <p class="font-medium">{{ animal.ethics_approval }}</p>
                 </div>
               </CardContent>
@@ -195,38 +195,38 @@
             <!-- Housing -->
             <Card>
               <CardHeader>
-                <CardTitle class="text-lg">Housing</CardTitle>
+                <CardTitle class="text-lg">{{ t('labs.animals.detail.housing') }}</CardTitle>
               </CardHeader>
               <CardContent class="space-y-4">
                 <div>
-                  <Label class="text-sm text-muted-foreground">Facility</Label>
+                  <Label class="text-sm text-muted-foreground">{{ t('labs.animals.form.facility') }}</Label>
                   <p class="font-medium">{{ animal.location.facility }}</p>
                 </div>
                 <div class="grid grid-cols-3 gap-4">
                   <div>
-                    <Label class="text-sm text-muted-foreground">Room</Label>
+                    <Label class="text-sm text-muted-foreground">{{ t('labs.animals.form.room') }}</Label>
                     <p class="font-medium">{{ animal.location.room }}</p>
                   </div>
                   <div>
-                    <Label class="text-sm text-muted-foreground">Rack</Label>
+                    <Label class="text-sm text-muted-foreground">{{ t('labs.animals.form.rack') }}</Label>
                     <p class="font-medium">{{ animal.location.rack }}</p>
                   </div>
                   <div>
-                    <Label class="text-sm text-muted-foreground">Cage</Label>
+                    <Label class="text-sm text-muted-foreground">{{ t('labs.animals.form.cage') }}</Label>
                     <p class="font-medium">{{ animal.location.cage }}</p>
                   </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <Label class="text-sm text-muted-foreground">Housing type</Label>
+                    <Label class="text-sm text-muted-foreground">{{ t('labs.animals.form.housingTypeLabel') }}</Label>
                     <p class="font-medium">
-                      {{ animal.housing_type === 'individual' ? 'Individual' :
-                        animal.housing_type === 'pair' ? 'Pair' : 'Group' }}
+                      {{ animal.housing_type === 'individual' ? t('labs.animals.form.housingType.individual') :
+                        animal.housing_type === 'pair' ? t('labs.animals.form.housingType.pair') : t('labs.animals.form.housingType.group') }}
                     </p>
                   </div>
                   <div v-if="animal.group_size">
-                    <Label class="text-sm text-muted-foreground">Group size</Label>
-                    <p class="font-medium">{{ animal.group_size }} animals</p>
+                    <Label class="text-sm text-muted-foreground">{{ t('labs.animals.form.groupSize') }}</Label>
+                    <p class="font-medium">{{ t('labs.animals.detail.groupSizeAnimals', { count: animal.group_size }) }}</p>
                   </div>
                 </div>
               </CardContent>
@@ -235,7 +235,7 @@
             <!-- Notes -->
             <Card>
               <CardHeader>
-                <CardTitle class="text-lg">Notes and observations</CardTitle>
+                <CardTitle class="text-lg">{{ t('labs.animals.detail.notesAndObservations') }}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p class="text-sm">{{ animal.notes }}</p>
@@ -246,10 +246,10 @@
 
         <TabsContent value="medical" class="space-y-4">
           <div class="flex items-center justify-between">
-            <h3 class="text-lg font-medium">Medical history</h3>
+            <h3 class="text-lg font-medium">{{ t('labs.animals.detail.medicalHistory') }}</h3>
             <Button size="sm" @click="newMedicalExamDialogOpen = true">
               <Plus class="h-4 w-4 mr-2" />
-              New examination
+              {{ t('labs.animals.detail.newExamination') }}
             </Button>
           </div>
 
@@ -268,13 +268,13 @@
                     </div>
                     <p class="font-medium">{{ record.description }}</p>
                     <p v-if="record.findings" class="text-sm text-muted-foreground">
-                      <strong>Observations:</strong> {{ record.findings }}
+                      <strong>{{ t('labs.animals.detail.observations') }}:</strong> {{ record.findings }}
                     </p>
                     <p v-if="record.treatment" class="text-sm text-muted-foreground">
-                      <strong>Treatment:</strong> {{ record.treatment }}
+                      <strong>{{ t('labs.animals.detail.treatment') }}:</strong> {{ record.treatment }}
                     </p>
                     <p v-if="record.followUp" class="text-sm text-muted-foreground">
-                      <strong>Follow-up:</strong> {{ record.followUp }}
+                      <strong>{{ t('labs.animals.detail.followUp') }}:</strong> {{ record.followUp }}
                     </p>
                     <div class="flex items-center gap-4 text-sm text-muted-foreground">
                       <span>{{ formatDate(record.date) }}</span>
@@ -290,10 +290,10 @@
 
         <TabsContent value="measurements" class="space-y-4">
           <div class="flex items-center justify-between">
-            <h3 class="text-lg font-medium">Measurement history</h3>
+            <h3 class="text-lg font-medium">{{ t('labs.animals.detail.measurementHistory') }}</h3>
             <Button size="sm" @click="newMeasurementDialogOpen = true">
               <Plus class="h-4 w-4 mr-2" />
-              New measurement
+              {{ t('labs.animals.detail.newMeasurement') }}
             </Button>
           </div>
 
@@ -317,10 +317,10 @@
                         {{ measurement.value }} {{ measurement.unit }}
                       </div>
                       <div class="text-sm text-muted-foreground">
-                        Measured by {{ measurement.measuredBy }}
+                        {{ t('labs.animals.detail.measuredBy', { name: measurement.measuredBy }) }}
                       </div>
                       <div v-if="measurement.notes" class="text-sm text-muted-foreground mt-2 p-2 bg-muted/50 rounded">
-                        <span class="font-medium">Note:</span> {{ measurement.notes }}
+                        <span class="font-medium">{{ t('common.labels.note') }}:</span> {{ measurement.notes }}
                       </div>
                     </div>
                   </div>
@@ -338,13 +338,13 @@
 
             <div v-if="animal.measurements.length === 0" class="text-center py-8">
               <Scale class="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 class="font-medium mb-2">No measurements recorded</h3>
+              <h3 class="font-medium mb-2">{{ t('labs.animals.detail.noMeasurements') }}</h3>
               <p class="text-sm text-muted-foreground mb-4">
-                Start by adding a first measurement for this animal.
+                {{ t('labs.animals.detail.firstMeasurementPrompt') }}
               </p>
               <Button @click="newMeasurementDialogOpen = true">
                 <Plus class="h-4 w-4 mr-2" />
-                First measurement
+                {{ t('labs.animals.detail.firstMeasurement') }}
               </Button>
             </div>
           </div>
@@ -352,10 +352,10 @@
 
         <TabsContent value="protocols" class="space-y-4">
           <div class="flex items-center justify-between">
-            <h3 class="text-lg font-medium">Experimental protocols</h3>
+            <h3 class="text-lg font-medium">{{ t('labs.animals.detail.experimentalProtocols') }}</h3>
             <Button size="sm">
               <Plus class="h-4 w-4 mr-2" />
-              Link protocol
+              {{ t('labs.animals.detail.linkProtocol') }}
             </Button>
           </div>
 
@@ -366,24 +366,24 @@
                   <div>
                     <p class="font-medium">{{ protocol }}</p>
                     <p v-if="animal.experimental_group" class="text-sm text-muted-foreground">
-                      Group: {{ animal.experimental_group }}
+                      {{ t('labs.animals.detail.group') }}: {{ animal.experimental_group }}
                     </p>
                   </div>
-                  <Badge variant="secondary">Active</Badge>
+                  <Badge variant="secondary">{{ t('labs.animals.detail.active') }}</Badge>
                 </div>
               </CardContent>
             </Card>
 
             <div v-if="animal.protocols.length === 0" class="text-center py-8">
               <ClipboardList class="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <p class="text-muted-foreground">No protocol linked</p>
+              <p class="text-muted-foreground">{{ t('labs.animals.detail.noProtocolLinked') }}</p>
             </div>
           </div>
         </TabsContent>
 
         <TabsContent value="documents" class="space-y-4">
-          <DocumentManager title="Animal Documents"
-            :description="`Manage documents for ${animal.identifier} - ${speciesLabels[animal.species as keyof typeof speciesLabels] || animal.species}`"
+          <DocumentManager :title="t('labs.animals.detail.animalDocuments')"
+            :description="t('labs.animals.detail.documentsDescription', { identifier: animal.identifier, species: speciesLabels[animal.species as keyof typeof speciesLabels] || animal.species })"
             owner-type="animals" :owner-id="animalId" :initial-documents="convertAnimalDocuments(animal.documents)"
             :show-stats="true"
             :available-types="['health-certificate', 'protocol', 'report', 'photo', 'analysis', 'authorization', 'other']"
@@ -448,10 +448,12 @@ import AnimalFormDialog from '@/components/labs/AnimalFormDialog.vue'
 import NewMeasurementDialog from '@/components/labs/NewMeasurementDialog.vue'
 import NewMedicalExamDialog from '@/components/labs/NewMedicalExamDialog.vue'
 import DocumentManager from '@/components/shared/DocumentManager.vue'
+import { useTranslation } from '@/composables/useLocale'
 import { formatDate } from '@/lib/format.utils'
 
 const route = useRoute()
 const animalId = route.params.id as string
+const { t } = useTranslation()
 
 const activeTab = ref('overview')
 const editDialogOpen = ref(false)
@@ -481,13 +483,13 @@ const sortedMeasurements = computed(() => {
 const getStatusInfo = (status: string) => {
   switch (status) {
     case 'alive':
-      return { label: 'Alive', color: 'bg-green-100 text-green-800' }
+      return { label: t('labs.animals.alive'), color: 'bg-green-100 text-green-800' }
     case 'experimental':
-      return { label: 'In experiment', color: 'bg-blue-100 text-blue-800' }
+      return { label: t('labs.animals.experimental'), color: 'bg-blue-100 text-blue-800' }
     case 'transferred':
-      return { label: 'Transferred', color: 'bg-yellow-100 text-yellow-800' }
+      return { label: t('labs.animals.transferred'), color: 'bg-yellow-100 text-yellow-800' }
     case 'deceased':
-      return { label: 'Deceased', color: 'bg-gray-100 text-gray-800' }
+      return { label: t('labs.animals.deceased'), color: 'bg-gray-100 text-gray-800' }
     default:
       return { label: status, color: 'bg-gray-100 text-gray-800' }
   }
@@ -496,13 +498,13 @@ const getStatusInfo = (status: string) => {
 const getHealthStatusInfo = (healthStatus: string) => {
   switch (healthStatus) {
     case 'excellent':
-      return { label: 'Excellent', color: 'bg-green-100 text-green-800', icon: CheckCircle }
+      return { label: t('labs.animals.healthStatus.excellent'), color: 'bg-green-100 text-green-800', icon: CheckCircle }
     case 'good':
-      return { label: 'Good', color: 'bg-blue-100 text-blue-800', icon: CheckCircle }
+      return { label: t('labs.animals.healthStatus.good'), color: 'bg-blue-100 text-blue-800', icon: CheckCircle }
     case 'concerning':
-      return { label: 'Concerning', color: 'bg-orange-100 text-orange-800', icon: AlertTriangle }
+      return { label: t('labs.animals.healthStatus.concerning'), color: 'bg-orange-100 text-orange-800', icon: AlertTriangle }
     case 'critical':
-      return { label: 'Critical', color: 'bg-red-100 text-red-800', icon: AlertCircle }
+      return { label: t('labs.animals.healthStatus.critical'), color: 'bg-red-100 text-red-800', icon: AlertCircle }
     default:
       return { label: healthStatus, color: 'bg-gray-100 text-gray-800', icon: CheckCircle }
   }
@@ -515,14 +517,14 @@ const calculateAge = (birthDate: string) => {
   const diffInDays = Math.floor((today.getTime() - birth.getTime()) / (1000 * 3600 * 24))
 
   if (diffInDays < 30) {
-    return `${diffInDays} days`
+    return t('labs.animals.detail.ageDays', { count: diffInDays })
   } else if (diffInDays < 365) {
     const weeks = Math.floor(diffInDays / 7)
-    return `${weeks} weeks`
+    return t('labs.animals.detail.ageWeeks', { count: weeks })
   } else {
     const years = Math.floor(diffInDays / 365)
     const months = Math.floor((diffInDays % 365) / 30)
-    return `${years}y ${months}m`
+    return t('labs.animals.detail.ageYearsMonths', { years, months })
   }
 }
 
@@ -544,45 +546,45 @@ const getMeasurementIcon = (type: string) => {
 const getMeasurementLabel = (type: string) => {
   switch (type) {
     case 'weight':
-      return 'Weight'
+      return t('labs.animals.measurement.types.weight')
     case 'temperature':
-      return 'Temperature'
+      return t('labs.animals.measurement.types.temperature')
     case 'blood-pressure':
-      return 'Blood pressure'
+      return t('labs.animals.measurement.types.bloodPressure')
     case 'behavior':
-      return 'Behavioral score'
+      return t('labs.animals.measurement.types.behavior')
     default:
-      return 'Other measurement'
+      return t('labs.animals.measurement.types.other')
   }
 }
 
 const getMedicalTypeLabel = (type: string) => {
   switch (type) {
     case 'examination':
-      return 'Examination'
+      return t('labs.animals.medical.types.examination')
     case 'vaccination':
-      return 'Vaccination'
+      return t('labs.animals.medical.types.vaccination')
     case 'treatment':
-      return 'Treatment'
+      return t('labs.animals.medical.types.treatment')
     case 'surgery':
-      return 'Surgery'
+      return t('labs.animals.medical.types.surgery')
     case 'sampling':
-      return 'Sampling'
+      return t('labs.animals.medical.types.sampling')
     default:
-      return 'Observation'
+      return t('labs.animals.medical.types.observation')
   }
 }
 
 const getSeverityLabel = (severity: string) => {
   switch (severity) {
     case 'normal':
-      return 'Normal'
+      return t('labs.animals.medical.severity.normal')
     case 'minor':
-      return 'Minor'
+      return t('labs.animals.medical.severity.minor')
     case 'moderate':
-      return 'Moderate'
+      return t('labs.animals.medical.severity.moderate')
     case 'severe':
-      return 'Severe'
+      return t('labs.animals.medical.severity.severe')
     default:
       return severity
   }
@@ -607,7 +609,7 @@ const handleSaveAnimal = async (updatedAnimal: Animal | import('@/types/supabase
   if ('id' in updatedAnimal && updatedAnimal.id) {
     const result = await animalsStore.updateAnimal(updatedAnimal.id, updatedAnimal as Animal)
     if (result) {
-      toast.success('Animal successfully updated')
+      toast.success(t('labs.animals.animalUpdatedSuccess'))
     }
   }
 }
@@ -622,7 +624,7 @@ const handleAddMeasurement = async (newMeasurement: Omit<Measurement, 'id'>) => 
 
   const result = await animalsStore.addMeasurement(animalId, measurementWithId)
   if (result) {
-    toast.success('Measurement successfully added')
+    toast.success(t('labs.animals.measurementAddedSuccess'))
   }
 }
 
@@ -647,7 +649,7 @@ const handleAddMedicalRecord = async (newRecord: Omit<MedicalRecord, 'id'>) => {
       health_status: healthStatusUpdate as any
     })
 
-    toast.success('Medical record successfully added')
+    toast.success(t('labs.animals.medicalRecordAddedSuccess'))
   }
 }
 

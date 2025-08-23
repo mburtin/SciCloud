@@ -5,6 +5,7 @@
 
 import type { User, UserRole } from '@/types/supabase'
 import { formatDate } from './format.utils'
+import { useTranslation } from '@/composables/useLocale'
 
 /**
  * Determine user status based on activity
@@ -49,9 +50,10 @@ export { formatDate }
  * Get human-readable role label
  */
 export const getRoleLabel = (role: UserRole): string => {
+  const { t } = useTranslation()
   const labels = {
-    admin: 'Administrator',
-    user: 'User'
+    admin: t('common.labels.admin'),
+    user: t('common.labels.user')
   }
   return labels[role] || role
 }

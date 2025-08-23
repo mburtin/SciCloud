@@ -3,14 +3,14 @@
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-2xl font-bold text-foreground">
-          Security
+          {{ t('profile.security.title') }}
         </h1>
         <p class="text-muted-foreground">
-          Manage your account's security settings
+          {{ t('profile.security.subtitle') }}
         </p>
       </div>
       <Button @click="saveAllSettings">
-        Save Settings
+        {{ t('profile.security.saveSettings') }}
       </Button>
     </div>
 
@@ -20,17 +20,17 @@
       <Card>
         <CardHeader>
           <CardTitle class="flex items-center gap-2">
-            <Key class="h-5 w-5" /> Change Password
+            <Key class="h-5 w-5" /> {{ t('profile.security.changePassword') }}
           </CardTitle>
         </CardHeader>
         <CardContent class="space-y-4">
           <div class="space-y-2">
-            <Label for="current-password">Current Password</Label>
+            <Label for="current-password">{{ t('profile.security.currentPassword') }}</Label>
             <Input id="current-password" v-model="passwordForm.current" type="password"
               :class="{ 'border-red-500': passwordForm.current.length > 0 && !passwordValidation.currentNotEmpty }" />
           </div>
           <div class="space-y-2">
-            <Label for="new-password">New Password</Label>
+            <Label for="new-password">{{ t('profile.security.newPassword') }}</Label>
             <Input id="new-password" v-model="passwordForm.new" type="password" :class="{
               'border-red-500': passwordMessages.newPassword.error,
               'border-green-500': passwordMessages.newPassword.success && passwordForm.new.length > 0
@@ -44,7 +44,7 @@
             </p>
           </div>
           <div class="space-y-2">
-            <Label for="confirm-password">Confirm New Password</Label>
+            <Label for="confirm-password">{{ t('profile.security.confirmNewPassword') }}</Label>
             <Input id="confirm-password" v-model="passwordForm.confirm" type="password" :class="{
               'border-red-500': passwordMessages.confirmPassword.error,
               'border-green-500': passwordMessages.confirmPassword.success && passwordForm.confirm.length > 0
@@ -61,7 +61,7 @@
         <CardFooter>
           <Button @click="handlePasswordChange"
             :disabled="isUpdatingPassword || !passwordValidation.currentNotEmpty || !passwordValidation.newMinLength || !passwordValidation.passwordsMatch || !passwordValidation.newDifferentFromCurrent">
-            {{ isUpdatingPassword ? 'Updating...' : 'Update Password' }}
+            {{ isUpdatingPassword ? t('profile.security.updating') : t('profile.security.updatePassword') }}
           </Button>
         </CardFooter>
       </Card>
@@ -70,12 +70,12 @@
       <Card>
         <CardHeader>
           <CardTitle class="flex items-center gap-2">
-            <Mail class="h-5 w-5" /> Change Email
+            <Mail class="h-5 w-5" /> {{ t('profile.security.changeEmail') }}
           </CardTitle>
         </CardHeader>
         <CardContent class="space-y-4">
           <div class="space-y-2">
-            <Label for="new-email">New Email</Label>
+            <Label for="new-email">{{ t('profile.security.newEmail') }}</Label>
             <Input id="new-email" v-model="emailForm.new" type="email" :class="{
               'border-red-500': emailMessages.newEmail.error,
               'border-green-500': emailMessages.newEmail.success && emailForm.new.length > 0
@@ -88,7 +88,7 @@
             </p>
           </div>
           <div class="space-y-2">
-            <Label for="confirm-email">Confirm New Email</Label>
+            <Label for="confirm-email">{{ t('profile.security.confirmNewEmail') }}</Label>
             <Input id="confirm-email" v-model="emailForm.confirm" type="email" :class="{
               'border-red-500': emailMessages.confirmEmail.error,
               'border-green-500': emailMessages.confirmEmail.success && emailForm.confirm.length > 0
@@ -105,7 +105,7 @@
         <CardFooter>
           <Button @click="handleEmailChange"
             :disabled="isUpdatingEmail || !emailValidation.newValidFormat || !emailValidation.emailsMatch">
-            {{ isUpdatingEmail ? 'Updating...' : 'Update Email' }}
+            {{ isUpdatingEmail ? t('profile.security.updating') : t('profile.security.updateEmail') }}
           </Button>
         </CardFooter>
       </Card>
@@ -117,15 +117,15 @@
         <Card>
           <CardHeader>
             <CardTitle class="flex items-center gap-2">
-              <Fingerprint class="h-5 w-5" /> Two-Factor Authentication
+              <Fingerprint class="h-5 w-5" /> {{ t('profile.security.twoFactorAuth') }}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div class="flex items-center justify-between p-4 border rounded-lg">
               <div class="space-y-1">
-                <Label for="2fa-switch">Enable 2FA</Label>
+                <Label for="2fa-switch">{{ t('profile.security.enable2FA') }}</Label>
                 <p class="text-sm text-muted-foreground">
-                  Protect your account with a second factor.
+                  {{ t('profile.security.twoFactorDescription') }}
                 </p>
               </div>
               <Switch id="2fa-switch" :checked="securitySettings.twoFactorEnabled"
@@ -137,34 +137,34 @@
         <Card>
           <CardHeader>
             <CardTitle class="flex items-center gap-2">
-              <Shield class="h-5 w-5" /> Security Settings
+              <Shield class="h-5 w-5" /> {{ t('profile.security.securitySettings') }}
             </CardTitle>
           </CardHeader>
           <CardContent class="space-y-4">
             <div class="space-y-2">
-              <Label for="session-timeout">Session Timeout</Label>
+              <Label for="session-timeout">{{ t('profile.security.sessionTimeout') }}</Label>
               <Select v-model="securitySettings.sessionTimeout">
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="15">
-                    15 minutes
+                    {{ t('profile.security.sessionTimeouts.15') }}
                   </SelectItem>
                   <SelectItem value="30">
-                    30 minutes
+                    {{ t('profile.security.sessionTimeouts.30') }}
                   </SelectItem>
                   <SelectItem value="60">
-                    1 hour
+                    {{ t('profile.security.sessionTimeouts.60') }}
                   </SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div class="flex items-center justify-between p-4 border rounded-lg">
               <div class="space-y-1">
-                <Label>Login Notifications</Label>
+                <Label>{{ t('profile.security.loginNotifications') }}</Label>
                 <p class="text-sm text-muted-foreground">
-                  Be alerted for new logins.
+                  {{ t('profile.security.loginNotificationsDescription') }}
                 </p>
               </div>
               <Switch :checked="securitySettings.loginNotifications"
@@ -178,10 +178,10 @@
       <Card>
         <CardHeader>
           <CardTitle class="flex items-center gap-2">
-            <Monitor class="h-5 w-5" /> Active Sessions
+            <Monitor class="h-5 w-5" /> {{ t('profile.security.activeSessions') }}
           </CardTitle>
           <p class="text-sm text-muted-foreground">
-            Manage sessions on other devices.
+            {{ t('profile.security.manageSessionsDescription') }}
           </p>
         </CardHeader>
         <CardContent class="space-y-4">
@@ -190,21 +190,21 @@
               <Monitor class="h-5 w-5 text-muted-foreground" />
               <div>
                 <p class="font-medium">
-                  Current Browser Session
+                  {{ t('profile.security.currentBrowserSession') }}
                 </p>
                 <p class="text-sm text-muted-foreground">
-                  Expires: {{ new Date(currentSession.expires_at || 0).toLocaleString() }}
+                  {{ t('profile.security.expires') }}: {{ new Date(currentSession.expires_at || 0).toLocaleString() }}
                 </p>
               </div>
             </div>
             <div class="flex gap-2">
               <Badge variant="secondary">
-                Current
+                {{ t('profile.security.current') }}
               </Badge>
             </div>
           </div>
           <div v-else class="text-center py-4 text-muted-foreground">
-            No active sessions found
+            {{ t('profile.security.noActiveSessions') }}
           </div>
         </CardContent>
       </Card>
@@ -225,6 +225,9 @@ import { useAuthStore } from '@/stores/auth.store';
 import { useUserStore } from '@/stores/user.store';
 import { Fingerprint, Key, Mail, Monitor, Shield } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
+import { useTranslation } from '@/composables/useLocale';
+
+const { t } = useTranslation();
 
 // State for password change form
 const passwordForm = ref({
@@ -272,17 +275,17 @@ const emailValidation = computed(() => {
 const passwordMessages = computed(() => ({
   newPassword: {
     error: passwordValidation.value.newNotEmpty && !passwordValidation.value.newMinLength
-      ? 'Password must be at least 6 characters long'
+      ? t('profile.security.validation.passwordMinLength')
       : passwordValidation.value.newNotEmpty && !passwordValidation.value.newDifferentFromCurrent
-        ? 'New password must be different from current password'
+        ? t('profile.security.validation.passwordMustDiffer')
         : '',
-    success: passwordValidation.value.newMinLength && passwordValidation.value.newDifferentFromCurrent ? 'Valid password' : ''
+    success: passwordValidation.value.newMinLength && passwordValidation.value.newDifferentFromCurrent ? t('profile.security.validation.validPassword') : ''
   },
   confirmPassword: {
     error: passwordValidation.value.confirmNotEmpty && !passwordValidation.value.passwordsMatch
-      ? 'Passwords do not match'
+      ? t('profile.security.validation.passwordsNoMatch')
       : '',
-    success: passwordValidation.value.passwordsMatch ? 'Passwords match' : ''
+    success: passwordValidation.value.passwordsMatch ? t('profile.security.validation.passwordsMatch') : ''
   }
 }));
 
@@ -290,15 +293,15 @@ const passwordMessages = computed(() => ({
 const emailMessages = computed(() => ({
   newEmail: {
     error: emailValidation.value.newNotEmpty && !emailValidation.value.newValidFormat
-      ? 'Please enter a valid email address'
+      ? t('profile.security.validation.invalidEmail')
       : '',
-    success: emailValidation.value.newValidFormat ? 'Valid email format' : ''
+    success: emailValidation.value.newValidFormat ? t('profile.security.validation.validEmail') : ''
   },
   confirmEmail: {
     error: emailValidation.value.confirmNotEmpty && !emailValidation.value.emailsMatch
-      ? 'Emails do not match'
+      ? t('profile.security.validation.emailsNoMatch')
       : '',
-    success: emailValidation.value.emailsMatch ? 'Emails match' : ''
+    success: emailValidation.value.emailsMatch ? t('profile.security.validation.emailsMatch') : ''
   }
 }));
 
@@ -323,28 +326,28 @@ const handlePasswordChange = async () => {
   const validation = passwordValidation.value;
 
   if (!validation.currentNotEmpty) {
-    notification.error('Current Password Required', 'Please enter your current password.');
+    notification.error(t('profile.security.notifications.currentPasswordRequired'), t('profile.security.notifications.currentPasswordRequiredDesc'));
     return;
   }
   if (!validation.newNotEmpty) {
-    notification.error('New Password Required', 'Please enter a new password.');
+    notification.error(t('profile.security.notifications.newPasswordRequired'), t('profile.security.notifications.newPasswordRequiredDesc'));
     return;
   }
   if (!validation.newMinLength) {
-    notification.error('Password Too Short', 'Password must be at least 6 characters long.');
+    notification.error(t('profile.security.notifications.passwordTooShort'), t('profile.security.notifications.passwordTooShortDesc'));
     return;
   }
   if (!validation.newDifferentFromCurrent) {
-    notification.warning('Same Password', 'New password must be different from your current password.');
+    notification.warning(t('profile.security.notifications.samePassword'), t('profile.security.notifications.samePasswordDesc'));
     return;
   }
   if (!validation.passwordsMatch) {
-    notification.error('Passwords Don\'t Match', 'New passwords do not match.');
+    notification.error(t('profile.security.notifications.passwordsDontMatch'), t('profile.security.notifications.passwordsDontMatchDesc'));
     return;
   }
 
   if (!currentUser.value?.email) {
-    notification.error('User Error', 'User email not found.');
+    notification.error(t('profile.security.notifications.userError'), t('profile.security.notifications.userErrorDesc'));
     return;
   }
 
@@ -358,14 +361,14 @@ const handlePasswordChange = async () => {
     );
 
     if (result.success) {
-      notification.success('Success!', 'Your password has been updated successfully.');
+      notification.success(t('profile.security.notifications.success'), t('profile.security.notifications.passwordUpdatedSuccess'));
       // Reset form
       passwordForm.value = { current: '', new: '', confirm: '' };
     } else {
-      notification.error('Update Failed', result.error || 'Failed to update password.');
+      notification.error(t('profile.security.notifications.updateFailed'), result.error || t('profile.security.notifications.passwordUpdateFailed'));
     }
   } catch (error) {
-    notification.error('Unexpected Error', 'An unexpected error occurred. Please try again.');
+    notification.error(t('profile.security.notifications.unexpectedError'), t('profile.security.notifications.unexpectedErrorDesc'));
   } finally {
     isUpdatingPassword.value = false;
   }
@@ -376,15 +379,15 @@ const handleEmailChange = async () => {
   const validation = emailValidation.value;
 
   if (!validation.newNotEmpty) {
-    notification.error('Email Required', 'Please enter a new email address.');
+    notification.error(t('profile.security.notifications.emailRequired'), t('profile.security.notifications.emailRequiredDesc'));
     return;
   }
   if (!validation.newValidFormat) {
-    notification.error('Invalid Email', 'Please enter a valid email address.');
+    notification.error(t('profile.security.notifications.invalidEmail'), t('profile.security.notifications.invalidEmailDesc'));
     return;
   }
   if (!validation.emailsMatch) {
-    notification.error('Emails Don\'t Match', 'Email addresses do not match.');
+    notification.error(t('profile.security.notifications.emailsDontMatch'), t('profile.security.notifications.emailsDontMatchDesc'));
     return;
   }
 
@@ -394,14 +397,14 @@ const handleEmailChange = async () => {
     const result = await userStore.updateEmail(emailForm.value.new);
 
     if (result.success) {
-      notification.success('Email Updated!', 'Please check your new email for confirmation.');
+      notification.success(t('profile.security.notifications.emailUpdated'), t('profile.security.notifications.emailUpdatedDesc'));
       // Reset form
       emailForm.value = { new: '', confirm: '' };
     } else {
-      notification.error('Update Failed', result.error || 'Failed to update email.');
+      notification.error(t('profile.security.notifications.updateFailed'), result.error || t('profile.security.notifications.emailUpdateFailed'));
     }
   } catch (error) {
-    notification.error('Unexpected Error', 'An unexpected error occurred. Please try again.');
+    notification.error(t('profile.security.notifications.unexpectedError'), t('profile.security.notifications.unexpectedErrorDesc'));
   } finally {
     isUpdatingEmail.value = false;
   }
@@ -412,7 +415,7 @@ const handleEmailChange = async () => {
 
 const saveAllSettings = () => {
   console.log('Saving security settings:', JSON.parse(JSON.stringify(securitySettings.value)));
-  alert('Security settings saved!');
+  alert(t('profile.security.settingsSaved'));
 };
 
 </script>

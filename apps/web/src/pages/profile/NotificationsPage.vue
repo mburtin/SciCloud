@@ -3,14 +3,14 @@
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-2xl font-bold text-foreground">
-          Notifications
+          {{ t('profile.notifications.title') }}
         </h1>
         <p class="text-muted-foreground">
-          Manage your notification preferences
+          {{ t('profile.notifications.subtitle') }}
         </p>
       </div>
       <Button @click="saveSettings">
-        Save Changes
+        {{ t('profile.notifications.saveChanges') }}
       </Button>
     </div>
 
@@ -21,10 +21,10 @@
           <CardHeader>
             <CardTitle class="flex items-center gap-2">
               <Bell class="h-5 w-5" />
-              Notification Types
+              {{ t('profile.notifications.notificationTypes') }}
             </CardTitle>
             <p class="text-sm text-muted-foreground">
-              Select the types of notifications you want to receive.
+              {{ t('profile.notifications.notificationTypesDescription') }}
             </p>
           </CardHeader>
           <CardContent class="space-y-4">
@@ -39,7 +39,7 @@
                   </p>
                 </div>
               </div>
-              <Switch :id="key" :checked="type.enabled" @update:checked="type.enabled = $event" />
+              <Switch :id="key" :checked="settingsData.types[key].enabled" @update:checked="settingsData.types[key].enabled = $event" />
             </div>
           </CardContent>
         </Card>
@@ -51,7 +51,7 @@
           <CardHeader>
             <CardTitle class="flex items-center gap-2">
               <Settings class="h-5 w-5" />
-              Notification Methods
+              {{ t('profile.notifications.notificationMethods') }}
             </CardTitle>
           </CardHeader>
           <CardContent class="space-y-4">
@@ -60,7 +60,7 @@
               <div>
                 <Label :for="key">{{ method.label }}</Label>
               </div>
-              <Switch :id="key" :checked="method.enabled" @update:checked="method.enabled = $event" />
+              <Switch :id="key" :checked="settingsData.methods[key].enabled" @update:checked="settingsData.methods[key].enabled = $event" />
             </div>
           </CardContent>
         </Card>
@@ -69,24 +69,24 @@
           <CardHeader>
             <CardTitle class="flex items-center gap-2">
               <Clock class="h-5 w-5" />
-              Quiet Hours
+              {{ t('profile.notifications.quietHours') }}
             </CardTitle>
           </CardHeader>
           <CardContent class="space-y-4">
             <div class="flex items-center justify-between p-4 border rounded-lg">
               <div>
-                <Label for="quiet-hours">Enable quiet hours</Label>
+                <Label for="quiet-hours">{{ t('profile.notifications.enableQuietHours') }}</Label>
                 <p class="text-sm text-muted-foreground">
-                  Pause notifications during specific times.
+                  {{ t('profile.notifications.quietHoursDescription') }}
                 </p>
               </div>
-              <Switch id="quiet-hours" :checked="settings.quietHours.enabled"
-                @update:checked="settings.quietHours.enabled = $event" />
+              <Switch id="quiet-hours" :checked="settingsData.quietHours.enabled"
+                @update:checked="settingsData.quietHours.enabled = $event" />
             </div>
-            <div v-if="settings.quietHours.enabled" class="grid grid-cols-2 gap-4 pt-2">
+            <div v-if="settingsData.quietHours.enabled" class="grid grid-cols-2 gap-4 pt-2">
               <div>
-                <Label for="quiet-start">Start</Label>
-                <Select v-model="settings.quietHours.start">
+                <Label for="quiet-start">{{ t('profile.notifications.start') }}</Label>
+                <Select v-model="settingsData.quietHours.start">
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -99,8 +99,8 @@
                 </Select>
               </div>
               <div>
-                <Label for="quiet-end">End</Label>
-                <Select v-model="settings.quietHours.end">
+                <Label for="quiet-end">{{ t('profile.notifications.end') }}</Label>
+                <Select v-model="settingsData.quietHours.end">
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -127,50 +127,23 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { AlertTriangle, Bell, Calendar, Clock, FileText, FolderKanban, Mail, Settings, Users } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { useTranslation } from '@/composables/useLocale';
 
-const settings = ref({
+const { t } = useTranslation();
+
+const settingsData = ref({
   methods: {
-    email: { label: 'Email', enabled: true },
-    push: { label: 'Push Notifications', enabled: true },
+    email: { enabled: true },
+    push: { enabled: true },
   },
   types: {
-    projectUpdates: {
-      label: 'Project Updates',
-      description: 'Status changes, new tasks, etc.',
-      icon: FolderKanban,
-      enabled: true
-    },
-    documentUpdates: {
-      label: 'Documents & Files',
-      description: 'New documents, modifications.',
-      icon: FileText,
-      enabled: true
-    },
-    collaborationRequests: {
-      label: 'Collaboration Requests',
-      description: 'Invitations to join projects.',
-      icon: Users,
-      enabled: true
-    },
-    systemAlerts: {
-      label: 'System Alerts',
-      description: 'Security alerts, system updates.',
-      icon: AlertTriangle,
-      enabled: true
-    },
-    deadlineReminders: {
-      label: 'Deadline Reminders',
-      description: 'Upcoming task deadlines.',
-      icon: Calendar,
-      enabled: false
-    },
-    weeklyDigest: {
-      label: 'Weekly Digest',
-      description: 'A summary of project activity.',
-      icon: Mail,
-      enabled: false
-    },
+    projectUpdates: { icon: FolderKanban, enabled: true },
+    documentUpdates: { icon: FileText, enabled: true },
+    collaborationRequests: { icon: Users, enabled: true },
+    systemAlerts: { icon: AlertTriangle, enabled: true },
+    deadlineReminders: { icon: Calendar, enabled: false },
+    weeklyDigest: { icon: Mail, enabled: false },
   },
   quietHours: {
     enabled: false,
@@ -179,10 +152,62 @@ const settings = ref({
   },
 });
 
+const settings = computed(() => ({
+  methods: {
+    email: { 
+      label: t('profile.notifications.methods.email'), 
+      enabled: settingsData.value.methods.email.enabled 
+    },
+    push: { 
+      label: t('profile.notifications.methods.push'), 
+      enabled: settingsData.value.methods.push.enabled 
+    },
+  },
+  types: {
+    projectUpdates: {
+      label: t('profile.notifications.types.projectUpdates.label'),
+      description: t('profile.notifications.types.projectUpdates.description'),
+      icon: settingsData.value.types.projectUpdates.icon,
+      enabled: settingsData.value.types.projectUpdates.enabled
+    },
+    documentUpdates: {
+      label: t('profile.notifications.types.documentUpdates.label'),
+      description: t('profile.notifications.types.documentUpdates.description'),
+      icon: settingsData.value.types.documentUpdates.icon,
+      enabled: settingsData.value.types.documentUpdates.enabled
+    },
+    collaborationRequests: {
+      label: t('profile.notifications.types.collaborationRequests.label'),
+      description: t('profile.notifications.types.collaborationRequests.description'),
+      icon: settingsData.value.types.collaborationRequests.icon,
+      enabled: settingsData.value.types.collaborationRequests.enabled
+    },
+    systemAlerts: {
+      label: t('profile.notifications.types.systemAlerts.label'),
+      description: t('profile.notifications.types.systemAlerts.description'),
+      icon: settingsData.value.types.systemAlerts.icon,
+      enabled: settingsData.value.types.systemAlerts.enabled
+    },
+    deadlineReminders: {
+      label: t('profile.notifications.types.deadlineReminders.label'),
+      description: t('profile.notifications.types.deadlineReminders.description'),
+      icon: settingsData.value.types.deadlineReminders.icon,
+      enabled: settingsData.value.types.deadlineReminders.enabled
+    },
+    weeklyDigest: {
+      label: t('profile.notifications.types.weeklyDigest.label'),
+      description: t('profile.notifications.types.weeklyDigest.description'),
+      icon: settingsData.value.types.weeklyDigest.icon,
+      enabled: settingsData.value.types.weeklyDigest.enabled
+    },
+  },
+  quietHours: settingsData.value.quietHours,
+}));
+
 const saveSettings = () => {
   // In a real app, you would send this to your backend.
-  console.log('Saving settings:', JSON.parse(JSON.stringify(settings.value)));
+  console.log('Saving settings:', JSON.parse(JSON.stringify(settingsData.value)));
   // Here you can add a toast notification for feedback
-  alert('Settings saved!');
+  alert(t('profile.notifications.settingsSaved'));
 };
 </script>

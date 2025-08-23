@@ -5,16 +5,16 @@
       <div class="flex items-center justify-between">
         <div>
           <h1 class="text-2xl font-semibold text-foreground">
-            Consumables
+            {{ t('labs.consumables.title') }}
           </h1>
           <p class="text-muted-foreground mt-1">
-            Manage stock levels and orders for consumables
+            {{ t('labs.consumables.subtitle') }}
           </p>
         </div>
         <div class="flex items-center gap-2">
           <Button @click="openNewConsumableDialog">
             <Plus class="h-4 w-4 mr-2" />
-            New Consumable
+            {{ t('labs.consumables.newConsumable') }}
           </Button>
         </div>
       </div>
@@ -29,7 +29,7 @@
           </div>
           <div>
             <p class="text-sm text-muted-foreground">
-              Low stock
+              {{ t('labs.consumables.lowStock') }}
             </p>
             <p class="text-xl font-bold">
               {{ lowStockConsumables }}
@@ -44,7 +44,7 @@
           </div>
           <div>
             <p class="text-sm text-muted-foreground">
-              Expired
+              {{ t('labs.consumables.outOfStock') }}
             </p>
             <p class="text-xl font-bold">
               {{ expiredConsumables }}
@@ -59,7 +59,7 @@
           </div>
           <div>
             <p class="text-sm text-muted-foreground">
-              Out of stock
+              {{ t('labs.consumables.outOfStock') }}
             </p>
             <p class="text-xl font-bold">
               {{ outOfStockConsumables }}
@@ -74,7 +74,7 @@
           </div>
           <div>
             <p class="text-sm text-muted-foreground">
-              Expiring soon
+              {{ t('labs.consumables.expiringSoon') }}
             </p>
             <p class="text-xl font-bold">
               {{ expiringSoonConsumables }}
@@ -87,52 +87,52 @@
     <!-- Filters -->
     <div class="bg-card border rounded-lg p-4 flex items-center gap-4">
       <div class="relative w-full max-w-sm">
-        <Input v-model="searchQuery" placeholder="Search by name, brand, reference, supplier..." class="pl-10" />
+        <Input v-model="searchQuery" :placeholder="t('labs.animals.searchPlaceholder')" class="pl-10" />
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <Search class="h-5 w-5 text-muted-foreground" />
         </div>
       </div>
       <Select v-model="filterStock">
         <SelectTrigger class="w-48">
-          <SelectValue placeholder="All statuses" />
+          <SelectValue :placeholder="t('labs.animals.allStatuses')" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">
-            All Statuses
+            {{ t('labs.animals.allStatuses') }}
           </SelectItem>
           <SelectItem value="low">
-            Low Stock
+            {{ t('labs.consumables.lowStock') }}
           </SelectItem>
           <SelectItem value="outofstock">
-            Out of Stock
+            {{ t('labs.consumables.outOfStock') }}
           </SelectItem>
           <SelectItem value="expired">
-            Expired
+            {{ t('labs.consumables.outOfStock') }}
           </SelectItem>
         </SelectContent>
       </Select>
       <Select v-model="filterCategory">
         <SelectTrigger class="w-48">
-          <SelectValue placeholder="All categories" />
+          <SelectValue :placeholder="t('common.labels.category')" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">
-            All Categories
+            {{ t('common.labels.category') }}
           </SelectItem>
           <SelectItem value="Reagents">
-            Reagents
+            {{ t('labs.consumables.categories.reagents') }}
           </SelectItem>
           <SelectItem value="Glassware">
-            Glassware
+            {{ t('labs.consumables.categories.glassware') }}
           </SelectItem>
           <SelectItem value="Plasticware">
-            Plasticware
+            {{ t('labs.consumables.categories.plasticware') }}
           </SelectItem>
           <SelectItem value="Culture Media">
-            Culture Media
+            {{ t('labs.consumables.categories.cultureMedia') }}
           </SelectItem>
           <SelectItem value="Other">
-            Other
+            {{ t('labs.consumables.categories.other') }}
           </SelectItem>
         </SelectContent>
       </Select>
@@ -144,12 +144,12 @@
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Reference</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Stock</TableHead>
-              <TableHead>Location</TableHead>
-              <TableHead>Last Ordered</TableHead>
+              <TableHead>{{ t('labs.consumables.lotNumber') }}</TableHead>
+              <TableHead>{{ t('common.labels.name') }}</TableHead>
+              <TableHead>{{ t('common.labels.category') }}</TableHead>
+              <TableHead>{{ t('labs.consumables.quantity') }}</TableHead>
+              <TableHead>{{ t('common.labels.location') }}</TableHead>
+              <TableHead>{{ t('labs.consumables.supplier') }}</TableHead>
               <TableHead />
             </TableRow>
           </TableHeader>
@@ -164,16 +164,16 @@
                   {{ consumable.supplier }}
                 </div>
               </TableCell>
-              <TableCell>{{ consumable.category }}</TableCell>
+              <TableCell>{{ getCategoryLabel(consumable.category) }}</TableCell>
               <TableCell>
                 <div class="flex items-center gap-2">
                   <div class="w-2 h-2 rounded-full" :class="getStockIndicatorClass(consumable.stock_level)" />
                   <span>{{ consumable.stock }} {{ consumable.unit }}</span>
                   <Badge v-if="consumable.stock_level === 'outofstock'" variant="destructive">
-                    Out of Stock
+                    {{ t('labs.consumables.outOfStock') }}
                   </Badge>
                   <Badge v-else-if="consumable.stock_level === 'low'" variant="secondary">
-                    Low Stock
+                    {{ t('labs.consumables.lowStock') }}
                   </Badge>
                 </div>
               </TableCell>
@@ -183,29 +183,29 @@
                   {{ formatDate(consumable.last_order) }}
                 </div>
                 <div v-else class="text-sm text-muted-foreground">
-                  Never ordered
+                  {{ t('labs.consumables.supplier') }}
                 </div>
               </TableCell>
               <TableCell>
                 <DropdownMenu>
                   <DropdownMenuTrigger as-child>
                     <Button variant="ghost" class="h-8 w-8 p-0" @click.stop>
-                      <span class="sr-only">Open menu</span>
+                      <span class="sr-only">{{ t('common.actions.openMenu') }}</span>
                       <MoreHorizontal class="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                    <DropdownMenuLabel>{{ t('common.actions.actions') }}</DropdownMenuLabel>
                     <DropdownMenuItem @click="openEditConsumableDialog(consumable)">
-                      Edit
+                      {{ t('common.actions.edit') }}
                     </DropdownMenuItem>
                     <DropdownMenuItem :disabled="consumable.stock_level === 'outofstock'"
                       @click="updateStock(consumable.id)">
-                      Use Stock
+                      {{ t('common.actions.update') }}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem class="text-red-500" @click="handleDeleteConsumable(consumable.id)">
-                      Delete
+                      {{ t('common.actions.delete') }}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -221,72 +221,72 @@
   <Dialog v-model:open="isNewConsumableDialogOpen">
     <DialogContent class="sm:max-w-[600px]">
       <DialogHeader>
-        <DialogTitle>Add New Consumable</DialogTitle>
+        <DialogTitle>{{ t('labs.consumables.newConsumable') }}</DialogTitle>
         <DialogDescription>
-          Fill in the details for the new consumable item.
+          {{ t('labs.consumables.subtitle') }}
         </DialogDescription>
       </DialogHeader>
       <div class="grid gap-4 py-4">
         <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="name" class="text-right">Name</Label>
+          <Label for="name" class="text-right">{{ t('common.labels.name') }}</Label>
           <Input id="name" v-model="newConsumableForm.name" class="col-span-3" />
         </div>
         <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="reference" class="text-right">Reference</Label>
+          <Label for="reference" class="text-right">{{ t('labs.consumables.lotNumber') }}</Label>
           <Input id="reference" v-model="newConsumableForm.reference" class="col-span-3" />
         </div>
         <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="supplier" class="text-right">Supplier</Label>
+          <Label for="supplier" class="text-right">{{ t('labs.consumables.supplier') }}</Label>
           <Input id="supplier" v-model="newConsumableForm.supplier" class="col-span-3" />
         </div>
         <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="category" class="text-right">Category</Label>
+          <Label for="category" class="text-right">{{ t('common.labels.category') }}</Label>
           <Select v-model="newConsumableForm.category">
             <SelectTrigger class="col-span-3">
-              <SelectValue placeholder="Select a category" />
+              <SelectValue :placeholder="t('common.labels.category')" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="Reagents">
-                Reagents
+                {{ t('labs.consumables.categories.reagents') }}
               </SelectItem>
               <SelectItem value="Glassware">
-                Glassware
+                {{ t('labs.consumables.categories.glassware') }}
               </SelectItem>
               <SelectItem value="Plasticware">
-                Plasticware
+                {{ t('labs.consumables.categories.plasticware') }}
               </SelectItem>
               <SelectItem value="Culture Media">
-                Culture Media
+                {{ t('labs.consumables.categories.cultureMedia') }}
               </SelectItem>
               <SelectItem value="Other">
-                Other
+                {{ t('labs.consumables.categories.other') }}
               </SelectItem>
             </SelectContent>
           </Select>
         </div>
         <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="stock" class="text-right">Current Stock</Label>
+          <Label for="stock" class="text-right">{{ t('labs.consumables.quantity') }}</Label>
           <Input id="stock" v-model.number="newConsumableForm.stock" type="number" class="col-span-3" />
         </div>
         <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="quantity" class="text-right">Package Size</Label>
+          <Label for="quantity" class="text-right">{{ t('labs.consumables.quantity') }}</Label>
           <Input id="quantity" v-model.number="newConsumableForm.quantity" type="number" class="col-span-3" />
         </div>
         <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="unit" class="text-right">Unit</Label>
+          <Label for="unit" class="text-right">{{ t('labs.consumables.unit') }}</Label>
           <Input id="unit" v-model="newConsumableForm.unit" class="col-span-3" />
         </div>
         <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="location" class="text-right">Location</Label>
+          <Label for="location" class="text-right">{{ t('common.labels.location') }}</Label>
           <Input id="location" v-model="newConsumableForm.location" class="col-span-3" />
         </div>
       </div>
       <DialogFooter>
         <Button variant="outline" @click="isNewConsumableDialogOpen = false">
-          Cancel
+          {{ t('common.actions.cancel') }}
         </Button>
         <Button @click="handleCreateConsumable">
-          Save Consumable
+          {{ t('common.actions.save') }}
         </Button>
       </DialogFooter>
     </DialogContent>
@@ -296,47 +296,47 @@
   <Dialog v-model:open="isEditDialogOpen">
     <DialogContent v-if="editingConsumable" class="sm:max-w-[600px]">
       <DialogHeader>
-        <DialogTitle>Edit Consumable</DialogTitle>
+        <DialogTitle>{{ t('common.actions.edit') }}</DialogTitle>
         <DialogDescription>
-          Update details for {{ editingConsumable.name }}.
+          {{ t('common.actions.update') }}
         </DialogDescription>
       </DialogHeader>
       <div class="grid gap-4 py-4">
         <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="edit-name" class="text-right">Name</Label>
+          <Label for="edit-name" class="text-right">{{ t('common.labels.name') }}</Label>
           <Input id="edit-name" v-model="editingConsumable.name" class="col-span-3" />
         </div>
         <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="edit-reference" class="text-right">Reference</Label>
+          <Label for="edit-reference" class="text-right">{{ t('labs.consumables.lotNumber') }}</Label>
           <Input id="edit-reference" v-model="editingConsumable.reference" class="col-span-3" />
         </div>
         <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="edit-supplier" class="text-right">Supplier</Label>
+          <Label for="edit-supplier" class="text-right">{{ t('labs.consumables.supplier') }}</Label>
           <Input id="edit-supplier" v-model="editingConsumable.supplier" class="col-span-3" />
         </div>
         <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="edit-stock" class="text-right">Current Stock</Label>
+          <Label for="edit-stock" class="text-right">{{ t('labs.consumables.quantity') }}</Label>
           <Input id="edit-stock" v-model.number="editingConsumable.stock" type="number" class="col-span-3" />
         </div>
         <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="edit-quantity" class="text-right">Package Size</Label>
+          <Label for="edit-quantity" class="text-right">{{ t('labs.consumables.quantity') }}</Label>
           <Input id="edit-quantity" v-model.number="editingConsumable.quantity" type="number" class="col-span-3" />
         </div>
         <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="edit-unit" class="text-right">Unit</Label>
+          <Label for="edit-unit" class="text-right">{{ t('labs.consumables.unit') }}</Label>
           <Input id="edit-unit" v-model="editingConsumable.unit" class="col-span-3" />
         </div>
         <div class="grid grid-cols-4 items-center gap-4">
-          <Label for="edit-location" class="text-right">Location</Label>
+          <Label for="edit-location" class="text-right">{{ t('common.labels.location') }}</Label>
           <Input id="edit-location" v-model="editingConsumable.location" class="col-span-3" />
         </div>
       </div>
       <DialogFooter>
         <Button variant="outline" @click="isEditDialogOpen = false">
-          Cancel
+          {{ t('common.actions.cancel') }}
         </Button>
         <Button @click="handleUpdateConsumable">
-          Save Changes
+          {{ t('common.actions.save') }}
         </Button>
       </DialogFooter>
     </DialogContent>
@@ -346,9 +346,9 @@
   <Dialog v-model:open="isOrderDialogOpen">
     <DialogContent class="sm:max-w-[700px]">
       <DialogHeader>
-        <DialogTitle>Order Stock</DialogTitle>
+        <DialogTitle>{{ t('common.actions.create') }}</DialogTitle>
         <DialogDescription>
-          Review items with low stock and place an order.
+          {{ t('labs.consumables.subtitle') }}
         </DialogDescription>
       </DialogHeader>
       <div class="py-4">
@@ -359,19 +359,19 @@
             <Badge :variant="item.stock_level === 'outofstock' ? 'destructive' : 'secondary'">
               {{ item.stock_level }}
             </Badge>
-            <Input v-model.number="orderQuantities[item.id]" type="number" placeholder="Quantity" class="col-span-1" />
+            <Input v-model.number="orderQuantities[item.id]" type="number" :placeholder="t('labs.consumables.quantity')" class="col-span-1" />
           </div>
         </div>
         <div v-else class="text-center text-muted-foreground py-8">
-          No items are currently low on stock.
+          {{ t('labs.consumables.noConsumables') }}
         </div>
       </div>
       <DialogFooter>
         <Button variant="outline" @click="isOrderDialogOpen = false">
-          Cancel
+          {{ t('common.actions.cancel') }}
         </Button>
         <Button :disabled="lowStockItems.length === 0" @click="handlePlaceOrder">
-          Place Order
+          {{ t('common.actions.create') }}
         </Button>
       </DialogFooter>
     </DialogContent>
@@ -408,6 +408,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useTranslation } from '@/composables/useLocale';
 import { formatDate } from '@/lib/format.utils';
 import { useAuthStore } from '@/stores/auth.store';
 import { useConsumablesStore } from '@/stores/consumables.store';
@@ -422,6 +423,9 @@ import {
   TrendingDown
 } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
+
+// Translation
+const { t } = useTranslation()
 
 // Stores
 const consumablesStore = useConsumablesStore()
@@ -470,6 +474,17 @@ const getStockIndicatorClass = (stockLevel: StockLevel) => {
     'outofstock': 'bg-red-500'
   }
   return classes[stockLevel]
+}
+
+const getCategoryLabel = (category: string) => {
+  const categoryMap: Record<string, string> = {
+    'Reagents': t('labs.consumables.categories.reagents'),
+    'Glassware': t('labs.consumables.categories.glassware'), 
+    'Plasticware': t('labs.consumables.categories.plasticware'),
+    'Culture Media': t('labs.consumables.categories.cultureMedia'),
+    'Other': t('labs.consumables.categories.other')
+  }
+  return categoryMap[category] || category
 }
 
 
@@ -546,7 +561,7 @@ const handleUpdateConsumable = async () => {
 }
 
 const handleDeleteConsumable = async (consumableId: string) => {
-  if (confirm('Are you sure you want to delete this consumable?')) {
+  if (confirm(t('labs.animals.confirmDelete'))) {
     await consumablesStore.deleteConsumable(consumableId)
   }
 }

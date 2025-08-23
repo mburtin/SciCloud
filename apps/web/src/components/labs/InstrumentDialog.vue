@@ -2,35 +2,34 @@
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
     <DialogContent class="max-w-2xl max-h-[90vh] overflow-y-auto">
       <DialogHeader>
-        <DialogTitle>{{ isEditing ? `Edit instrument ${instrument?.name}` : 'Add New Instrument' }}</DialogTitle>
+        <DialogTitle>{{ isEditing ? t('labs.instruments.form.editInstrument', { name: instrument?.name }) : t('labs.instruments.form.addNewInstrument') }}</DialogTitle>
         <DialogDescription>
-          {{ isEditing ? 'Edit the instrument information.' : 'Fill in the details for the new instrument.' }} Fields
-          marked with an asterisk (*) are required.
+          {{ isEditing ? t('labs.instruments.form.editInformation') : t('labs.instruments.form.fillDetails') }} {{ t('labs.instruments.form.requiredFields') }}
         </DialogDescription>
       </DialogHeader>
 
       <form @submit.prevent="handleSubmit" class="space-y-6">
         <!-- Basic information -->
         <div class="space-y-4">
-          <h3 class="text-lg font-medium">Basic information</h3>
+          <h3 class="text-lg font-medium">{{ t('labs.instruments.form.basicInformation') }}</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="space-y-2">
-              <Label for="name">Name *</Label>
-              <Input id="name" v-model="formData.name" placeholder="Confocal Microscope" required />
+              <Label for="name">{{ t('labs.instruments.form.name') }} *</Label>
+              <Input id="name" v-model="formData.name" :placeholder="t('labs.instruments.form.namePlaceholder')" required />
             </div>
             <div class="space-y-2">
-              <Label for="model">Model *</Label>
-              <Input id="model" v-model="formData.model" placeholder="LSM 980" required />
+              <Label for="model">{{ t('labs.instruments.form.model') }} *</Label>
+              <Input id="model" v-model="formData.model" :placeholder="t('labs.instruments.form.modelPlaceholder')" required />
             </div>
             <div class="space-y-2">
-              <Label for="manufacturer">Manufacturer *</Label>
-              <Input id="manufacturer" v-model="formData.manufacturer" placeholder="Zeiss" required />
+              <Label for="manufacturer">{{ t('labs.instruments.form.manufacturer') }} *</Label>
+              <Input id="manufacturer" v-model="formData.manufacturer" :placeholder="t('labs.instruments.form.manufacturerPlaceholder')" required />
             </div>
             <div class="space-y-2">
-              <Label for="category">Category *</Label>
+              <Label for="category">{{ t('labs.instruments.form.category') }} *</Label>
               <Select v-model="formData.category">
                 <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
+                  <SelectValue :placeholder="t('labs.instruments.form.selectCategory')" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem v-for="category in categoryOptions" :key="category" :value="category">
@@ -40,25 +39,25 @@
               </Select>
             </div>
             <div class="space-y-2">
-              <Label for="serialNumber">Serial Number</Label>
-              <Input id="serialNumber" v-model="formData.serial_number" placeholder="MICR-001" />
+              <Label for="serialNumber">{{ t('labs.instruments.form.serialNumber') }}</Label>
+              <Input id="serialNumber" v-model="formData.serial_number" :placeholder="t('labs.instruments.form.serialNumberPlaceholder')" />
             </div>
             <div class="space-y-2">
-              <Label for="location">Location</Label>
-              <Input id="location" v-model="formData.location" placeholder="Room A-101" />
+              <Label for="location">{{ t('labs.instruments.form.location') }}</Label>
+              <Input id="location" v-model="formData.location" :placeholder="t('labs.instruments.form.locationPlaceholder')" />
             </div>
           </div>
         </div>
 
         <!-- Status and maintenance -->
         <div class="space-y-4">
-          <h3 class="text-lg font-medium">Status and maintenance</h3>
+          <h3 class="text-lg font-medium">{{ t('labs.instruments.form.statusAndMaintenance') }}</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="space-y-2">
-              <Label for="status">Status *</Label>
+              <Label for="status">{{ t('labs.instruments.form.status') }} *</Label>
               <Select v-model="formData.status">
                 <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
+                  <SelectValue :placeholder="t('labs.instruments.form.selectStatus')" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem v-for="option in statusOptions" :key="option.value" :value="option.value">
@@ -70,17 +69,17 @@
             <div class="flex items-center space-x-2">
               <input id="maintenanceDue" type="checkbox" v-model="formData.maintenance_due"
                 class="rounded border-gray-300 text-primary focus:ring-primary" />
-              <Label for="maintenanceDue">Maintenance due</Label>
+              <Label for="maintenanceDue">{{ t('labs.instruments.form.maintenanceDue') }}</Label>
             </div>
           </div>
         </div>
 
         <DialogFooter>
           <Button type="button" variant="outline" @click="$emit('update:open', false)">
-            Cancel
+            {{ t('common.cancel') }}
           </Button>
           <Button type="submit" :disabled="isSubmitting">
-            {{ isSubmitting ? 'Saving...' : (isEditing ? 'Save changes' : 'Save Instrument') }}
+            {{ isSubmitting ? t('common.saving') : (isEditing ? t('common.saveChanges') : t('labs.instruments.form.saveInstrument')) }}
           </Button>
         </DialogFooter>
       </form>
@@ -107,6 +106,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useTranslation } from '@/composables/useLocale'
 import type { Instrument, InstrumentInsert } from '@/types/supabase'
 import { computed, reactive, ref, watch } from 'vue'
 import { toast } from 'vue-sonner'
@@ -127,29 +127,30 @@ const emit = defineEmits<{
   'save': [instrument: Instrument | InstrumentInsert]
 }>()
 
+const { t } = useTranslation()
 const isSubmitting = ref(false)
 const isEditing = computed(() => props.mode === 'edit')
 
-const categoryOptions = [
-  'Microscopes',
-  'Centrifuges',
-  'Spectrophotometers',
-  'PCR',
-  'Incubators',
-  'Balances',
-  'Pipettes',
-  'Autoclave',
-  'Freezers',
-  'Fume Hoods',
-  'Other'
-]
+const categoryOptions = computed(() => [
+  t('labs.instruments.categories.microscopes'),
+  t('labs.instruments.categories.centrifuges'),
+  t('labs.instruments.categories.spectrophotometers'),
+  t('labs.instruments.categories.pcr'),
+  t('labs.instruments.categories.incubators'),
+  t('labs.instruments.categories.balances'),
+  t('labs.instruments.categories.pipettes'),
+  t('labs.instruments.categories.autoclave'),
+  t('labs.instruments.categories.freezers'),
+  t('labs.instruments.categories.fumeHoods'),
+  t('labs.instruments.categories.other')
+])
 
-const statusOptions = [
-  { value: 'available', label: 'Available' },
-  { value: 'in-use', label: 'In Use' },
-  { value: 'maintenance', label: 'In Maintenance' },
-  { value: 'broken', label: 'Broken' },
-]
+const statusOptions = computed(() => [
+  { value: 'available', label: t('labs.instruments.status.available') },
+  { value: 'in-use', label: t('labs.instruments.status.inUse') },
+  { value: 'maintenance', label: t('labs.instruments.status.maintenance') },
+  { value: 'broken', label: t('labs.instruments.status.broken') },
+])
 
 const getDefaultFormData = (): InstrumentInsert => ({
   name: '',
@@ -190,27 +191,27 @@ const handleSubmit = async () => {
   try {
     // Basic validation
     if (!formData.name?.trim()) {
-      toast.error('Name is required')
+      toast.error(t('labs.instruments.validation.nameRequired'))
       return
     }
     if (!formData.model?.trim()) {
-      toast.error('Model is required')
+      toast.error(t('labs.instruments.validation.modelRequired'))
       return
     }
     if (!formData.manufacturer?.trim()) {
-      toast.error('Manufacturer is required')
+      toast.error(t('labs.instruments.validation.manufacturerRequired'))
       return
     }
     if (!formData.category?.trim()) {
-      toast.error('Category is required')
+      toast.error(t('labs.instruments.validation.categoryRequired'))
       return
     }
 
     emit('save', { ...formData })
     emit('update:open', false)
-    toast.success(`Instrument ${isEditing.value ? 'updated' : 'created'} successfully`)
+    toast.success(isEditing.value ? t('labs.instruments.instrumentUpdated') : t('labs.instruments.instrumentCreated'))
   } catch (error) {
-    toast.error(`Error ${isEditing.value ? 'updating' : 'creating'} instrument`)
+    toast.error(isEditing.value ? t('labs.instruments.instrumentUpdateError') : t('labs.instruments.instrumentCreateError'))
   } finally {
     isSubmitting.value = false
   }

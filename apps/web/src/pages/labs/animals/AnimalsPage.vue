@@ -5,15 +5,15 @@
       <div class="flex items-center justify-between">
         <div>
           <h1 class="text-2xl font-semibold text-foreground">
-            Animals
+            {{ t('labs.animals.title') }}
           </h1>
           <p class="text-muted-foreground mt-1">
-            Manage and track laboratory animals.
+            {{ t('labs.animals.subtitle') }}
           </p>
         </div>
         <Button @click="openNewAnimalDialog">
           <Plus class="h-4 w-4 mr-2" />
-          New Animal
+          {{ t('labs.animals.newAnimal') }}
         </Button>
       </div>
     </div>
@@ -27,7 +27,7 @@
           </div>
           <div>
             <p class="text-sm text-muted-foreground">
-              Total animals
+              {{ t('labs.animals.totalAnimals') }}
             </p>
             <p class="text-xl font-bold">
               {{ totalAnimals }}
@@ -42,7 +42,7 @@
           </div>
           <div>
             <p class="text-sm text-muted-foreground">
-              Alive
+              {{ t('labs.animals.alive') }}
             </p>
             <p class="text-xl font-bold">
               {{ aliveAnimals }}
@@ -57,7 +57,7 @@
           </div>
           <div>
             <p class="text-sm text-muted-foreground">
-              In experimentation
+              {{ t('labs.animals.inExperimentation') }}
             </p>
             <p class="text-xl font-bold">
               {{ experimentAnimals }}
@@ -72,7 +72,7 @@
           </div>
           <div>
             <p class="text-sm text-muted-foreground">
-              Health monitoring
+              {{ t('labs.animals.healthMonitoring') }}
             </p>
             <p class="text-xl font-bold">
               {{ healthMonitoringAnimals }}
@@ -87,7 +87,7 @@
           </div>
           <div>
             <p class="text-sm text-muted-foreground">
-              Upcoming exams
+              {{ t('labs.animals.upcomingExams') }}
             </p>
             <p class="text-xl font-bold">
               {{ upcomingExamsAnimals }}
@@ -100,62 +100,62 @@
     <!-- Filters -->
     <div class="bg-card border rounded-lg p-4 flex items-center gap-4">
       <div class="relative w-full max-w-sm">
-        <Input v-model="searchQuery" placeholder="Search by ID, species, strain, veterinarian..." class="pl-10" />
+        <Input v-model="searchQuery" :placeholder="t('labs.animals.searchPlaceholder')" class="pl-10" />
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <Search class="h-5 w-5 text-muted-foreground" />
         </div>
       </div>
       <Select v-model="filterSpecies">
         <SelectTrigger class="w-48">
-          <SelectValue placeholder="All species" />
+          <SelectValue :placeholder="t('labs.animals.allSpecies')" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">
-            All Species
+            {{ t('labs.animals.allSpecies') }}
           </SelectItem>
           <SelectItem value="mouse">
-            Mouse
+            {{ t('labs.animals.mouse') }}
           </SelectItem>
           <SelectItem value="rat">
-            Rat
+            {{ t('labs.animals.rat') }}
           </SelectItem>
           <SelectItem value="rabbit">
-            Rabbit
+            {{ t('labs.animals.rabbit') }}
           </SelectItem>
           <SelectItem value="other">
-            Other
+            {{ t('labs.animals.other') }}
           </SelectItem>
         </SelectContent>
       </Select>
       <Select v-model="filterStatus">
         <SelectTrigger class="w-48">
-          <SelectValue placeholder="All statuses" />
+          <SelectValue :placeholder="t('labs.animals.allStatuses')" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">
-            All Statuses
+            {{ t('labs.animals.allStatuses') }}
           </SelectItem>
           <SelectItem value="active">
-            Active
+            {{ t('labs.animals.active') }}
           </SelectItem>
           <SelectItem value="quarantine">
-            Quarantine
+            {{ t('labs.animals.quarantine') }}
           </SelectItem>
           <SelectItem value="experiment">
-            In Experiment
+            {{ t('labs.animals.inExperiment') }}
           </SelectItem>
           <SelectItem value="archived">
-            Archived
+            {{ t('labs.animals.archived') }}
           </SelectItem>
         </SelectContent>
       </Select>
       <Select v-model="filterProject">
         <SelectTrigger class="w-48">
-          <SelectValue placeholder="All projects" />
+          <SelectValue :placeholder="t('labs.animals.allProjects')" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">
-            All Projects
+            {{ t('labs.animals.allProjects') }}
           </SelectItem>
           <SelectItem value="Project Alpha">
             Project Alpha
@@ -176,13 +176,13 @@
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>ID</TableHead>
-              <TableHead>Species</TableHead>
-              <TableHead>Age</TableHead>
-              <TableHead>Sex</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Project</TableHead>
-              <TableHead>Last Updated</TableHead>
+              <TableHead>{{ t('labs.animals.animalId') }}</TableHead>
+              <TableHead>{{ t('labs.animals.species') }}</TableHead>
+              <TableHead>{{ t('labs.animals.age') }}</TableHead>
+              <TableHead>{{ t('labs.animals.gender') }}</TableHead>
+              <TableHead>{{ t('labs.animals.status') }}</TableHead>
+              <TableHead>{{ t('common.labels.project') }}</TableHead>
+              <TableHead>{{ t('common.labels.updated') }}</TableHead>
               <TableHead />
             </TableRow>
           </TableHeader>
@@ -210,7 +210,7 @@
                   {{ animal.protocols[0] }}
                 </div>
                 <div v-else class="text-sm text-muted-foreground">
-                  No protocol
+                  {{ t('labs.animals.noProtocol') }}
                 </div>
               </TableCell>
               <TableCell>{{ formatDate(animal.updated_at) }}</TableCell>
@@ -218,21 +218,21 @@
                 <DropdownMenu>
                   <DropdownMenuTrigger as-child>
                     <Button variant="ghost" class="h-8 w-8 p-0" @click.stop>
-                      <span class="sr-only">Open menu</span>
+                      <span class="sr-only">{{ t('common.actions.openMenu') }}</span>
                       <MoreHorizontal class="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                    <DropdownMenuLabel>{{ t('common.actions.actions') }}</DropdownMenuLabel>
                     <DropdownMenuItem @click="navigateToAnimalDetail(animal.id)">
-                      View details
+                      {{ t('labs.animals.viewDetails') }}
                     </DropdownMenuItem>
                     <DropdownMenuItem @click="openEditAnimalDialog(animal)">
-                      Edit
+                      {{ t('common.actions.edit') }}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem class="text-red-500" @click="handleDeleteAnimal(animal.id)">
-                      Delete
+                      {{ t('common.actions.delete') }}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -287,11 +287,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useTranslation } from '@/composables/useLocale'
 import { formatDate } from '@/lib/format.utils'
 
 // Router and store
 const router = useRouter()
 const animalsStore = useAnimalsStore()
+const { t } = useTranslation()
 
 // Initialize animals data
 onMounted(() => {
@@ -334,20 +336,20 @@ const filteredAnimals = computed(() => animalsStore.filteredAnimals)
 // Methods
 const getSpeciesLabel = (species: string) => {
   const speciesLabels: Record<string, string> = {
-    'Mus musculus': 'Mouse',
-    'Rattus norvegicus': 'Rat',
-    'Oryctolagus cuniculus': 'Rabbit',
-    'Cavia porcellus': 'Guinea Pig'
+    'Mus musculus': t('labs.animals.mouse'),
+    'Rattus norvegicus': t('labs.animals.rat'),
+    'Oryctolagus cuniculus': t('labs.animals.rabbit'),
+    'Cavia porcellus': t('labs.animals.guineaPig')
   }
   return speciesLabels[species] || species
 }
 
 const getStatusLabel = (status: string) => {
   const labels: Record<string, string> = {
-    'alive': 'Alive',
-    'deceased': 'Deceased',
-    'transferred': 'Transferred',
-    'experimental': 'In Experiment'
+    'alive': t('labs.animals.alive'),
+    'deceased': t('labs.animals.deceased'),
+    'transferred': t('labs.animals.transferred'),
+    'experimental': t('labs.animals.experimental')
   }
   return labels[status] || status
 }
@@ -368,14 +370,14 @@ const calculateAge = (birthDate: string) => {
   const diffInDays = Math.floor((today.getTime() - birth.getTime()) / (1000 * 3600 * 24))
 
   if (diffInDays < 30) {
-    return `${diffInDays} days`
+    return `${diffInDays} ${t('labs.animals.days')}`
   } else if (diffInDays < 365) {
     const weeks = Math.floor(diffInDays / 7)
-    return `${weeks} weeks`
+    return `${weeks} ${t('labs.animals.weeks')}`
   } else {
     const years = Math.floor(diffInDays / 365)
     const months = Math.floor((diffInDays % 365) / 30)
-    return `${years}y ${months}m`
+    return `${years}${t('labs.animals.yearsShort')} ${months}${t('labs.animals.monthsShort')}`
   }
 }
 
@@ -411,7 +413,7 @@ const handleUpdateAnimal = async (animalData: Animal | AnimalInsert) => {
 }
 
 const handleDeleteAnimal = async (animalId: string) => {
-  if (confirm('Are you sure you want to delete this animal?')) {
+  if (confirm(t('labs.animals.confirmDelete'))) {
     await animalsStore.deleteAnimal(animalId)
   }
 }

@@ -11,7 +11,7 @@
               SciCloud
             </h1>
             <p class="text-xs text-muted-foreground">
-              Laboratory Manager
+              {{ t('app.tagline') }}
             </p>
           </div>
         </div>
@@ -40,7 +40,7 @@
         <div class="relative group">
           <Search
             class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-          <Input v-model="searchQuery" placeholder="Search..."
+          <Input v-model="searchQuery" :placeholder="t('common.actions.search')"
             class="pl-10 layout-search-width !bg-white border-border text-foreground placeholder:text-muted-foreground focus:!bg-white focus:border-primary/50 rounded-xl transition-all duration-300" />
         </div>
 
@@ -68,24 +68,24 @@
               </div>
               <div v-else>
                 <p class="font-semibold text-popover-foreground">
-                  {{ user.name || 'User' }}
+                  {{ user.name || t('common.user') }}
                 </p>
                 <p class="text-sm text-muted-foreground font-normal">
-                  {{ user.email || 'No email' }}
+                  {{ user.email || t('common.noEmail') }}
                 </p>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem @click="() => router.push('/profile')">
-              <User class="h-4 w-4 mr-2" /> Profile
+              <User class="h-4 w-4 mr-2" /> {{ t('navigation.profile') }}
             </DropdownMenuItem>
             <DropdownMenuItem v-if="userStore.currentUserProfile?.role === 'admin'"
               @click="() => router.push('/admin/settings')">
-              <Settings class="h-4 w-4 mr-2" /> Settings
+              <Settings class="h-4 w-4 mr-2" /> {{ t('navigation.settings') }}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem @click="logout">
-              <LogOut class="h-4 w-4 mr-2" /> Logout
+              <LogOut class="h-4 w-4 mr-2" /> {{ t('auth.logout') }}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -121,19 +121,21 @@ import {
 } from 'lucide-vue-next'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useTranslation } from '@/composables/useLocale'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 const userStore = useUserStore()
 const notificationsStore = useNotificationsStore()
+const { t } = useTranslation()
 
 // Navigation modules
-const mainModules: NavigationModule[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: 'layout-dashboard', to: '/dashboard' },
-  { id: 'laboratory', label: 'Laboratory', icon: 'test-tube', to: '/lab/animals' },
-  { id: 'projects', label: 'Projects', icon: 'folder-open', to: '/projects' },
-]
+const mainModules = computed(() => [
+  { id: 'dashboard', label: t('navigation.dashboard'), icon: 'layout-dashboard', to: '/dashboard' },
+  { id: 'laboratory', label: t('navigation.laboratory'), icon: 'test-tube', to: '/lab/animals' },
+  { id: 'projects', label: t('navigation.projects'), icon: 'folder-open', to: '/projects' },
+])
 
 // Use composables
 const realtimeNotifications = useRealtimeNotifications()

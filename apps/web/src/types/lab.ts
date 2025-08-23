@@ -64,12 +64,3 @@ export const healthStatusLabels = {
   critical: 'Critical'
 } as const
 
-export const documentTypeLabels = {
-  'health-certificate': 'Health certificate',
-  'protocol': 'Protocol',
-  'report': 'Report',
-  'photo': 'Photo',
-  'analysis': 'Analysis',
-  'authorization': 'Authorization',
-  'other': 'Other'
-} as const

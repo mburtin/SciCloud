@@ -4,26 +4,26 @@
       <DialogHeader>
         <DialogTitle class="flex items-center gap-2">
           <Stethoscope class="h-5 w-5" />
-          New measurement
+          {{ t('labs.animals.measurement.newMeasurement') }}
         </DialogTitle>
         <DialogDescription>
-          Add a new measurement for this animal. All fields marked with an asterisk (*) are required.
+          {{ t('labs.animals.measurement.newMeasurementDescription') }}
         </DialogDescription>
       </DialogHeader>
 
       <form @submit.prevent="handleSubmit" class="space-y-6">
         <!-- Date -->
         <div class="space-y-2">
-          <Label for="date">Measurement date *</Label>
+          <Label for="date">{{ t('labs.animals.measurement.date') }} *</Label>
           <Input id="date" type="date" v-model="formData.date" :max="today" />
         </div>
 
         <!-- Type de mesure -->
         <div class="space-y-2">
-          <Label for="type">Measurement type *</Label>
+          <Label for="type">{{ t('labs.animals.measurement.type') }} *</Label>
           <Select v-model="formData.type" @update:model-value="handleTypeChange">
             <SelectTrigger>
-              <SelectValue placeholder="Select a measurement type" />
+              <SelectValue :placeholder="t('labs.animals.measurement.selectType')" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem v-for="type in measurementTypes" :key="type.value" :value="type.value">
@@ -40,21 +40,21 @@
         <div class="grid grid-cols-2 gap-4">
           <div class="space-y-2">
             <Label for="value">
-              Value *
+              {{ t('labs.animals.measurement.value') }} *
               <component v-if="selectedTypeInfo?.icon" :is="selectedTypeInfo.icon" class="h-4 w-4 inline ml-1" />
             </Label>
             <Input id="value" type="number" step="0.01" v-model="formData.value"
               :placeholder="selectedTypeInfo?.placeholder || '0'" :disabled="!formData.type" />
           </div>
           <div class="space-y-2">
-            <Label for="unit">Unit *</Label>
+            <Label for="unit">{{ t('labs.animals.measurement.unit') }} *</Label>
             <Select v-model="formData.unit" :disabled="!formData.type">
               <SelectTrigger>
-                <SelectValue placeholder="Unit" />
+                <SelectValue :placeholder="t('labs.animals.measurement.selectUnit')" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem v-for="unit in availableUnits" :key="unit" :value="unit">
-                  {{ unit === 'none' ? 'No unit' : unit }}
+                  {{ unit === 'none' ? t('labs.animals.measurement.noUnit') : unit }}
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -63,10 +63,10 @@
 
         <!-- Personne ayant effectué la mesure -->
         <div class="space-y-2">
-          <Label for="measuredBy">Measured by *</Label>
+          <Label for="measuredBy">{{ t('labs.animals.measurement.measuredBy') }} *</Label>
           <Select v-model="formData.measuredBy">
             <SelectTrigger>
-              <SelectValue placeholder="Select a person" />
+              <SelectValue :placeholder="t('labs.animals.measurement.selectPerson')" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem v-for="person in measurementPersonnel" :key="person" :value="person">
@@ -78,14 +78,14 @@
 
         <!-- Notes -->
         <div class="space-y-2">
-          <Label for="notes">Notes and observations</Label>
-          <Textarea id="notes" v-model="formData.notes" placeholder="Additional notes about the measurement..."
+          <Label for="notes">{{ t('labs.animals.measurement.notes') }}</Label>
+          <Textarea id="notes" v-model="formData.notes" :placeholder="t('labs.animals.measurement.notesPlaceholder')"
             :rows="3" />
         </div>
 
         <!-- Aperçu de la mesure -->
         <div v-if="formData.type && formData.value && formData.unit" class="bg-muted p-4 rounded-lg">
-          <h4 class="font-medium mb-2">Measurement preview</h4>
+          <h4 class="font-medium mb-2">{{ t('labs.animals.measurement.preview') }}</h4>
           <div class="flex items-center gap-2 text-sm">
             <component v-if="selectedTypeInfo?.icon" :is="selectedTypeInfo.icon"
               class="h-4 w-4 text-muted-foreground" />
@@ -106,10 +106,10 @@
 
         <DialogFooter>
           <Button type="button" variant="outline" @click="$emit('update:open', false)">
-            Cancel
+            {{ t('common.cancel') }}
           </Button>
           <Button type="submit" :disabled="isSubmitting">
-            {{ isSubmitting ? 'Adding...' : 'Add measurement' }}
+            {{ isSubmitting ? t('common.adding') : t('labs.animals.measurement.addMeasurement') }}
           </Button>
         </DialogFooter>
       </form>
@@ -137,6 +137,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { useTranslation } from '@/composables/useLocale'
 import { formatDateSimple } from '@/lib/format.utils'
 import type { Measurement } from '@/types/lab'
 import {
@@ -161,46 +162,47 @@ const emit = defineEmits<{
   'save': [measurement: Omit<Measurement, 'id'>]
 }>()
 
+const { t } = useTranslation()
 const isSubmitting = ref(false)
 const today = new Date().toISOString().split('T')[0]
 
-const measurementTypes = [
+const measurementTypes = computed(() => [
   {
     value: 'weight',
-    label: 'Weight',
+    label: t('labs.animals.measurement.types.weight'),
     icon: Scale,
     defaultUnit: 'g',
     placeholder: '28.5'
   },
   {
     value: 'temperature',
-    label: 'Temperature',
+    label: t('labs.animals.measurement.types.temperature'),
     icon: Thermometer,
     defaultUnit: '°C',
     placeholder: '37.2'
   },
   {
     value: 'blood-pressure',
-    label: 'Blood pressure',
+    label: t('labs.animals.measurement.types.bloodPressure'),
     icon: Heart,
     defaultUnit: 'mmHg',
     placeholder: '120'
   },
   {
     value: 'behavior',
-    label: 'Behavioral score',
+    label: t('labs.animals.measurement.types.behavior'),
     icon: Activity,
     defaultUnit: 'score',
     placeholder: '8'
   },
   {
     value: 'other',
-    label: 'Other measurement',
+    label: t('labs.animals.measurement.types.other'),
     icon: FlaskConical,
     defaultUnit: '',
     placeholder: '0'
   }
-] as const
+])
 
 const commonUnits = {
   weight: ['g', 'kg', 'mg'],
@@ -231,7 +233,7 @@ const formData = reactive({
 })
 
 const selectedTypeInfo = computed(() =>
-  measurementTypes.find(t => t.value === formData.type)
+  measurementTypes.value.find(t => t.value === formData.type)
 )
 
 const availableUnits = computed(() => {
@@ -240,8 +242,8 @@ const availableUnits = computed(() => {
 })
 
 const handleTypeChange = (type: unknown) => {
-  if (typeof type !== 'string' || !measurementTypes.some(t => t.value === type)) return // Ensure type is valid
-  const selectedType = measurementTypes.find(t => t.value === type)
+  if (typeof type !== 'string' || !measurementTypes.value.some(t => t.value === type)) return // Ensure type is valid
+  const selectedType = measurementTypes.value.find(t => t.value === type)
   formData.unit = selectedType?.defaultUnit || 'none'
   formData.value = ''
 }
@@ -253,19 +255,19 @@ const handleSubmit = async () => {
   try {
     // Validation
     if (!formData.type) {
-      toast.error('Please select a measurement type')
+      toast.error(t('labs.animals.measurement.validation.typeRequired'))
       return
     }
     if (!formData.value || parseFloat(formData.value) < 0) {
-      toast.error('Please enter a valid value')
+      toast.error(t('labs.animals.measurement.validation.valueRequired'))
       return
     }
     if (!formData.unit.trim()) {
-      toast.error('Please select a unit')
+      toast.error(t('labs.animals.measurement.validation.unitRequired'))
       return
     }
     if (!formData.measuredBy.trim()) {
-      toast.error('Please select who performed the measurement')
+      toast.error(t('labs.animals.measurement.validation.measuredByRequired'))
       return
     }
 
@@ -294,9 +296,9 @@ const handleSubmit = async () => {
       notes: ''
     })
 
-    toast.success('Measurement successfully added')
+    toast.success(t('labs.animals.measurement.measurementAdded'))
   } catch (error) {
-    toast.error('Error adding measurement')
+    toast.error(t('labs.animals.measurement.measurementError'))
   } finally {
     isSubmitting.value = false
   }

@@ -7,10 +7,10 @@
           <Users class="h-8 w-8 text-primary" />
           <div>
             <h1 class="text-2xl font-semibold text-foreground">
-              User Management
+              {{ t('admin.title') }}
             </h1>
             <p class="text-muted-foreground mt-1">
-              Manage user accounts, roles, and permissions
+              {{ t('admin.subtitle') }}
             </p>
           </div>
         </div>
@@ -19,14 +19,14 @@
 
     <!-- Loading State -->
     <div v-if="isLoading" class="text-center py-8">
-      <p class="text-muted-foreground">Loading users...</p>
+      <p class="text-muted-foreground">{{ t('admin.loading') }}</p>
     </div>
 
     <!-- Error State -->
     <div v-else-if="error" class="text-center py-8">
       <p class="text-destructive">{{ error }}</p>
       <button @click="userStore.getAllUsers()" class="mt-2 text-sm text-primary hover:underline">
-        Try again
+        {{ t('common.actions.refresh') }}
       </button>
     </div>
 
@@ -36,32 +36,32 @@
         <div class="flex items-center gap-4">
           <div class="relative">
             <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input v-model="searchQuery" placeholder="Search users..." class="w-64 pl-10" />
+            <Input v-model="searchQuery" :placeholder="t('admin.searchUsers')" class="w-64 pl-10" />
           </div>
           <Select v-model="roleFilter">
             <SelectTrigger class="w-40">
-              <SelectValue placeholder="All roles" />
+              <SelectValue :placeholder="t('admin.allRoles')" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All roles</SelectItem>
-              <SelectItem value="admin">Administrator</SelectItem>
-              <SelectItem value="user">User</SelectItem>
+              <SelectItem value="all">{{ t('admin.allRoles') }}</SelectItem>
+              <SelectItem value="admin">{{ t('common.labels.admin') }}</SelectItem>
+              <SelectItem value="user">{{ t('common.labels.user') }}</SelectItem>
             </SelectContent>
           </Select>
           <Select v-model="statusFilter">
             <SelectTrigger class="w-40">
-              <SelectValue placeholder="All status" />
+              <SelectValue :placeholder="t('admin.allStatus')" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All status</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="inactive">Inactive</SelectItem>
+              <SelectItem value="all">{{ t('admin.allStatus') }}</SelectItem>
+              <SelectItem value="active">{{ t('common.status.active') }}</SelectItem>
+              <SelectItem value="inactive">{{ t('common.status.inactive') }}</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <Button @click="showCreateUserDialog = true">
           <UserPlus class="h-4 w-4 mr-2" />
-          Create User
+          {{ t('admin.createUser') }}
         </Button>
       </div>
 
@@ -74,7 +74,7 @@
             </div>
             <div>
               <p class="text-sm text-muted-foreground">
-                Total Users
+                {{ t('admin.totalUsers') }}
               </p>
               <p class="text-xl font-bold">
                 {{ stats.total }}
@@ -91,7 +91,7 @@
             </div>
             <div>
               <p class="text-sm text-muted-foreground">
-                Active
+                {{ t('common.status.active') }}
               </p>
               <p class="text-xl font-bold">
                 {{ stats.active }}
@@ -106,7 +106,7 @@
             </div>
             <div>
               <p class="text-sm text-muted-foreground">
-                Admins
+                {{ t('admin.admins') }}
               </p>
               <p class="text-xl font-bold">
                 {{ stats.admins }}
@@ -121,7 +121,7 @@
             </div>
             <div>
               <p class="text-sm text-muted-foreground">
-                Users
+                {{ t('admin.users') }}
               </p>
               <p class="text-xl font-bold">
                 {{ stats.users }}
@@ -138,7 +138,7 @@
             </div>
             <div>
               <p class="text-sm text-muted-foreground">
-                Inactive
+                {{ t('common.status.inactive') }}
               </p>
               <p class="text-xl font-bold">
                 {{ stats.inactive }}
@@ -153,23 +153,23 @@
           <!-- Show empty state if no filtered users -->
           <div v-if="filteredUsers.length === 0" class="text-center py-12">
             <Users class="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 class="font-medium mb-2">No users found</h3>
-            <p class="text-sm text-muted-foreground mb-4">Try adjusting your search criteria or create a new user.</p>
+            <h3 class="font-medium mb-2">{{ t('admin.noUsers') }}</h3>
+            <p class="text-sm text-muted-foreground mb-4">{{ t('admin.tryAdjusting') }}</p>
             <Button @click="showCreateUserDialog = true" class="gap-2">
               <UserPlus class="h-4 w-4" />
-              Create User
+              {{ t('admin.createUser') }}
             </Button>
           </div>
           <Table v-else>
             <TableHeader>
               <TableRow>
-                <TableHead>User</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Location</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead>Last Login</TableHead>
+                <TableHead>{{ t('common.labels.user') }}</TableHead>
+                <TableHead>{{ t('common.labels.email') }}</TableHead>
+                <TableHead>{{ t('common.labels.role') }}</TableHead>
+                <TableHead>{{ t('common.labels.status') }}</TableHead>
+                <TableHead>{{ t('common.labels.location') }}</TableHead>
+                <TableHead>{{ t('common.labels.created') }}</TableHead>
+                <TableHead>{{ t('admin.lastLogin') }}</TableHead>
                 <TableHead></TableHead>
               </TableRow>
             </TableHeader>
@@ -204,7 +204,7 @@
                 </TableCell>
                 <TableCell>
                   <Badge :variant="getStatusVariant(getUserStatus(user))">
-                    {{ getUserStatus(user) }}
+                    {{ t(`common.status.${getUserStatus(user)}`) }}
                   </Badge>
                 </TableCell>
                 <TableCell>
@@ -227,7 +227,7 @@
                     {{ formatDate(user.updated_at) }}
                   </div>
                   <div class="text-sm text-muted-foreground" v-else>
-                    Never
+                    {{ t('admin.never') }}
                   </div>
                 </TableCell>
                 <TableCell>
@@ -239,14 +239,14 @@
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                       <DropdownMenuItem @click="handleUserAction('edit', user)">
-                        Edit Role
+                        {{ t('admin.editRole') }}
                       </DropdownMenuItem>
                       <DropdownMenuItem @click="handleUserAction('toggle-status', user)">
-                        {{ getUserStatus(user) === 'active' ? 'Deactivate' : 'Activate' }}
+                        {{ getUserStatus(user) === 'active' ? t('admin.deactivate') : t('admin.activate') }}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem @click="handleUserAction('delete', user)" class="text-destructive">
-                        Delete User
+                        {{ t('admin.deleteUser') }}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -271,6 +271,7 @@
 <script setup lang="ts">
 import CreateUserDialog from '@/components/admin/CreateUserDialog.vue'
 import EditUserRoleDialog from '@/components/admin/EditUserRoleDialog.vue'
+import { useTranslation } from '@/composables/useLocale'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -298,6 +299,9 @@ import {
 } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
 import { computed, onMounted, ref } from 'vue'
+
+// Translation
+const { t } = useTranslation()
 
 // Store initialization
 const userStore = useUserStore()
@@ -349,7 +353,7 @@ const handleUserAction = async (action: string, user: UserType) => {
       // todo: toggle statut activate / desactivate user account
       // await userStore.getAllUsers() // Refresh the user list
     } else if (action === 'delete') {
-      if (confirm(`Are you sure you want to delete ${user.first_name} ${user.last_name}?`)) {
+      if (confirm(t('admin.confirmDelete', { name: `${user.first_name} ${user.last_name}` }))) {
         await userStore.deleteUser(user.id)
         await userStore.getAllUsers() // Refresh the user list
       }

@@ -3,13 +3,13 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <Card class="lg:col-span-2">
         <CardHeader>
-          <CardTitle>General Information</CardTitle>
+          <CardTitle>{{ t('projects.summary.generalInformation') }}</CardTitle>
         </CardHeader>
         <CardContent class="space-y-4">
           <div class="grid grid-cols-2 gap-4">
             <div>
               <p class="text-sm font-medium text-muted-foreground">
-                Start date
+                {{ t('projects.summary.startDate') }}
               </p>
               <p class="flex items-center gap-2">
                 <Calendar class="h-4 w-4" /> Jan 15, 2024
@@ -17,7 +17,7 @@
             </div>
             <div>
               <p class="text-sm font-medium text-muted-foreground">
-                End date
+                {{ t('projects.summary.endDate') }}
               </p>
               <p class="flex items-center gap-2">
                 <Calendar class="h-4 w-4" /> Dec 15, 2024
@@ -26,23 +26,23 @@
           </div>
           <div>
             <p class="text-sm font-medium text-muted-foreground">
-              Funding
+              {{ t('projects.summary.funding') }}
             </p>
             <p>€ 25,000 €</p>
           </div>
           <div>
             <p class="text-sm font-medium text-muted-foreground">
-              Project summary
+              {{ t('projects.summary.projectSummary') }}
             </p>
-            <p>Study of microbiological contamination in surface water</p>
+            <p>{{ t('projects.summary.sampleDescription') }}</p>
           </div>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Project Team</CardTitle>
-          <CardDescription>Leaders and collaborators</CardDescription>
+          <CardTitle>{{ t('projects.summary.projectTeam') }}</CardTitle>
+          <CardDescription>{{ t('projects.summary.leadersAndCollaborators') }}</CardDescription>
         </CardHeader>
         <CardContent class="space-y-4">
           <div v-for="member in team" :key="member.name" class="flex items-center gap-4">
@@ -67,8 +67,11 @@
 <script setup lang="ts">
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTranslation } from '@/composables/useLocale';
 import { Calendar } from 'lucide-vue-next';
 import { ref } from 'vue';
+
+const { t } = useTranslation();
 
 const team = ref([
   { name: 'Dr. Marie Dubois', role: 'Principal Investigator', initials: 'MD' },

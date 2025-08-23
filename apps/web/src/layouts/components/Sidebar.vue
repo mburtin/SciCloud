@@ -52,9 +52,11 @@ import {
 } from 'lucide-vue-next'
 import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useTranslation } from '@/composables/useLocale'
 
 const route = useRoute()
 const userStore = useUserStore()
+const { t } = useTranslation()
 
 // Load user profile on mount to check role
 onMounted(async () => {
@@ -77,39 +79,39 @@ interface SidebarSection {
   items: SidebarItem[]
 }
 
-const settingsSection: SidebarSection = {
-  title: 'Settings',
+const settingsSection = computed((): SidebarSection => ({
+  title: t('sidebar.settings'),
   items: [
-    { id: 'profile', label: 'Profile', icon: User, to: '/profile' },
-    { id: 'notifications', label: 'Notifications', icon: Bell, to: '/profile/notifications' },
-    { id: 'security', label: 'Security', icon: Lock, to: '/profile/security' }
+    { id: 'profile', label: t('sidebar.profile'), icon: User, to: '/profile' },
+    { id: 'notifications', label: t('sidebar.notifications'), icon: Bell, to: '/profile/notifications' },
+    { id: 'security', label: t('sidebar.security'), icon: Lock, to: '/profile/security' }
   ]
-};
+}));
 
-const myProjectsSection: SidebarSection = {
-  title: 'MY PROJECTS',
+const myProjectsSection = computed((): SidebarSection => ({
+  title: t('sidebar.myProjects'),
   items: [
-    { id: 'active-projects', label: 'Active projects', icon: Folder, to: '/projects' },
-    { id: 'favorites', label: 'Favorites', icon: Star, to: '/projects/favorites' },
-    { id: 'archived', label: 'Archived', icon: Archive, to: '/projects/archived' }
+    { id: 'active-projects', label: t('sidebar.activeProjects'), icon: Folder, to: '/projects' },
+    { id: 'favorites', label: t('sidebar.favorites'), icon: Star, to: '/projects/favorites' },
+    { id: 'archived', label: t('sidebar.archived'), icon: Archive, to: '/projects/archived' }
   ]
-};
+}));
 
-const labSection: SidebarSection = {
-  title: 'Laboratory',
+const labSection = computed((): SidebarSection => ({
+  title: t('sidebar.laboratory'),
   items: [
-    { id: 'animals', label: 'Animals', icon: Activity, to: '/lab/animals' },
-    { id: 'instruments', label: 'Instruments', icon: Microscope, to: '/lab/instruments' },
-    { id: 'consumables', label: 'Consumables', icon: Package, to: '/lab/consumables' }
+    { id: 'animals', label: t('sidebar.animals'), icon: Activity, to: '/lab/animals' },
+    { id: 'instruments', label: t('sidebar.instruments'), icon: Microscope, to: '/lab/instruments' },
+    { id: 'consumables', label: t('sidebar.consumables'), icon: Package, to: '/lab/consumables' }
   ]
-};
+}));
 
-const adminSection: SidebarSection = {
-  title: 'Administration',
+const adminSection = computed((): SidebarSection => ({
+  title: t('sidebar.administration'),
   items: [
-    { id: 'members', label: 'Members', icon: Users, to: '/admin/settings' }
+    { id: 'members', label: t('sidebar.members'), icon: Users, to: '/admin/settings' }
   ]
-};
+}));
 
 // Sidebar sections based on the active module
 const sidebarSections = computed<SidebarSection[]>(() => {
@@ -119,37 +121,37 @@ const sidebarSections = computed<SidebarSection[]>(() => {
   if (path.startsWith('/projects/') && route.params.id) {
     const projectId = route.params.id as string;
     const projectDetailSection: SidebarSection = {
-      title: 'PROJECT WQA',
+      title: t('sidebar.projectDetails'),
       items: [
-        { id: 'summary', label: 'Summary', icon: Eye, to: `/projects/${projectId}/summary` },
-        { id: 'documents', label: 'Documents', icon: FileText, to: `/projects/${projectId}/documents` },
-        { id: 'notebook', label: 'Laboratory notebook', icon: Book, to: `/projects/${projectId}/notebook` },
+        { id: 'summary', label: t('sidebar.summary'), icon: Eye, to: `/projects/${projectId}/summary` },
+        { id: 'documents', label: t('sidebar.documents'), icon: FileText, to: `/projects/${projectId}/documents` },
+        { id: 'notebook', label: t('sidebar.laboratoryNotebook'), icon: Book, to: `/projects/${projectId}/notebook` },
       ]
     };
-    return [myProjectsSection, projectDetailSection];
+    return [myProjectsSection.value, projectDetailSection];
   }
 
   // Main sections - order is important, from most specific to least
   if (path.startsWith('/admin')) {
-    return [adminSection];
+    return [adminSection.value];
   }
   if (path.startsWith('/projects')) {
-    return [myProjectsSection];
+    return [myProjectsSection.value];
   }
   if (path.startsWith('/lab')) {
-    return [labSection];
+    return [labSection.value];
   }
   if (path.startsWith('/profile')) {
-    return [settingsSection];
+    return [settingsSection.value];
   }
   if (path.startsWith('/dashboard') || path.startsWith('/calendar') || path.startsWith('/notes') || path === '/') {
     return [
       {
-        title: 'Workspace',
+        title: t('sidebar.workspace'),
         items: [
-          { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard' },
-          { id: 'calendar', label: 'Calendar', icon: Calendar, to: '/calendar' },
-          { id: 'notes', label: 'Notes', icon: FileText, to: '/notes' }
+          { id: 'dashboard', label: t('sidebar.dashboard'), icon: LayoutDashboard, to: '/dashboard' },
+          { id: 'calendar', label: t('sidebar.calendar'), icon: Calendar, to: '/calendar' },
+          { id: 'notes', label: t('sidebar.notes'), icon: FileText, to: '/notes' }
         ]
       }
     ];

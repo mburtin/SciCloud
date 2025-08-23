@@ -19,14 +19,14 @@
 
     <!-- Loading State -->
     <div v-if="isLoading" class="text-center py-8">
-      <p class="text-muted-foreground">Loading projects...</p>
+      <p class="text-muted-foreground">{{ t('common.messages.loading') }}</p>
     </div>
 
     <!-- Error State -->
     <div v-else-if="error" class="text-center py-8">
       <p class="text-destructive">{{ error }}</p>
       <button @click="projectsStore.fetchProjects" class="mt-2 text-sm text-primary hover:underline">
-        Try again
+        {{ t('common.actions.refresh') }}
       </button>
     </div>
 
@@ -36,12 +36,12 @@
         <div class="flex items-center gap-4">
           <div class="relative">
             <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input v-model="searchQuery" placeholder="Search projects..." class="w-64 pl-10" />
+            <Input v-model="searchQuery" :placeholder="t('common.actions.search') + ' ' + t('projects.title').toLowerCase() + '...'" class="w-64 pl-10" />
           </div>
         </div>
         <Button v-if="pageInfo.showCreateButton" @click="handleNewProject">
           <Plus class="h-4 w-4 mr-2" />
-          New Project
+          {{ t('projects.createNew') }}
         </Button>
       </div>
 
@@ -54,7 +54,7 @@
             </div>
             <div>
               <p class="text-sm text-muted-foreground">
-                Total
+                {{ t('common.labels.total') }}
               </p>
               <p class="text-xl font-bold">
                 {{ projectStats.total }}
@@ -71,7 +71,7 @@
             </div>
             <div>
               <p class="text-sm text-muted-foreground">
-                Active
+                {{ t('projects.status.active') }}
               </p>
               <p class="text-xl font-bold">
                 {{ projectStats.active }}
@@ -88,7 +88,7 @@
             </div>
             <div>
               <p class="text-sm text-muted-foreground">
-                Planning
+                {{ t('projects.status.planning') }}
               </p>
               <p class="text-xl font-bold">
                 {{ projectStats.planning }}
@@ -105,7 +105,7 @@
             </div>
             <div>
               <p class="text-sm text-muted-foreground">
-                Completed
+                {{ t('projects.status.completed') }}
               </p>
               <p class="text-xl font-bold">
                 {{ projectStats.completed }}
@@ -122,7 +122,7 @@
             </div>
             <div>
               <p class="text-sm text-muted-foreground">
-                Paused
+                {{ t('projects.status.onHold') }}
               </p>
               <p class="text-xl font-bold">
                 {{ projectStats.paused }}
@@ -137,7 +137,7 @@
             </div>
             <div>
               <p class="text-sm text-muted-foreground">
-                Archived
+                {{ t('projects.status.archived') }}
               </p>
               <p class="text-xl font-bold">
                 {{ projectStats.archived }}
@@ -156,18 +156,18 @@
             <p class="text-sm text-muted-foreground mb-4">{{ pageInfo.emptyDescription }}</p>
             <Button v-if="pageInfo.showCreateButton" @click="handleNewProject" class="gap-2">
               <Plus class="h-4 w-4" />
-              Create your first project
+              {{ t('projects.createFirstProject') }}
             </Button>
           </div>
           <Table v-else>
             <TableHeader>
               <TableRow>
-                <TableHead>Project Name</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Progress</TableHead>
-                <TableHead>Deadline</TableHead>
-                <TableHead>Budget</TableHead>
-                <TableHead>Responsible</TableHead>
+                <TableHead>{{ t('projects.projectForm.name') }}</TableHead>
+                <TableHead>{{ t('projects.status') }}</TableHead>
+                <TableHead>{{ t('projects.progress') }}</TableHead>
+                <TableHead>{{ t('projects.deadline') }}</TableHead>
+                <TableHead>{{ t('projects.budget') }}</TableHead>
+                <TableHead>{{ t('projects.owner') }}</TableHead>
                 <TableHead />
               </TableRow>
             </TableHeader>
@@ -206,14 +206,14 @@
                 </TableCell>
                 <TableCell>
                   <div class="text-sm">
-                    {{ new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(project.budget) }}
+                    {{ formatCurrency(project.budget) }}
                   </div>
                 </TableCell>
                 <TableCell>
                   <span class="text-sm">
                     {{ project.responsible_profile
                       ? `${project.responsible_profile.first_name} ${project.responsible_profile.last_name}`
-                      : 'Unknown'
+                      : t('common.labels.unknown')
                     }}
                   </span>
                 </TableCell>
@@ -226,13 +226,13 @@
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                       <DropdownMenuItem @click.stop="handleProjectAction('view', project.id)">
-                        View Details
+                        {{ t('projects.viewDetails') }}
                       </DropdownMenuItem>
                       <DropdownMenuItem @click.stop="handleProjectAction('favorite', project.id)">
-                        {{ project.is_favorite ? 'Remove from favorites' : 'Add to favorites' }}
+                        {{ project.is_favorite ? t('projects.removeFavorite') : t('projects.addFavorite') }}
                       </DropdownMenuItem>
                       <DropdownMenuItem @click.stop="handleProjectAction('archive', project.id)">
-                        {{ project.status === 'archived' ? 'Restore' : 'Archive' }}
+                        {{ project.status === 'archived' ? t('projects.restore') : t('projects.archive') }}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -248,43 +248,43 @@
     <Dialog v-model:open="showNewProjectDialog">
       <DialogContent class="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create New Project</DialogTitle>
+          <DialogTitle>{{ t('projects.createNew') }}</DialogTitle>
           <DialogDescription>
-            Create a new project to start organizing your work.
+            {{ t('projects.createDescription') }}
           </DialogDescription>
         </DialogHeader>
         <div class="grid gap-4 py-4">
           <div class="grid gap-2">
-            <Label for="name">Project Name *</Label>
-            <Input id="name" v-model="newProjectForm.name" placeholder="Enter project name"
+            <Label for="name">{{ t('projects.projectForm.name') }} *</Label>
+            <Input id="name" v-model="newProjectForm.name" :placeholder="t('projects.projectForm.namePlaceholder')"
               :disabled="isCreatingProject" />
           </div>
           <div class="grid gap-2">
-            <Label for="category">Category *</Label>
-            <Input id="category" v-model="newProjectForm.category" placeholder="e.g., Research, Development, Analysis"
+            <Label for="category">{{ t('projects.category') }} *</Label>
+            <Input id="category" v-model="newProjectForm.category" :placeholder="t('projects.projectForm.categoryPlaceholder')"
               :disabled="isCreatingProject" />
           </div>
           <div class="grid gap-2">
-            <Label for="description">Description</Label>
-            <Textarea id="description" v-model="newProjectForm.description" placeholder="Optional project description"
+            <Label for="description">{{ t('common.labels.description') }}</Label>
+            <Textarea id="description" v-model="newProjectForm.description" :placeholder="t('projects.projectForm.descriptionPlaceholder')"
               :disabled="isCreatingProject" />
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div class="grid gap-2">
-              <Label for="priority">Priority</Label>
+              <Label for="priority">{{ t('projects.projectForm.priority') }}</Label>
               <Select v-model="newProjectForm.priority" :disabled="isCreatingProject">
                 <SelectTrigger>
-                  <SelectValue placeholder="Select priority" />
+                  <SelectValue :placeholder="t('projects.projectForm.priorityPlaceholder')" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
+                  <SelectItem value="low">{{ t('projects.priority.low') }}</SelectItem>
+                  <SelectItem value="medium">{{ t('projects.priority.medium') }}</SelectItem>
+                  <SelectItem value="high">{{ t('projects.priority.high') }}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div class="grid gap-2">
-              <Label for="budget">Budget ($)</Label>
+              <Label for="budget">{{ t('projects.budget') }}</Label>
               <Input id="budget" v-model.number="newProjectForm.budget" type="number" min="0" step="100" placeholder="0"
                 :disabled="isCreatingProject" />
             </div>
@@ -292,12 +292,12 @@
         </div>
         <DialogFooter>
           <Button variant="outline" @click="showNewProjectDialog = false" :disabled="isCreatingProject">
-            Cancel
+            {{ t('common.actions.cancel') }}
           </Button>
           <Button @click="handleCreateProject"
             :disabled="isCreatingProject || !newProjectForm.name.trim() || !newProjectForm.category.trim()">
             <Plus v-if="!isCreatingProject" class="h-4 w-4 mr-2" />
-            {{ isCreatingProject ? 'Creating...' : 'Create Project' }}
+            {{ isCreatingProject ? t('projects.creating') : t('projects.create') }}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -335,6 +335,7 @@ import {
 } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
+import { useLocaleFormat, useTranslation } from '@/composables/useLocale';
 import { formatDate } from '@/lib/format.utils';
 import { supabase } from '@/lib/supabase';
 import { useProjectsStore } from '@/stores/projects.store';
@@ -355,6 +356,8 @@ import { useRoute, useRouter } from 'vue-router';
 const router = useRouter();
 const route = useRoute();
 const searchQuery = ref('');
+const { t } = useTranslation();
+const { formatCurrency } = useLocaleFormat();
 
 // Use projects store
 const projectsStore = useProjectsStore()
@@ -363,11 +366,11 @@ const { projects, loading: isLoading, error } = storeToRefs(projectsStore)
 // Utility functions for status display
 const getStatusLabel = (status: string) => {
   const labels: Record<string, string> = {
-    'active': 'Active',
-    'planning': 'Planning',
-    'completed': 'Completed',
-    'paused': 'Paused',
-    'archived': 'Archived'
+    'active': t('projects.status.active'),
+    'planning': t('projects.status.planning'),
+    'completed': t('projects.status.completed'),
+    'paused': t('projects.status.onHold'),
+    'archived': t('projects.status.archived')
   }
   return labels[status] || status
 }
@@ -394,29 +397,29 @@ const pageInfo = computed(() => {
   switch (currentPageType.value) {
     case 'projects-favorites':
       return {
-        title: 'Favorite Projects',
-        description: 'Your projects marked as favorites',
+        title: t('projects.favorites'),
+        description: t('projects.favoritesDescription'),
         icon: Star,
-        emptyTitle: 'No favorite projects',
-        emptyDescription: 'Add projects to your favorites by clicking the star',
+        emptyTitle: t('projects.noFavorites'),
+        emptyDescription: t('projects.addFavoritesDescription'),
         showCreateButton: false
       }
     case 'projects-archived':
       return {
-        title: 'Archived Projects',
-        description: 'Completed or archived projects',
+        title: t('projects.archived'),
+        description: t('projects.archivedDescription'),
         icon: Archive,
-        emptyTitle: 'No archived projects',
-        emptyDescription: 'Archived projects will appear here',
+        emptyTitle: t('projects.noArchived'),
+        emptyDescription: t('projects.archivedDescription'),
         showCreateButton: false
       }
     default:
       return {
-        title: 'Projects',
-        description: 'Manage and track all your scientific projects',
+        title: t('projects.title'),
+        description: t('projects.subtitle'),
         icon: Folder,
-        emptyTitle: 'No active projects',
-        emptyDescription: 'Create your first project to get started',
+        emptyTitle: t('projects.noProjects'),
+        emptyDescription: t('projects.createFirstProject'),
         showCreateButton: true
       }
   }

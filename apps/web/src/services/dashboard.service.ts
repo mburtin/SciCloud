@@ -29,34 +29,34 @@ export class DashboardService {
 
     const statCards: StatCard[] = [
       {
-        title: 'Active projects',
+        title: 'dashboard.stats.activeProjects',
         value: String(activeCount),
         icon: 'folder-open',
-        trendText: `Completed: ${completedCount}`,
+        trendText: `dashboard.stats.completed|${completedCount}`, // Store count for interpolation
         trendIcon: 'check-circle',
         trendClass: 'text-green-500'
       },
       {
-        title: 'Ongoing analyses',
+        title: 'dashboard.stats.ongoingAnalyses',
         value: String(analysesOngoing),
         icon: 'alert-triangle',
-        trendText: 'Based on project progress',
+        trendText: 'dashboard.stats.basedOnProgress',
         trendIcon: 'bar-chart',
         trendClass: 'text-blue-500'
       },
       {
-        title: 'Active team',
+        title: 'dashboard.stats.activeTeam',
         value: String(activeTeam),
         icon: 'users',
-        trendText: 'Distinct responsibles',
+        trendText: 'dashboard.stats.distinctResponsibles',
         trendIcon: 'user-check',
         trendClass: 'text-muted-foreground'
       },
       {
-        title: 'Deadlines',
+        title: 'dashboard.stats.deadlines',
         value: '0', // No tasks table yet; show 0
         icon: 'clock',
-        trendText: 'No task deadlines available',
+        trendText: 'dashboard.stats.noTaskDeadlines',
         trendIcon: 'minus',
         trendClass: 'text-muted-foreground'
       }
