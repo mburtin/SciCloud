@@ -229,12 +229,12 @@ const forgotPasswordEmail = ref('');
 
 // Test data
 const errorPages = [
-  { code: '400', label: 'Error 400 - Bad Request', page: 'error-400' },
-  { code: '401', label: 'Error 401 - Unauthorized', page: 'error-401' },
-  { code: '403', label: 'Error 403 - Forbidden', page: 'error-403' },
-  { code: '404', label: 'Error 404 - Not Found', page: 'error-404' },
-  { code: '408', label: 'Error 408 - Timeout', page: 'error-408' },
-  { code: '500', label: 'Error 500 - Server Error', page: 'error-500' },
+  { code: '400', label: 'Error 400 - Bad Request', page: 'error/400' },
+  { code: '401', label: 'Error 401 - Unauthorized', page: 'error/401' },
+  { code: '403', label: 'Error 403 - Forbidden', page: 'error/403' },
+  { code: '404', label: 'Error 404 - Not Found', page: 'error/404' },
+  { code: '408', label: 'Error 408 - Timeout', page: 'error/408' },
+  { code: '500', label: 'Error 500 - Server Error', page: 'error/500' },
 ];
 
 // Event Handlers
