@@ -43,12 +43,7 @@
               {{ stat.value }}
             </div>
           </CardContent>
-          <CardFooter class="justify-start pt-0 !px-0">
-            <p class="text-xs text-muted-foreground flex items-center gap-1">
-              <component :is="stat.trendIcon" class="h-4 w-4" :class="stat.trendClass" />
-              {{ stat.trendText }}
-            </p>
-          </CardFooter>
+
         </Card>
       </div>
 
@@ -120,7 +115,7 @@
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import CardFooter from '@/components/ui/card/CardFooter.vue'
+
 import { Progress } from '@/components/ui/progress'
 import { dashboardService } from '@/services/dashboard.service'
 import {
