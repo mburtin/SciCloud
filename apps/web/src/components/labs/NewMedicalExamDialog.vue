@@ -30,6 +30,7 @@
               </SelectTrigger>
               <SelectContent>
                 <SelectItem v-for="type in examTypes" :key="type.value" :value="type.value">
+                  <SelectItemText class="sr-only">{{ type.label }}</SelectItemText>
                   <div class="flex items-center gap-2">
                     <component :is="type.icon" class="h-4 w-4" />
                     <div>
@@ -96,6 +97,7 @@
             </SelectTrigger>
             <SelectContent>
               <SelectItem v-for="level in severityLevels" :key="level.value" :value="level.value">
+                <SelectItemText class="sr-only">{{ level.label }}</SelectItemText>
                 <div class="flex items-center gap-2">
                   <component :is="level.icon" class="h-4 w-4" />
                   <div>
@@ -180,6 +182,7 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  SelectItemText,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
