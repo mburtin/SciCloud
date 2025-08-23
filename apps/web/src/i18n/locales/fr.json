@@ -448,6 +448,7 @@
       "current": "Actuelle",
       "noActiveSessions": "Aucune session active trouvée",
       "settingsSaved": "Paramètres de sécurité sauvegardés !",
+      "moduleInDevelopment": "Ce module de sécurité est encore en développement et peut ne pas être entièrement fonctionnel.",
       "validation": {
         "passwordMinLength": "Le mot de passe doit contenir au moins 6 caractères",
         "passwordMustDiffer": "Le nouveau mot de passe doit être différent du mot de passe actuel",
@@ -802,6 +803,7 @@
         "group": "Groupe",
         "active": "Actif",
         "noProtocolLinked": "Aucun protocole lié",
+        "protocolModuleInDevelopment": "Ce module est encore en développement et peut ne pas être entièrement fonctionnel.",
         "animalDocuments": "Documents de l'animal",
         "documentsDescription": "Gérer les documents pour {identifier} - {species}",
         "ageDays": "{count} jours",

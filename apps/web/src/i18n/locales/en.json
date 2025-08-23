@@ -448,6 +448,7 @@
       "current": "Current",
       "noActiveSessions": "No active sessions found",
       "settingsSaved": "Security settings saved!",
+      "moduleInDevelopment": "This security module is still in development and may not be fully functional yet.",
       "validation": {
         "passwordMinLength": "Password must be at least 6 characters long",
         "passwordMustDiffer": "New password must be different from current password",
@@ -802,6 +803,7 @@
         "group": "Group",
         "active": "Active",
         "noProtocolLinked": "No protocol linked",
+        "protocolModuleInDevelopment": "This module is still in development and may not be fully functional yet.",
         "animalDocuments": "Animal Documents",
         "documentsDescription": "Manage documents for {identifier} - {species}",
         "ageDays": "{count} days",

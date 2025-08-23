@@ -14,6 +14,16 @@
       </Button>
     </div>
 
+    <!-- Development notice -->
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+      <div class="flex items-center gap-2">
+        <AlertTriangle class="h-5 w-5 text-yellow-600" />
+        <p class="text-sm text-yellow-800 font-medium">
+          {{ t('profile.security.moduleInDevelopment') }}
+        </p>
+      </div>
+    </div>
+
     <!-- Password and Email Change -->
     <div class="grid grid-cols-1 lg:grid-cols-2 layout-section-gap">
       <!-- Password Change -->
@@ -223,7 +233,7 @@ import { Switch } from '@/components/ui/switch';
 import { useNotification } from '@/composables/useNotification';
 import { useAuthStore } from '@/stores/auth.store';
 import { useUserStore } from '@/stores/user.store';
-import { Fingerprint, Key, Mail, Monitor, Shield } from 'lucide-vue-next';
+import { AlertTriangle, Fingerprint, Key, Mail, Monitor, Shield } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { useTranslation } from '@/composables/useLocale';
 
