@@ -672,7 +672,20 @@
       "coInvestigator": "Co-Investigator",
       "labTechnician": "Lab Technician",
       "phdStudent": "PhD Student",
-      "collaborator": "Collaborator"
+      "collaborator": "Collaborator",
+      "viewer": "Viewer",
+      "viewerDescription": "Can view project and its information",
+      "member": "Member",
+      "memberDescription": "Can contribute to the project",
+      "admin": "Administrator",
+      "adminDescription": "Can manage project and its members"
+    },
+    "members": {
+      "addMember": "Add Member",
+      "selectUserAndRole": "Select a user and assign them a role",
+      "user": "User",
+      "selectUser": "Select User",
+      "role": "Role"
     }
   },
   "settings": {

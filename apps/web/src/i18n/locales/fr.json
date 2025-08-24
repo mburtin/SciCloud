@@ -672,7 +672,20 @@
       "coInvestigator": "Co-investigateur",
       "labTechnician": "Technicien de laboratoire",
       "phdStudent": "Étudiant en doctorat",
-      "collaborator": "Collaborateur"
+      "collaborator": "Collaborateur",
+      "viewer": "Observateur",
+      "viewerDescription": "Peut voir le projet et ses informations",
+      "member": "Membre",
+      "memberDescription": "Peut contribuer au projet",
+      "admin": "Administrateur",
+      "adminDescription": "Peut gérer le projet et ses membres"
+    },
+    "members": {
+      "addMember": "Ajouter un membre",
+      "selectUserAndRole": "Sélectionnez un utilisateur et attribuez-lui un rôle",
+      "user": "Utilisateur",
+      "selectUser": "Sélectionner un utilisateur",
+      "role": "Rôle"
     }
   },
   "settings": {
