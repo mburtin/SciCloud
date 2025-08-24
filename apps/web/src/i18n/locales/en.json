@@ -136,7 +136,8 @@
       "totalSize": "Total size",
       "recentDocuments": "Recent documents",
       "documentTypes": "Document types",
-      "you": "You"
+      "you": "You",
+      "notSpecified": "Not specified"
     },
     "documents": {
       "documentType": "Document Type",
@@ -578,7 +579,8 @@
       "projectSummary": "Project summary",
       "sampleDescription": "Study of microbiological contamination in surface water",
       "projectTeam": "Project Team",
-      "leadersAndCollaborators": "Leaders and collaborators"
+      "leadersAndCollaborators": "Leaders and collaborators",
+      "noDescription": "No description provided"
     },
     "documents": {
       "title": "Project Documents",

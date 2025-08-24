@@ -52,6 +52,8 @@ export interface Database {
           responsible: string
           tags: string[] | null
           budget: number
+          start_date: string | null
+          end_date: string | null
           created_by: string
           created_at: string
           updated_by: string
@@ -69,6 +71,8 @@ export interface Database {
           responsible: string
           tags?: string[] | null
           budget?: number
+          start_date?: string | null
+          end_date?: string | null
           created_by: string
           updated_by: string
         }
@@ -83,6 +87,8 @@ export interface Database {
           responsible?: string
           tags?: string[] | null
           budget?: number
+          start_date?: string | null
+          end_date?: string | null
           updated_by?: string
         }
       }

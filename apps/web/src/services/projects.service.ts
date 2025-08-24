@@ -116,6 +116,8 @@ export class ProjectsService {
       responsible: projectData.responsible || user.id,
       tags: projectData.tags || [],
       budget: projectData.budget || 0,
+      start_date: projectData.start_date,
+      end_date: projectData.end_date,
       created_by: user.id,
       updated_by: user.id
     }

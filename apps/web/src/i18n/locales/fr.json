@@ -129,6 +129,7 @@
       "none": "Aucun",
     "noEmail": "Aucun e-mail",
       "you": "Vous",
+      "notSpecified": "Non spécifié",
       "admin": "Administrateur",
       "note": "Note",
       "personalNotes": "Vos notes personnelles et de projet",
@@ -578,7 +579,8 @@
       "projectSummary": "Résumé du projet",
       "sampleDescription": "Étude de la contamination microbiologique dans les eaux de surface",
       "projectTeam": "Équipe du projet",
-      "leadersAndCollaborators": "Responsables et collaborateurs"
+      "leadersAndCollaborators": "Responsables et collaborateurs",
+      "noDescription": "Aucune description fournie"
     },
     "documents": {
       "title": "Documents du projet",

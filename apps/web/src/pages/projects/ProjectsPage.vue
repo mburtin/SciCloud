@@ -201,7 +201,7 @@
                 <TableCell>
                   <div class="flex items-center gap-2">
                     <Calendar class="h-4 w-4 text-muted-foreground" />
-                    <span>{{ formatDate((project as any).deadline || project.created_at) }}</span>
+                    <span>{{ project.end_date ? formatDate(project.end_date) : t('common.labels.notSpecified') }}</span>
                   </div>
                 </TableCell>
                 <TableCell>
@@ -268,6 +268,16 @@
             <Label for="description">{{ t('common.labels.description') }}</Label>
             <Textarea id="description" v-model="newProjectForm.description" :placeholder="t('projects.projectForm.descriptionPlaceholder')"
               :disabled="isCreatingProject" />
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="grid gap-2">
+              <Label for="startDate">{{ t('projects.projectForm.startDate') }}</Label>
+              <Input id="startDate" v-model="newProjectForm.startDate" type="date" :disabled="isCreatingProject" />
+            </div>
+            <div class="grid gap-2">
+              <Label for="endDate">{{ t('projects.projectForm.endDate') }}</Label>
+              <Input id="endDate" v-model="newProjectForm.endDate" type="date" :disabled="isCreatingProject" />
+            </div>
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div class="grid gap-2">
@@ -477,7 +487,9 @@ const newProjectForm = ref({
   description: '',
   category: '',
   priority: 'medium' as 'low' | 'medium' | 'high',
-  budget: 0
+  budget: 0,
+  startDate: '',
+  endDate: ''
 })
 const isCreatingProject = ref(false)
 
@@ -491,7 +503,9 @@ const resetNewProjectForm = () => {
     description: '',
     category: '',
     priority: 'medium',
-    budget: 0
+    budget: 0,
+    startDate: '',
+    endDate: ''
   }
 }
 
@@ -515,6 +529,8 @@ const handleCreateProject = async () => {
       category: newProjectForm.value.category.trim(),
       priority: newProjectForm.value.priority,
       budget: newProjectForm.value.budget,
+      start_date: newProjectForm.value.startDate || null,
+      end_date: newProjectForm.value.endDate || null,
       responsible: user.id,
       created_by: user.id,
       updated_by: user.id
