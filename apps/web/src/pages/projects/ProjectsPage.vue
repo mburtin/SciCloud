@@ -163,7 +163,7 @@
             <TableHeader>
               <TableRow>
                 <TableHead>{{ t('projects.projectForm.name') }}</TableHead>
-                <TableHead>{{ t('projects.status') }}</TableHead>
+                <TableHead>{{ t('common.labels.status') }}</TableHead>
                 <TableHead>{{ t('projects.progress') }}</TableHead>
                 <TableHead>{{ t('projects.deadline') }}</TableHead>
                 <TableHead>{{ t('projects.budget') }}</TableHead>
