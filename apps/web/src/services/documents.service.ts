@@ -49,7 +49,9 @@ export async function listDocuments(ownerType: string, ownerId: string): Promise
     id: `${prefix}/${obj.name}`,
     name: obj.name.replace(/^\d+_/, ''),
     type: inferTypeFromName(obj.name),
-    uploadDate: (obj as any).updated_at || (obj as any).created_at || new Date().toISOString(),
+    uploadDate: (obj as { updated_at?: string; created_at?: string }).updated_at || 
+                (obj as { updated_at?: string; created_at?: string }).created_at || 
+                new Date().toISOString(),
     size: formatSize(obj.metadata?.size ?? 0),
     uploadedBy: '—'
   }))

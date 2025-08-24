@@ -10,7 +10,6 @@ const displaySupabaseStudioAddress = () => {
     name: 'supabase-studio',
     buildStart() {
       setTimeout(() => {
-        // eslint-disable-next-line no-console
         console.log('  \x1b[32m➜\x1b[0m  \x1b[1mSupabase Studio:\x1b[0m \x1b[36mhttp://localhost:54323/\x1b[0m')
       }, 1000)
     }
