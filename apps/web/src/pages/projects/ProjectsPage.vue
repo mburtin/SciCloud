@@ -299,6 +299,54 @@
                 :disabled="isCreatingProject" />
             </div>
           </div>
+          <div class="grid gap-2">
+            <Label for="members">{{ t('projects.projectForm.members') }}</Label>
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <Button variant="outline" class="w-full justify-between">
+                  <div class="flex items-center gap-2">
+                    <Users class="h-4 w-4" />
+                    <span>
+                      {{ 
+                        newProjectForm.selectedMembers.length === 0 
+                          ? t('projects.projectForm.selectMembers')
+                          : t('projects.projectForm.membersSelected', { count: newProjectForm.selectedMembers.length })
+                      }}
+                    </span>
+                  </div>
+                  <ChevronDown class="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent class="w-full max-h-[200px] overflow-y-auto">
+                <DropdownMenuLabel>{{ t('projects.projectForm.availableUsers') }}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <div v-if="isLoadingUsers" class="p-2 text-center text-sm text-muted-foreground">
+                  {{ t('common.messages.loading') }}
+                </div>
+                <div v-else-if="allUsers.length === 0" class="p-2 text-center text-sm text-muted-foreground">
+                  {{ t('projects.projectForm.noUsersAvailable') }}
+                </div>
+                <DropdownMenuCheckboxItem
+                  v-for="user in allUsers"
+                  :key="user.id"
+                  :checked="newProjectForm.selectedMembers.some(m => m.id === user.id)"
+                  @click="toggleUserSelection(user)"
+                  @select="(event) => event.preventDefault()"
+                  class="cursor-pointer"
+                >
+                  <div class="flex items-center gap-2">
+                    <div class="flex-1">
+                      <div class="font-medium">{{ user.first_name }} {{ user.last_name }}</div>
+                      <div class="text-xs text-muted-foreground">{{ user.email }}</div>
+                    </div>
+                  </div>
+                </DropdownMenuCheckboxItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <div v-if="newProjectForm.selectedMembers.length > 0" class="text-xs text-muted-foreground">
+              {{ t('projects.projectForm.selectedMembersWillBeAdded') }}
+            </div>
+          </div>
         </div>
         <DialogFooter>
           <Button variant="outline" @click="showNewProjectDialog = false" :disabled="isCreatingProject">
@@ -329,8 +377,11 @@ import {
 } from '@/components/ui/dialog';
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
@@ -349,18 +400,22 @@ import { useLocaleFormat, useTranslation } from '@/composables/useLocale';
 import { formatDate } from '@/lib/format.utils';
 import { supabase } from '@/lib/supabase';
 import { useProjectsStore } from '@/stores/projects.store';
+import { useUserStore } from '@/stores/user.store';
 import {
   Archive,
   Calendar,
+  ChevronDown,
   Folder,
   MoreHorizontal,
   Plus,
   Search,
-  Star
+  Star,
+  Users
 } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import type { User } from '@/types/supabase';
 
 // Reactive state
 const router = useRouter();
@@ -372,6 +427,10 @@ const { formatCurrency } = useLocaleFormat();
 // Use projects store
 const projectsStore = useProjectsStore()
 const { projects, loading: isLoading, error } = storeToRefs(projectsStore)
+
+// Use user store
+const userStore = useUserStore()
+const { allUsers, loading: isLoadingUsers } = storeToRefs(userStore)
 
 // Utility functions for status display
 const getStatusLabel = (status: string) => {
@@ -489,12 +548,17 @@ const newProjectForm = ref({
   priority: 'medium' as 'low' | 'medium' | 'high',
   budget: 0,
   startDate: '',
-  endDate: ''
+  endDate: '',
+  selectedMembers: [] as User[]
 })
 const isCreatingProject = ref(false)
 
-const handleNewProject = () => {
+const handleNewProject = async () => {
   showNewProjectDialog.value = true
+  // Load users when dialog opens if not already loaded
+  if (allUsers.value.length === 0) {
+    await userStore.getAllUsers()
+  }
 }
 
 const resetNewProjectForm = () => {
@@ -505,7 +569,8 @@ const resetNewProjectForm = () => {
     priority: 'medium',
     budget: 0,
     startDate: '',
-    endDate: ''
+    endDate: '',
+    selectedMembers: []
   }
 }
 
@@ -539,6 +604,17 @@ const handleCreateProject = async () => {
     const newProject = await projectsStore.createProject(projectData)
 
     if (newProject) {
+      // Add selected members to the project
+      for (const member of newProjectForm.value.selectedMembers) {
+        const success = await projectsStore.addProjectMember(newProject.id, member.id, 'member')
+        if (!success) {
+          console.error(`Failed to add member ${member.first_name} ${member.last_name} (ID: ${member.id})`)
+          // Continue adding other members even if one fails
+        } else {
+          console.log(`Successfully added member ${member.first_name} ${member.last_name} (ID: ${member.id})`)
+        }
+      }
+      
       showNewProjectDialog.value = false
       resetNewProjectForm()
       // Navigate to the new project
@@ -567,6 +643,16 @@ const handleProjectAction = async (action: string, projectId: string) => {
     }
   } catch (err) {
     console.error(`Failed to ${action} project:`, err)
+  }
+}
+
+// Toggle user selection for project members
+const toggleUserSelection = (user: User) => {
+  const index = newProjectForm.value.selectedMembers.findIndex(m => m.id === user.id)
+  if (index > -1) {
+    newProjectForm.value.selectedMembers.splice(index, 1)
+  } else {
+    newProjectForm.value.selectedMembers.push(user)
   }
 }
 

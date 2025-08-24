@@ -47,7 +47,17 @@
           <CardDescription>{{ t('projects.summary.leadersAndCollaborators') }}</CardDescription>
         </CardHeader>
         <CardContent class="space-y-4">
-          <div v-for="member in team" :key="member.name" class="flex items-center gap-4">
+          <div v-if="loadingMembers" class="flex items-center justify-center py-4">
+            <div class="text-sm text-muted-foreground">
+              {{ t('common.loading') }}...
+            </div>
+          </div>
+          <div v-else-if="team.length === 0" class="flex items-center justify-center py-4">
+            <div class="text-sm text-muted-foreground">
+              {{ t('projects.summary.noMembers') }}
+            </div>
+          </div>
+          <div v-else v-for="member in team" :key="member.name" class="flex items-center gap-4">
             <Avatar>
               <AvatarFallback>{{ member.initials }}</AvatarFallback>
             </Avatar>
@@ -75,7 +85,7 @@ import type { Project } from '@/types/supabase';
 import { format } from 'date-fns';
 import { Calendar } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 const { t } = useTranslation();
@@ -92,9 +102,18 @@ const project = computed((): Project | undefined => {
 });
 
 // Load projects if not already loaded
-onMounted(() => {
+onMounted(async () => {
   if (!projectsStore.isInitialized) {
-    projectsStore.fetchProjects();
+    await projectsStore.fetchProjects();
+  }
+  // Fetch team members for current project
+  await fetchTeamMembers();
+});
+
+// Watch for project changes to refetch members
+watch(project, async (newProject) => {
+  if (newProject?.id) {
+    await fetchTeamMembers();
   }
 });
 
@@ -114,10 +133,51 @@ const formatBudget = (budget: number): string => {
   }).format(budget);
 };
 
-// Keep existing team mock data for now
-const team = ref([
-  { name: 'Dr. Marie Dubois', role: 'Principal Investigator', initials: 'MD' },
-  { name: 'Prof. Jean Martin', role: 'Co-investigator', initials: 'JM' },
-  { name: 'Alice Chen', role: 'PhD Student', initials: 'AC' },
-]);
+// Team members state
+const teamMembers = ref([])
+const loadingMembers = ref(false)
+
+// Transform members data for UI display
+const team = computed(() => {
+  return teamMembers.value.map(member => {
+    const firstName = member.user?.first_name || ''
+    const lastName = member.user?.last_name || ''
+    const name = `${firstName} ${lastName}`.trim() || 'Unknown User'
+    
+    // Generate initials from name
+    const initials = firstName && lastName 
+      ? `${firstName.charAt(0)}${lastName.charAt(0)}` 
+      : name.charAt(0).toUpperCase()
+    
+    // Map database roles to display roles
+    const roleMap = {
+      'owner': 'Principal Investigator',
+      'admin': 'Co-investigator',  
+      'member': 'Team Member',
+      'viewer': 'Observer'
+    }
+    
+    return {
+      name,
+      role: roleMap[member.role] || member.role,
+      initials: initials.toUpperCase()
+    }
+  })
+})
+
+// Fetch team members when project changes
+async function fetchTeamMembers() {
+  if (!project.value?.id) return
+  
+  try {
+    loadingMembers.value = true
+    const members = await projectsStore.getProjectMembers(project.value.id)
+    teamMembers.value = members
+  } catch (error) {
+    console.error('Failed to fetch team members:', error)
+    teamMembers.value = []
+  } finally {
+    loadingMembers.value = false
+  }
+}
 </script>

@@ -137,7 +137,8 @@ export const useProjectsStore = defineStore('projects', () => {
       const newProject = await projectsService.createProject(projectData)
       projects.value.unshift(newProject) // Add to beginning of array
       return newProject
-    } catch {
+    } catch (createError) {
+      error.value = createError instanceof Error ? createError.message : 'Unknown error'
       return null
     } finally {
       loading.value = false
@@ -217,7 +218,15 @@ export const useProjectsStore = defineStore('projects', () => {
       await getProjectById(projectId)
 
       return true
-    } catch {
+    } catch (error) {
+      console.error(`[STORE] Error in addProjectMember:`, error)
+      console.error(`[STORE] Error details:`, {
+        projectId,
+        userId, 
+        role,
+        errorMessage: error instanceof Error ? error.message : 'Unknown error',
+        errorStack: error instanceof Error ? error.stack : undefined
+      })
       return false
     }
   }
@@ -245,6 +254,39 @@ export const useProjectsStore = defineStore('projects', () => {
       return true
     } catch {
       return false
+    }
+  }
+
+  async function getProjectMembers(projectId: string) {
+    try {
+      const members = await projectsService.getProjectMembers(projectId)
+      
+      // Import user store to get user profile data
+      const { useUserStore } = await import('./user.store')
+      const userStore = useUserStore()
+      
+      // Ensure all users are loaded (always reload to get latest data)
+      await userStore.getAllUsers()
+      
+      // Enrich members with full user profile data from user store
+      const enrichedMembers = members.map(member => {
+        const userProfile = userStore.allUsers.find(user => user.id === member.user_id)
+        return {
+          ...member,
+          user: userProfile || {
+            id: member.user_id,
+            first_name: '',
+            last_name: '',
+            avatar_url: null
+          }
+        }
+      })
+      
+      console.log('[STORE] Final enriched members:', enrichedMembers)
+      return enrichedMembers
+    } catch (error) {
+      console.error('Failed to fetch project members:', error)
+      return []
     }
   }
 
@@ -310,6 +352,7 @@ export const useProjectsStore = defineStore('projects', () => {
     addProjectMember,
     removeProjectMember,
     updateProjectMemberRole,
+    getProjectMembers,
     setSearchQuery,
     setStatusFilter,
     setCategoryFilter,

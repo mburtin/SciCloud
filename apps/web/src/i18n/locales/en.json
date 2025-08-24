@@ -581,7 +581,8 @@
       "sampleDescription": "Study of microbiological contamination in surface water",
       "projectTeam": "Project Team",
       "leadersAndCollaborators": "Leaders and collaborators",
-      "noDescription": "No description provided"
+      "noDescription": "No description provided",
+      "noMembers": "No team members added yet"
     },
     "documents": {
       "title": "Project Documents",
@@ -609,7 +610,13 @@
       "namePlaceholder": "Enter project name",
       "categoryPlaceholder": "e.g., Research, Development, Analysis",
       "descriptionPlaceholder": "Optional project description",
-      "priorityPlaceholder": "Select priority"
+      "priorityPlaceholder": "Select priority",
+      "members": "Project Members",
+      "selectMembers": "Select members",
+      "membersSelected": "{count} member(s) selected",
+      "availableUsers": "Available Users",
+      "noUsersAvailable": "No users available",
+      "selectedMembersWillBeAdded": "Selected members will be added to the project as members"
     },
     "status": {
       "planning": "Planning",

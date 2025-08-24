@@ -141,7 +141,8 @@ export class ProjectsService {
     }
 
     // Add the creator as an owner of the project
-    const { error: memberError } = await supabase
+    console.log('Adding creator as owner:', { project_id: data.id, user_id: user.id })
+    const { error: memberError, data: ownerData } = await supabase
       .from('project_members')
       .insert({
         project_id: data.id,
@@ -150,10 +151,19 @@ export class ProjectsService {
         created_by: user.id,
         updated_by: user.id
       })
+      .select()
 
     if (memberError) {
-      // Note: We don't throw here as the project was created successfully
-      // The user might still be able to access it as the creator
+      console.error('Failed to add creator as owner:', memberError)
+      console.error('Owner creation error details:', {
+        code: memberError.code,
+        message: memberError.message,
+        details: memberError.details,
+        hint: memberError.hint
+      })
+      // This is critical - if we can't add the creator as owner,
+      // they won't be able to manage the project
+      throw new Error(`Failed to add creator as project owner: ${memberError.message}`)
     }
 
     // If responsible person is different from creator, add them as admin
@@ -169,7 +179,9 @@ export class ProjectsService {
         })
 
       if (responsibleMemberError) {
+        console.error('Failed to add responsible user as admin:', responsibleMemberError)
         // Note: We don't throw here as the project was created successfully
+        // and the responsible user can still be contacted via the responsible field
       }
     }
 
@@ -379,7 +391,15 @@ export class ProjectsService {
       throw new Error('User must be authenticated to manage project members')
     }
 
-    const { error } = await supabase
+    console.log('Adding project member:', {
+      project_id: projectId,
+      user_id: userId,
+      role,
+      created_by: user.id,
+      current_user: user.id
+    })
+
+    const { error, data } = await supabase
       .from('project_members')
       .insert({
         project_id: projectId,
@@ -388,8 +408,16 @@ export class ProjectsService {
         created_by: user.id,
         updated_by: user.id
       })
+      .select()
 
     if (error) {
+      console.error('Database error adding project member:', error)
+      console.error('Error details:', {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint
+      })
       throw new Error(`Failed to add project member: ${error.message}`)
     }
   }
@@ -430,6 +458,23 @@ export class ProjectsService {
     if (error) {
       throw new Error(`Failed to update project member role: ${error.message}`)
     }
+  }
+
+  /**
+   * Get project members (basic data only)
+   */
+  async getProjectMembers(projectId: string): Promise<{ user_id: string; role: string }[]> {
+    const { data, error } = await supabase
+      .from('project_members')
+      .select('user_id, role')
+      .eq('project_id', projectId)
+      .order('role', { ascending: true }) // owners first, then admins, etc.
+
+    if (error) {
+      throw new Error(`Failed to fetch project members: ${error.message}`)
+    }
+
+    return data || []
   }
 }
 

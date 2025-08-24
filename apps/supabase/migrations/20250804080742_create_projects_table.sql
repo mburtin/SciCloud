@@ -90,98 +90,103 @@ CREATE POLICY "Authenticated users can create projects"
   FOR INSERT
   WITH CHECK ((select auth.role()) = 'authenticated');
 
--- RLS Policies for project_members table
--- Allow users to view project members if they are members themselves or admins
-CREATE POLICY "Users can view project members"
+-- RLS Policies for project_members table (Non-recursive implementation)
+-- Strategy: Use only external table checks to eliminate infinite recursion
+
+-- Allow users to view project members if they are project creators, responsible users, or system admins
+CREATE POLICY "Non-recursive project members view"
   ON public.project_members
   FOR SELECT
   USING (
-    -- User is a member of the project
+    -- User is the project creator (safe - checks projects table only)
     EXISTS (
-      SELECT 1 FROM public.project_members pm2
-      WHERE pm2.project_id = public.project_members.project_id
-      AND pm2.user_id = (select auth.uid())
+      SELECT 1 FROM public.projects p
+      WHERE p.id = public.project_members.project_id
+      AND p.created_by = (select auth.uid())
     )
-    -- OR user is admin
+    -- OR user is the project responsible person (safe - checks projects table only)
     OR EXISTS (
-      SELECT 1 FROM public.user_profiles 
-      WHERE id = (select auth.uid()) AND role = 'admin'
+      SELECT 1 FROM public.projects p
+      WHERE p.id = public.project_members.project_id
+      AND p.responsible = (select auth.uid())
+    )
+    -- OR user is system admin (safe - checks user_profiles table only)
+    OR EXISTS (
+      SELECT 1 FROM public.user_profiles up
+      WHERE up.id = (select auth.uid()) AND up.role = 'admin'
     )
   );
 
--- Allow users to add project members if they are project owners/admins or system admins
-CREATE POLICY "Project owners can add members"
+-- Allow project creators, responsible users, and system admins to add members
+CREATE POLICY "Project creators and admins can add members"
   ON public.project_members
   FOR INSERT
   WITH CHECK (
-    -- User is owner/admin of the project
+    -- User is the project creator (safe - checks projects table only)
     EXISTS (
-      SELECT 1 FROM public.project_members pm
-      WHERE pm.project_id = public.project_members.project_id
-      AND pm.user_id = (select auth.uid())
-      AND pm.role IN ('owner', 'admin')
-    )
-    -- OR user is the project creator
-    OR EXISTS (
       SELECT 1 FROM public.projects p
       WHERE p.id = public.project_members.project_id
       AND p.created_by = (select auth.uid())
     )
-    -- OR user is system admin
+    -- OR user is the project responsible person (safe - checks projects table only)
     OR EXISTS (
-      SELECT 1 FROM public.user_profiles 
-      WHERE id = (select auth.uid()) AND role = 'admin'
+      SELECT 1 FROM public.projects p
+      WHERE p.id = public.project_members.project_id
+      AND p.responsible = (select auth.uid())
+    )
+    -- OR user is system admin (safe - checks user_profiles table only)
+    OR EXISTS (
+      SELECT 1 FROM public.user_profiles up
+      WHERE up.id = (select auth.uid()) AND up.role = 'admin'
     )
   );
 
--- Allow users to update project members if they are project owners/admins or system admins
-CREATE POLICY "Project owners can update members"
+-- Allow project creators, responsible users, and system admins to update members
+CREATE POLICY "Non-recursive project members update"
   ON public.project_members
   FOR UPDATE
   USING (
-    -- User is owner/admin of the project
+    -- User is the project creator (safe - checks projects table only)
     EXISTS (
-      SELECT 1 FROM public.project_members pm
-      WHERE pm.project_id = public.project_members.project_id
-      AND pm.user_id = (select auth.uid())
-      AND pm.role IN ('owner', 'admin')
-    )
-    -- OR user is the project creator
-    OR EXISTS (
       SELECT 1 FROM public.projects p
       WHERE p.id = public.project_members.project_id
       AND p.created_by = (select auth.uid())
     )
-    -- OR user is system admin
+    -- OR user is the project responsible person (safe - checks projects table only)
     OR EXISTS (
-      SELECT 1 FROM public.user_profiles 
-      WHERE id = (select auth.uid()) AND role = 'admin'
+      SELECT 1 FROM public.projects p
+      WHERE p.id = public.project_members.project_id
+      AND p.responsible = (select auth.uid())
+    )
+    -- OR user is system admin (safe - checks user_profiles table only)
+    OR EXISTS (
+      SELECT 1 FROM public.user_profiles up
+      WHERE up.id = (select auth.uid()) AND up.role = 'admin'
     )
   );
 
--- Allow users to remove project members if they are project owners/admins, system admins, or removing themselves
-CREATE POLICY "Project owners can remove members"
+-- Allow users to remove themselves or allow project creators/responsible/admins to remove others
+CREATE POLICY "Non-recursive project members delete"
   ON public.project_members
   FOR DELETE
   USING (
     -- User is removing themselves
     user_id = (select auth.uid())
-    -- OR user is owner/admin of the project
-    OR EXISTS (
-      SELECT 1 FROM public.project_members pm
-      WHERE pm.project_id = public.project_members.project_id
-      AND pm.user_id = (select auth.uid())
-      AND pm.role IN ('owner', 'admin')
-    )
-    -- OR user is the project creator
+    -- OR user is the project creator (safe - checks projects table only)
     OR EXISTS (
       SELECT 1 FROM public.projects p
       WHERE p.id = public.project_members.project_id
       AND p.created_by = (select auth.uid())
     )
-    -- OR user is system admin
+    -- OR user is the project responsible person (safe - checks projects table only)
     OR EXISTS (
-      SELECT 1 FROM public.user_profiles 
-      WHERE id = (select auth.uid()) AND role = 'admin'
+      SELECT 1 FROM public.projects p
+      WHERE p.id = public.project_members.project_id
+      AND p.responsible = (select auth.uid())
+    )
+    -- OR user is system admin (safe - checks user_profiles table only)
+    OR EXISTS (
+      SELECT 1 FROM public.user_profiles up
+      WHERE up.id = (select auth.uid()) AND up.role = 'admin'
     )
   );
