@@ -1195,5 +1195,18 @@
       "training": "Formation",
       "meeting": "Réunion"
     }
+  },
+  "notes": {
+    "title": "Titre",
+    "content": "Contenu",
+    "tags": "Étiquettes",
+    "editNote": "Modifier la note",
+    "createNote": "Créer une note",
+    "editingNote": "Modification en cours",
+    "titlePlaceholder": "Titre de votre note...",
+    "tagsPlaceholder": "Ajouter des étiquettes (appuyez sur Entrée)",
+    "contentPlaceholder": "Commencez à écrire votre note...",
+    "createNoteDescription": "Rédigez une nouvelle note avec l'éditeur Markdown.",
+    "editNoteDescription": "Modifiez votre note avec l'éditeur Markdown."
   }
 }
