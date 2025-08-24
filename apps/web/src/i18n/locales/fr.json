@@ -390,6 +390,7 @@
       "start": "Début",
       "end": "Fin",
       "settingsSaved": "Paramètres sauvegardés !",
+      "moduleInDevelopment": "Ce module de notifications est encore en développement et peut ne pas être entièrement fonctionnel.",
       "methods": {
         "email": "E-mail",
         "push": "Notifications push"
