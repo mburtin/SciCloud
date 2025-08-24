@@ -156,8 +156,9 @@ export const useProjectsStore = defineStore('projects', () => {
       }
 
       return updatedProject
-    } catch {
-      return null
+    } catch (err) {
+      console.error('Error updating project in store:', err)
+      throw err // Propagate the error instead of returning null
     }
   }
 

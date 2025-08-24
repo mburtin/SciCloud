@@ -142,7 +142,7 @@ export class ProjectsService {
 
     // Add the creator as an owner of the project
     console.log('Adding creator as owner:', { project_id: data.id, user_id: user.id })
-    const { error: memberError, data: ownerData } = await supabase
+    const { error: memberError } = await supabase
       .from('project_members')
       .insert({
         project_id: data.id,
@@ -399,7 +399,7 @@ export class ProjectsService {
       current_user: user.id
     })
 
-    const { error, data } = await supabase
+    const { error } = await supabase
       .from('project_members')
       .insert({
         project_id: projectId,
@@ -408,7 +408,6 @@ export class ProjectsService {
         created_by: user.id,
         updated_by: user.id
       })
-      .select()
 
     if (error) {
       console.error('Database error adding project member:', error)
