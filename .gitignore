@@ -16,6 +16,7 @@ dist-ssr
 # Build output
 dist/
 build/
+**/*.tsbuildinfo
 
 # Test output
 /test-results
