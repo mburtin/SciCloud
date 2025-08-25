@@ -1189,13 +1189,85 @@
   "calendar": {
     "title": "Calendar",
     "subtitle": "Detailed Schedule - 3-Day View",
+    "navigation": {
+      "today": "Today",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "actions": {
+      "newEvent": "New Event",
+      "createEvent": "Create Event"
+    },
     "newEvent": "New Event",
     "events": "event(s)",
     "categories": {
       "maintenance": "Maintenance",
       "experiment": "Experiment", 
       "training": "Training",
-      "meeting": "Meeting"
+      "meeting": "Meeting",
+      "custom": "Custom"
+    },
+    "validation": {
+      "titleRequired": "Title is required",
+      "dateRequired": "Date is required",
+      "startTimeRequired": "Start time is required",
+      "endTimeRequired": "End time is required",
+      "endTimeAfterStart": "End time must be after start time",
+      "timeSlotConflict": "Time slot conflicts with existing event"
+    },
+    "eventDialog": {
+      "titles": {
+        "create": "Create New Event",
+        "edit": "Edit Event"
+      },
+      "descriptions": {
+        "create": "Fill in the event information",
+        "edit": "Update event details"
+      },
+      "fields": {
+        "title": "Title",
+        "date": "Date",
+        "category": "Category",
+        "allDay": "All day event",
+        "startTime": "Start Time",
+        "endTime": "End Time",
+        "location": "Location",
+        "attendees": "Attendees"
+      },
+      "placeholders": {
+        "title": "Enter event title",
+        "category": "Select category",
+        "location": "Enter location (optional)",
+        "attendee": "Add attendee email"
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "saving": "Saving...",
+        "create": "Create Event",
+        "update": "Update Event"
+      },
+      "validation": {
+        "titleRequired": "Title is required",
+        "dateRequired": "Date is required", 
+        "startTimeRequired": "Start time is required",
+        "endTimeRequired": "End time is required",
+        "endTimeAfterStart": "End time must be after start time",
+        "generalError": "An error occurred"
+      }
+    },
+    "views": {
+      "day": "Day",
+      "week": "Week",
+      "common": {
+        "time": "Time",
+        "allDay": "All Day",
+        "event": "event",
+        "events": "events"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete"
+      }
     }
   },
   "notes": {

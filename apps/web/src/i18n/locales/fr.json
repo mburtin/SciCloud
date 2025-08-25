@@ -1189,13 +1189,85 @@
   "calendar": {
     "title": "Calendrier",
     "subtitle": "Planning détaillé - Vue 3 jours",
+    "navigation": {
+      "today": "Aujourd'hui",
+      "previous": "Précédent",
+      "next": "Suivant"
+    },
+    "actions": {
+      "newEvent": "Nouvel événement",
+      "createEvent": "Créer un événement"
+    },
     "newEvent": "Nouvel événement",
     "events": "événement(s)",
     "categories": {
       "maintenance": "Maintenance",
       "experiment": "Expérience",
       "training": "Formation",
-      "meeting": "Réunion"
+      "meeting": "Réunion",
+      "custom": "Personnalisé"
+    },
+    "validation": {
+      "titleRequired": "Le titre est obligatoire",
+      "dateRequired": "La date est obligatoire",
+      "startTimeRequired": "L'heure de début est obligatoire",
+      "endTimeRequired": "L'heure de fin est obligatoire",
+      "endTimeAfterStart": "L'heure de fin doit être après l'heure de début",
+      "timeSlotConflict": "Le créneau horaire entre en conflit avec un événement existant"
+    },
+    "eventDialog": {
+      "titles": {
+        "create": "Créer un nouvel événement",
+        "edit": "Modifier l'événement"
+      },
+      "descriptions": {
+        "create": "Remplissez les informations de l'événement",
+        "edit": "Mettre à jour les détails de l'événement"
+      },
+      "fields": {
+        "title": "Titre",
+        "date": "Date",
+        "category": "Catégorie",
+        "allDay": "Événement toute la journée",
+        "startTime": "Heure de début",
+        "endTime": "Heure de fin",
+        "location": "Lieu",
+        "attendees": "Participants"
+      },
+      "placeholders": {
+        "title": "Entrez le titre de l'événement",
+        "category": "Sélectionner une catégorie",
+        "location": "Entrez le lieu (optionnel)",
+        "attendee": "Ajouter l'e-mail d'un participant"
+      },
+      "buttons": {
+        "cancel": "Annuler",
+        "saving": "Enregistrement...",
+        "create": "Créer l'événement",
+        "update": "Mettre à jour l'événement"
+      },
+      "validation": {
+        "titleRequired": "Le titre est obligatoire",
+        "dateRequired": "La date est obligatoire",
+        "startTimeRequired": "L'heure de début est obligatoire", 
+        "endTimeRequired": "L'heure de fin est obligatoire",
+        "endTimeAfterStart": "L'heure de fin doit être après l'heure de début",
+        "generalError": "Une erreur s'est produite"
+      }
+    },
+    "views": {
+      "day": "Jour",
+      "week": "Semaine",
+      "common": {
+        "time": "Heure",
+        "allDay": "Toute la journée",
+        "event": "événement",
+        "events": "événements"
+      },
+      "actions": {
+        "edit": "Modifier",
+        "delete": "Supprimer"
+      }
     }
   },
   "notes": {
