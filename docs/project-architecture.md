@@ -12,8 +12,13 @@ SciCloud is a scientific laboratory management platform built with modern web te
 - **Vue Router** for client-side routing with lazy-loaded pages
 - **Pinia** for state management
 - **TypeScript** throughout the application
-- **Tailwind CSS** + **ShadCN/UI** component library (Radix Vue)
+- **Tailwind CSS v4** + **ShadCN/UI** component library (Radix Vue)
 - **Vue Sonner** for toast notifications
+- **TipTap** for rich text editing (notes system)
+- **Vue i18n** for internationalization (French/English)
+- **VeeValidate** for form validation
+- **@tanstack/vue-table** for data tables
+- **date-fns** for date manipulation
 
 ### Backend Services
 - **Supabase** as the primary backend service providing:
@@ -50,18 +55,27 @@ src/
 ├── components/
 │   ├── ui/                   # ShadCN/UI base components
 │   ├── shared/               # Reusable business components
-│   ├── .../                  # Other modules components
+│   ├── scheduler/            # Calendar/scheduler components
+│   ├── editor/               # Rich text editor components
+│   ├── notes/                # Notes management components
+│   ├── notifications/        # Notification system components
+│   ├── admin/                # Admin-specific components
+│   ├── labs/                 # Laboratory management components
+│   └── projects/             # Project management components
 ├── pages/                    # Route-level components
 │   ├── dashboard/
 │   ├── projects/
 │   ├── labs/
 │   ├── profile/
-│   └── admin/
+│   ├── admin/
+│   ├── notes/                # Notes page
+│   └── calendar/             # Calendar page
 ├── stores/                    # Pinia state management
 ├── services/                  # API communication layer
 ├── composables/               # Vue composables for reusable logic
 ├── router/                    # Vue Router configuration
-├── types/                     # TypeScript functions
+├── types/                     # TypeScript type definitions
+├── i18n/                      # Internationalization files
 └── lib/                       # Third-party library configurations
 ```
 
@@ -96,6 +110,9 @@ PostgreSQL Database
 - `instruments`: Equipment management
 - `consumables`: Inventory management
 - `notifications`: System notifications
+- `notification_settings`: User notification preferences
+- `notes`: Personal and project-linked notes
+- `user_calendar`: Personal calendar events and scheduling
 
 ### Security Model
 - **Row Level Security (RLS)** enabled on all tables

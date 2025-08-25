@@ -4,15 +4,15 @@ Scicloud is a open-source scientific laboratory management platform. It provides
 
 ## Using Modular Prompts
 
-To work effectively on specific areas of Positron, research the codebase and ask Claude to include relevant context files:
+To work effectively on specific areas of SciCloud, research the codebase and ask Claude to include relevant context files:
 
-- **UI Components**: `Please read .claude/ui-components.md` - For SciCloud UI development
-- **Backend Services**: `Please read .claude/backend.md` - (Coming soon)
-- **Database**: `Please read .claude/supabase.md` - (Coming soon)
-- **Modules System**: `Please read .claude/modules-system.md` - (Coming soon)
-- **Language Support**: `Please read .claude/language-support.md` - (Coming soon)
-- **Deploy System**: `Please read .claude/build-system.md` - (Coming soon)
-- **E2E Testing**: `Please read .claude/e2e-testing.md` - (Coming soon)
+- **UI Components**: `Please read .docs/ui-components.md` - For SciCloud UI development
+- **Backend Services**: `Please read .docs/services.md` - Overview of all service architecture
+- **Database**: `Please read .docs/supabase.md` - Database architecture and security
+- **Modules System**: `Please read .docs/modules-system.md` - (Coming soon)
+- **Language Support**: `Please read .docs/language-support.md` - Internationalization system
+- **Deploy System**: `Please read .docs/build-system.md` - (Coming soon)
+- **E2E Testing**: `Please read .docs/testing.md` - Unit and E2E tests
 
 ## Architecture Overview
 
