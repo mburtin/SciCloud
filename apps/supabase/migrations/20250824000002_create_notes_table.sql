@@ -21,16 +21,16 @@ ALTER TABLE public.notes ENABLE ROW LEVEL SECURITY;
 
 -- Create RLS policies
 CREATE POLICY "Users can view their own notes" ON public.notes
-    FOR SELECT USING (auth.uid() = user_id);
+    FOR SELECT USING ((SELECT auth.uid()) = user_id);
 
 CREATE POLICY "Users can insert their own notes" ON public.notes
-    FOR INSERT WITH CHECK (auth.uid() = user_id);
+    FOR INSERT WITH CHECK ((SELECT auth.uid()) = user_id);
 
 CREATE POLICY "Users can update their own notes" ON public.notes
-    FOR UPDATE USING (auth.uid() = user_id);
+    FOR UPDATE USING ((SELECT auth.uid()) = user_id);
 
 CREATE POLICY "Users can delete their own notes" ON public.notes
-    FOR DELETE USING (auth.uid() = user_id);
+    FOR DELETE USING ((SELECT auth.uid()) = user_id);
 
 -- Create function to automatically update updated_at timestamp
 CREATE OR REPLACE FUNCTION public.handle_updated_at()
@@ -39,7 +39,7 @@ BEGIN
     NEW.updated_at = timezone('utc'::text, now());
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SET search_path = '';
 
 -- Create trigger to automatically update updated_at
 CREATE TRIGGER handle_notes_updated_at

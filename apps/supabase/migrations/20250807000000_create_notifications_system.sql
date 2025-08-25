@@ -53,7 +53,7 @@ BEGIN
     NEW.updated_at = NOW();
     RETURN NEW;
 END;
-$$ language 'plpgsql';
+$$ LANGUAGE plpgsql SET search_path = '';
 
 -- Create triggers for updated_at
 CREATE TRIGGER update_notifications_updated_at 
@@ -71,38 +71,38 @@ ALTER TABLE notification_settings ENABLE ROW LEVEL SECURITY;
 -- RLS Policies for notifications table
 CREATE POLICY "Users can view their own notifications" 
     ON notifications FOR SELECT 
-    USING (auth.uid() = user_id);
+    USING ((SELECT auth.uid()) = user_id);
 
 CREATE POLICY "Users can insert their own notifications" 
     ON notifications FOR INSERT 
-    WITH CHECK (auth.uid() = user_id);
+    WITH CHECK ((SELECT auth.uid()) = user_id);
 
 CREATE POLICY "Users can update their own notifications" 
     ON notifications FOR UPDATE 
-    USING (auth.uid() = user_id)
-    WITH CHECK (auth.uid() = user_id);
+    USING ((SELECT auth.uid()) = user_id)
+    WITH CHECK ((SELECT auth.uid()) = user_id);
 
 CREATE POLICY "Users can delete their own notifications" 
     ON notifications FOR DELETE 
-    USING (auth.uid() = user_id);
+    USING ((SELECT auth.uid()) = user_id);
 
 -- RLS Policies for notification_settings table
 CREATE POLICY "Users can view their own notification settings" 
     ON notification_settings FOR SELECT 
-    USING (auth.uid() = user_id);
+    USING ((SELECT auth.uid()) = user_id);
 
 CREATE POLICY "Users can insert their own notification settings" 
     ON notification_settings FOR INSERT 
-    WITH CHECK (auth.uid() = user_id);
+    WITH CHECK ((SELECT auth.uid()) = user_id);
 
 CREATE POLICY "Users can update their own notification settings" 
     ON notification_settings FOR UPDATE 
-    USING (auth.uid() = user_id)
-    WITH CHECK (auth.uid() = user_id);
+    USING ((SELECT auth.uid()) = user_id)
+    WITH CHECK ((SELECT auth.uid()) = user_id);
 
 CREATE POLICY "Users can delete their own notification settings" 
     ON notification_settings FOR DELETE 
-    USING (auth.uid() = user_id);
+    USING ((SELECT auth.uid()) = user_id);
 
 -- Enable realtime for notifications table
 ALTER PUBLICATION supabase_realtime ADD TABLE notifications;
@@ -124,7 +124,7 @@ EXCEPTION WHEN OTHERS THEN
     RAISE WARNING 'Failed to create notification settings for user %: %', NEW.id, SQLERRM;
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = '';
 
 -- Create trigger to auto-create notification settings when user is created
 CREATE TRIGGER create_notification_settings_on_user_creation
@@ -142,7 +142,7 @@ BEGIN
         WHERE user_id = user_uuid AND read = FALSE
     );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = '';
 
 -- Grant necessary permissions
 GRANT USAGE ON SCHEMA public TO authenticated;
