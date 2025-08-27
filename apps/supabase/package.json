@@ -18,6 +18,6 @@
     "functions:deploy": "pnpx supabase functions deploy"
   },
   "devDependencies": {
-    "supabase": "^2.34.3"
+    "supabase": "2.39.2"
   }
 }

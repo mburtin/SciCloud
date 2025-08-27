@@ -36,8 +36,8 @@ importers:
   apps/supabase:
     devDependencies:
       supabase:
-        specifier: ^2.34.3
-        version: 2.34.3
+        specifier: 2.39.2
+        version: 2.39.2
 
   apps/web:
     dependencies:
@@ -2369,8 +2369,7 @@ packages:
           targets:
             - cpu: x86
               os: win32
-    version: 22.18.0
-    hasBin: true
+    version: 0.0.0
 
   nopt@7.2.1:
     resolution: {integrity: sha512-taM24ViiimT/XntxbPyJQzCG+p4EKOpgD3mxFwW38mGjVUrfERQOeY4EDHjdnptttfHuHQXFx+lTP08Q+mLa/w==}
@@ -2714,8 +2713,8 @@ packages:
   strip-literal@3.0.0:
     resolution: {integrity: sha512-TcccoMhJOM3OebGhSBEmp3UZ2SfDMZUEBdRA/9ynfLi8yYajyWX3JiXArcJt4Umh4vISpspkQIY8ZZoCqjbviA==}
 
-  supabase@2.34.3:
-    resolution: {integrity: sha512-nMO7MFkw3ze/ScRt8S7AssNuBDbFeEsu2MTF2hol5T8HoAz5WgoLhhwCL5NUh8G0Jigpg88QIaDEPhHdNvv9TQ==}
+  supabase@2.39.2:
+    resolution: {integrity: sha512-/LDPMDIDmuDwj3UsKVw+wA+uHF7QhEF8xgJnKpnk1vqVdr+lA6xRSwWQzgaNuwPj5YPt6+78JKp+wzKziTsRVw==}
     engines: {npm: '>=8'}
     hasBin: true
 
@@ -5674,7 +5673,7 @@ snapshots:
     dependencies:
       js-tokens: 9.0.1
 
-  supabase@2.34.3:
+  supabase@2.39.2:
     dependencies:
       bin-links: 5.0.0
       https-proxy-agent: 7.0.6
