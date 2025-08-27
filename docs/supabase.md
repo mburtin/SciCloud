@@ -26,8 +26,8 @@ SciCloud uses Supabase (PostgreSQL) as its primary database with a comprehensive
 #### 4. Content & Communication
 - **`public.notes`**: Personal and project-linked notes with tags
 - **`public.user_calendar`**: Personal calendar events with categorization
-- **`public.notifications`**: System notifications with type categorization
-- **`public.notification_settings`**: User notification preferences
+- **`public.user_notifications`**: System notifications with type categorization
+- **`public.user_notification_settings`**: User notification preferences
 
 #### 5. Storage
 - **`storage.objects`**: File storage for project documents
@@ -124,7 +124,7 @@ END IF;
 
 #### Tables
 - **Lowercase with underscores**: `user_profiles`, `project_members`
-- **Plural nouns**: `animals`, `instruments`, `notifications`
+- **Plural nouns**: `animals`, `instruments`, `user_notifications`
 - **Junction tables**: `user_favorite_projects`
 
 #### Columns

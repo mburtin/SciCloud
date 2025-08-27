@@ -26,7 +26,7 @@ class NotificationsServiceImpl implements NotificationsService {
    */
   async getNotifications(limit = 50, offset = 0): Promise<Notification[]> {
     const { data, error } = await this.supabase
-      .from('notifications')
+      .from('user_notifications')
       .select('*')
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1)
@@ -43,7 +43,7 @@ class NotificationsServiceImpl implements NotificationsService {
    */
   async getNotification(id: UUID): Promise<Notification | null> {
     const { data, error } = await this.supabase
-      .from('notifications')
+      .from('user_notifications')
       .select('*')
       .eq('id', id)
       .single()
@@ -63,7 +63,7 @@ class NotificationsServiceImpl implements NotificationsService {
    */
   async createNotification(notification: NotificationInsert): Promise<Notification> {
     const { data, error } = await this.supabase
-      .from('notifications')
+      .from('user_notifications')
       .insert(notification)
       .select()
       .single()
@@ -80,7 +80,7 @@ class NotificationsServiceImpl implements NotificationsService {
    */
   async markAsRead(id: UUID): Promise<void> {
     const { error } = await this.supabase
-      .from('notifications')
+      .from('user_notifications')
       .update({ read: true })
       .eq('id', id)
 
@@ -94,7 +94,7 @@ class NotificationsServiceImpl implements NotificationsService {
    */
   async markAllAsRead(): Promise<void> {
     const { error } = await this.supabase
-      .from('notifications')
+      .from('user_notifications')
       .update({ read: true })
       .eq('read', false)
 
@@ -108,7 +108,7 @@ class NotificationsServiceImpl implements NotificationsService {
    */
   async updateNotification(id: UUID, updates: NotificationUpdate): Promise<Notification> {
     const { data, error } = await this.supabase
-      .from('notifications')
+      .from('user_notifications')
       .update(updates)
       .eq('id', id)
       .select()
@@ -126,7 +126,7 @@ class NotificationsServiceImpl implements NotificationsService {
    */
   async deleteNotification(id: UUID): Promise<void> {
     const { error } = await this.supabase
-      .from('notifications')
+      .from('user_notifications')
       .delete()
       .eq('id', id)
 
@@ -140,7 +140,7 @@ class NotificationsServiceImpl implements NotificationsService {
    */
   async getSettings(): Promise<NotificationSettings> {
     const { data, error } = await this.supabase
-      .from('notification_settings')
+      .from('user_notification_settings')
       .select('*')
       .single()
 
@@ -160,7 +160,7 @@ class NotificationsServiceImpl implements NotificationsService {
    */
   async updateSettings(updates: NotificationSettingsUpdate): Promise<NotificationSettings> {
     const { data, error } = await this.supabase
-      .from('notification_settings')
+      .from('user_notification_settings')
       .update(updates)
       .select()
       .single()
@@ -199,7 +199,7 @@ class NotificationsServiceImpl implements NotificationsService {
       }
 
       const { data, error } = await this.supabase
-        .from('notification_settings')
+        .from('user_notification_settings')
         .insert(defaultSettings)
         .select()
         .single()
@@ -223,13 +223,13 @@ class NotificationsServiceImpl implements NotificationsService {
     callback: (payload: RealtimeNotificationPayload) => void
   ): () => void {
     const channel = this.supabase
-      .channel(`notifications:${userId}`)
+      .channel(`user_notifications:${userId}`)
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'notifications',
+          table: 'user_notifications',
           filter: `user_id=eq.${userId}`
         },
         (payload) => {

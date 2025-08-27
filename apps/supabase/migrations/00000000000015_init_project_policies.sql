@@ -1,44 +1,9 @@
--- Create projects table with proper audit fields and constraints
-CREATE TABLE IF NOT EXISTS public.projects (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name TEXT NOT NULL,
-  description TEXT,
-  category TEXT NOT NULL,
-  status TEXT NOT NULL DEFAULT 'planning' CHECK (status IN ('active', 'planning', 'completed', 'paused', 'archived')),
-  priority TEXT NOT NULL DEFAULT 'medium' CHECK (priority IN ('low', 'medium', 'high')),
-  progress INTEGER NOT NULL DEFAULT 0 CHECK (progress >= 0 AND progress <= 100),
-  responsible UUID NOT NULL REFERENCES public.user_profiles(id) ON DELETE RESTRICT,
-  tags JSONB DEFAULT '[]'::jsonb,
-  budget NUMERIC(10,2) NOT NULL DEFAULT 0,
-  
-  -- Audit fields
-  created_by UUID NOT NULL REFERENCES auth.users(id) ON DELETE RESTRICT,
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-  updated_by UUID NOT NULL REFERENCES auth.users(id) ON DELETE RESTRICT,
-  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-  version INTEGER NOT NULL DEFAULT 1
-);
+-- ====================================================
+--          Policies related to `projects`
+-- ====================================================
 
--- Create project_members table for many-to-many relationship
-CREATE TABLE IF NOT EXISTS public.project_members (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  project_id UUID NOT NULL REFERENCES public.projects(id) ON DELETE CASCADE,
-  user_id UUID NOT NULL REFERENCES public.user_profiles(id) ON DELETE CASCADE,
-  role TEXT NOT NULL DEFAULT 'member' CHECK (role IN ('owner', 'admin', 'member', 'viewer')),
-  
-  -- Audit fields
-  created_by UUID NOT NULL REFERENCES auth.users(id) ON DELETE RESTRICT,
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-  updated_by UUID NOT NULL REFERENCES auth.users(id) ON DELETE RESTRICT,
-  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-  version INTEGER NOT NULL DEFAULT 1,
-  
-  -- Unique constraint to prevent duplicate memberships
-  UNIQUE(project_id, user_id)
-);
-
+-- Enable RLS policies for projects table
 ALTER TABLE public.projects ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.project_members ENABLE ROW LEVEL SECURITY;
 
 -- Allow any user to select all projects
 CREATE POLICY "Public view of projects"
@@ -90,8 +55,12 @@ CREATE POLICY "Authenticated users can create projects"
   FOR INSERT
   WITH CHECK ((select auth.role()) = 'authenticated');
 
--- RLS Policies for project_members table (Non-recursive implementation)
--- Strategy: Use only external table checks to eliminate infinite recursion
+-- ====================================================
+--        Policies related to `project_members`
+-- ====================================================
+
+-- Enable RLS policies for project_members table
+ALTER TABLE public.project_members ENABLE ROW LEVEL SECURITY;
 
 -- Allow users to view project members if they are project creators, responsible users, or system admins
 CREATE POLICY "Non-recursive project members view"
@@ -190,3 +159,22 @@ CREATE POLICY "Non-recursive project members delete"
       WHERE up.id = (select auth.uid()) AND up.role = 'admin'
     )
   );
+
+-- ====================================================
+--     Policies related to `user_favorite_projects`
+-- ====================================================
+
+-- Enable Row Level Security
+ALTER TABLE public.user_favorite_projects ENABLE ROW LEVEL SECURITY;
+
+-- Users can view their own favorites
+CREATE POLICY "Users can view their own favorite projects" ON public.user_favorite_projects
+  FOR SELECT USING ((select auth.uid()) = user_id);
+
+-- Users can add projects to their own favorites
+CREATE POLICY "Users can add to their own favorites" ON public.user_favorite_projects
+  FOR INSERT WITH CHECK ((select auth.uid()) = user_id);
+
+-- Users can remove projects from their own favorites
+CREATE POLICY "Users can remove from their own favorites" ON public.user_favorite_projects
+  FOR DELETE USING ((select auth.uid()) = user_id);

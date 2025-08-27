@@ -109,8 +109,8 @@ PostgreSQL Database
 - `animals`: Laboratory animal tracking
 - `instruments`: Equipment management
 - `consumables`: Inventory management
-- `notifications`: System notifications
-- `notification_settings`: User notification preferences
+- `user_notifications`: System notifications
+- `user_notification_settings`: User notification preferences
 - `notes`: Personal and project-linked notes
 - `user_calendar`: Personal calendar events and scheduling
 
